@@ -218,6 +218,10 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="NewShapeAct"/>
+   <addaction name="ColorAct"/>
+   <addaction name="SortHorizontalAct"/>
+   <addaction name="SortVericalAct"/>
   </widget>
   <widget class="QToolBar" name="leeLToolBar">
    <property name="windowTitle">
@@ -303,6 +307,73 @@
   <action name="Recent">
    <property name="text">
     <string>Recent</string>
+   </property>
+  </action>
+  <action name="NewShapeAct">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/newsquare.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>NewShape</string>
+   </property>
+   <property name="toolTip">
+    <string>Create New Shape</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="ColorAct">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/color.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Color</string>
+   </property>
+   <property name="toolTip">
+    <string>Set Color Selection</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="SortHorizontalAct">
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/shorizontal.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>SortHorizontal</string>
+   </property>
+   <property name="toolTip">
+    <string>Sort Align Horizontal </string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="SortVericalAct">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/svertical.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>SortVerical</string>
+   </property>
+   <property name="toolTip">
+    <string>Sort Align Vertical</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
  </widget>

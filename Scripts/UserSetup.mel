@@ -1,0 +1,2 @@
+commandPort -name "localhost:54321" -sourceType "mel";
+commandPort -name "localhost:54322" -sourceType "python";
