@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <pickerscene.h>
+#include <leepickerview.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,9 +20,6 @@ public:
 
 private:
     Ui::leePicker *ui;
-
-    PickerScene* scene=nullptr;
-
-    QGraphicsView* pView=nullptr;
+    LeePickerView* pView=nullptr;
 };
 #endif // MAINWINDOW_H

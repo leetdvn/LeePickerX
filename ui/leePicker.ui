@@ -126,25 +126,6 @@
           <property name="spacing">
            <number>0</number>
           </property>
-          <item>
-           <widget class="QGraphicsView" name="PickerGraphicsViews">
-            <property name="mouseTracking">
-             <bool>true</bool>
-            </property>
-            <property name="tabletTracking">
-             <bool>true</bool>
-            </property>
-            <property name="verticalScrollBarPolicy">
-             <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-            </property>
-            <property name="horizontalScrollBarPolicy">
-             <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-            </property>
-            <property name="cacheMode">
-             <set>QGraphicsView::CacheModeFlag::CacheBackground</set>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
        </layout>

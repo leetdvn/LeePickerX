@@ -17,16 +17,19 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ui)
 
 set(PROJECT_SOURCES
+        include/Definations.h
+        include/mainwindow.h
+        include/leepickeritem.h
+        include/leepickerscene.h
+        include/leepickerview.h
+        ui/leePicker.qrc
         src/main.cpp
         src/mainwindow.cpp
-        include/mainwindow.h
-        include/pickeritem.h
-        include/pickerscene.h
-        ui/leePicker.qrc
-        src/pickeritem.cpp
+        src/leepickeritem.cpp
         ui/leePicker.ui
         ui/leePicker.qrc
-        src/pickerscene.cpp
+        src/leepickerscene.cpp
+        src/leepickerview.cpp
 
 )
 

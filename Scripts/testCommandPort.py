@@ -1,3 +1,5 @@
+import maya.standalone
+maya.standalone.initialize(name='python')
 import socket
 
 HOST = '127.0.0.1'  # the local host
