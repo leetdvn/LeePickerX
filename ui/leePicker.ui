@@ -16,6 +16,14 @@
   <property name="windowTitle">
    <string>leePicker</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normalon>:/icons/leeAi.png</normalon>
+   </iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
   </property>
@@ -40,32 +48,6 @@
      <number>0</number>
     </property>
     <item row="1" column="0">
-     <layout class="QGridLayout" name="btBottom">
-      <property name="sizeConstraint">
-       <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-      </property>
-      <property name="spacing">
-       <number>6</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QToolButton" name="toolButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Extras</string>
-        </property>
-        <property name="autoRaise">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="2" column="0">
      <widget class="QProgressBar" name="leeProgress">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -104,6 +86,9 @@
       <property name="acceptDrops">
        <bool>true</bool>
       </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -137,9 +122,12 @@
          <number>0</number>
         </property>
         <item row="0" column="0">
-         <layout class="QHBoxLayout" name="leeGraphics">
+         <layout class="QHBoxLayout" name="GraphicsLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
           <item>
-           <widget class="QGraphicsView" name="graphicsView">
+           <widget class="QGraphicsView" name="PickerGraphicsViews">
             <property name="tabletTracking">
              <bool>true</bool>
             </property>
