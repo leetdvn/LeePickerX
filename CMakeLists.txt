@@ -21,10 +21,13 @@ set(PROJECT_SOURCES
         src/mainwindow.cpp
         include/mainwindow.h
         include/pickeritem.h
+        include/pickerscene.h
         ui/leePicker.qrc
         src/pickeritem.cpp
         ui/leePicker.ui
         ui/leePicker.qrc
+        src/pickerscene.cpp
+
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -76,3 +79,8 @@ install(TARGETS LeePickerX
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(LeePickerX)
 endif()
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Scripts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/icons DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
