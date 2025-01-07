@@ -3,12 +3,14 @@
 LeePickerScene::LeePickerScene(QObject *parent)
     : QGraphicsScene{parent}
 {
-    CreateItem("ABC");
+    QString itemName = "Demo";
+    QString inImage(":/icons/color.png");
+    CreateItem(itemName,inImage);
 }
 
-void LeePickerScene::CreateItem(const QString inItemName)
+LeePickerItem* LeePickerScene::CreateItem(const QString inItemName, QString inImage, int itemId)
 {
-    QString inImage(":/icons/color.png");
-    LeePickerItem* item = new LeePickerItem(inItemName,inImage,0);
+    LeePickerItem* item = new LeePickerItem(inItemName,inImage,itemId);
     addItem(item);
+    return item;
 }

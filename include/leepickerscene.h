@@ -11,7 +11,7 @@ class LeePickerScene : public QGraphicsScene
 public:
     explicit LeePickerScene(QObject *parent = nullptr);
 
-    virtual void CreateItem(const QString inItemName);
+    LeePickerItem* CreateItem(const QString inItemName,QString inImage=QString(),int itemId = -1);
 
 private:
 
