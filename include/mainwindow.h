@@ -21,5 +21,11 @@ public:
 private:
     Ui::leePicker *ui;
     LeePickerView* pView=nullptr;
+
+    void InitializeFuns();
+
+public slots:
+    ///Connection Slot
+    void CreateNewShape(bool ischecked=0);
 };
 #endif // MAINWINDOW_H

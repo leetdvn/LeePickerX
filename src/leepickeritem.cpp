@@ -29,13 +29,28 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     Q_UNUSED(widget);
 
     //Pixmap file image link
+    if (ImageIsValid())	{
+        QPainter::CompositionMode mode = !iIsOverlay ? QPainter::CompositionMode_SourceOver : QPainter::CompositionMode_Overlay;
+        painter->drawPixmap(iRectF.toRect(), iPixmap);
+        painter->setCompositionMode(mode);
+    }
+    else {
+        painter->fillRect(boundingRect(), Qt::blue);
 
-    painter->setCompositionMode(QPainter::CompositionMode_Overlay);
-    painter->drawPixmap(iRectF.toRect(), iPixmap);
-    //QPainter::CompositionMode mode = !status.isOverlay ? QPainter::CompositionMode_SourceOver : QPainter::CompositionMode_Overlay;
-    painter->setCompositionMode(QPainter::CompositionMode_SourceOver);
+    }
 
-    //return QGraphicsItem::paint(painter,option,widget);
+    if (isSelected())
+    {
+        QPen boder(Qt::green);
+        boder.setWidth(5);
+        painter->setPen(boder);
+        painter->drawRect(boundingRect());
+    }
+    //painter->setPen(textPen);
+    //painter->setFont(font);
+    //painter->drawText(rectF, label, QTextOption(Qt::AlignCenter));
+    //painter->setOpacity(alpha);
+
 }
 
 #pragma region Item Functions {

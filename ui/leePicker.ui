@@ -292,6 +292,9 @@
    </property>
   </action>
   <action name="NewShapeAct">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normalon>:/icons/newsquare.png</normalon>

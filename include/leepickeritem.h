@@ -38,6 +38,8 @@ protected:
 
     //private Funtion
     bool ImageIsValid();
+
+    bool iIsOverlay;
 signals:
 
 
