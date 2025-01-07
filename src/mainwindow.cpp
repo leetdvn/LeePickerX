@@ -3,6 +3,8 @@
 #include <QWidgetAction>
 #include <QTabBar>
 #include <QLineEdit>
+#include <QScrollBar>
+#include <QColorDialog>
 
 static QString USER = qgetenv("USER").isEmpty() ? qgetenv("USERNAME") : qgetenv("USER");
 static QString PICKERICON = "C:/Users/" + USER + "/Documents/GitHub/LeePickerX/build/Debug/icons/";
@@ -29,6 +31,47 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
+{
+    if(inMessage =="") return;
+    QStringList splitMes =  inMessage.split(" : ");
+    QString title = splitMes.count() >=0 ? splitMes[0] : inMessage;
+
+    QString mess = splitMes.count() >=2  ? splitMes[1] : splitMes[0];
+    QString result;
+    switch (inLog) {
+    case Log:{
+        result = QString("<font color=\"white\">%1 : </font>").arg(mess);
+        break;
+    }
+    case Warning:{
+        result = QString("<font color=\"yellow\">%1 : </font>").arg(title);
+        result += mess;
+        break;
+    }
+    case Error:{
+        result = QString("<font color=\"red\">%1 : </font>").arg(title);
+        result += mess;
+        break;
+    }
+    case Completed:{
+        result = QString("<font color=\"green\">%1 : </font>").arg(title);
+        result += mess;
+        break;
+    }
+    };
+
+    QString CLog = !isClear ? ui->LogPicker->toHtml() : "";
+    CLog += result;
+    ui->LogPicker->setHtml(CLog);
+
+    //new Logs
+    //set value max down to new Log
+    int valueMax = ui->LogPicker->verticalScrollBar()->maximum();
+    ui->LogPicker->verticalScrollBar()->setValue(valueMax);
+
+}
+
 void MainWindow::InitializeFuns()
 {
     //Signal SLot Window
@@ -39,18 +82,32 @@ void MainWindow::InitializeFuns()
 
     connect(ui->NewScene,SIGNAL(triggered(bool)),this,SLOT(OnNewFile()));
 
-    connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(OnTabBarClicked(int)));
-
+    connect(ui->Quit,SIGNAL(triggered(bool)),this,SLOT(OnPickerExit()));
     //toogle grid
     connect(ui->actionLeeGrid, SIGNAL(triggered()), this, SLOT(OnToogleGrid()));
 
     connect(ui->actionConnectApp,SIGNAL(triggered(bool)),this,SLOT(OnConnectAppChanged(bool)));
+
+    connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(OnTabBarClicked(int)));
+
+    connect(ui->ColorAct,SIGNAL(triggered(bool)),this,SLOT(OnColorChoise()));
+
 }
 
 void MainWindow::CreateNewShape(bool ischecked)
 {
+    QWidget* curentWidget = ui->tabWidget->currentWidget();
+
+    if(currentTab == ui->tabWidget->count()-1) return;
+
+    LeePickerView* pView = curentWidget->findChild<LeePickerView*>();
+
+    LeePickerScene* pScene = dynamic_cast<LeePickerScene*>(pView->scene());
+
+    if(pScene == Q_NULLPTR) return;
+
+    pScene->CreateItem("ABC");
     qDebug() << "Create New Shape" << ischecked << Qt::endl;
-    OnNewItem();
 }
 
 void MainWindow::OnNewFile()
@@ -231,6 +288,8 @@ void MainWindow::OnConnectAppChanged(bool checkable)
 {
     QString img = !checkable ? (":/icons/maya.jpg") : (":/icons/blender.jpg");
 
+    QString message = !checkable ? "     Connect To Maya " : "      Connect To Blender";
+    AddToLog(LogType::Log,message,true);
     QImage image(img);
 
     QAction* appAct = qobject_cast<QAction*>(sender());
@@ -241,14 +300,37 @@ void MainWindow::OnConnectAppChanged(bool checkable)
 
 void MainWindow::OnNewItem()
 {
+
+}
+
+void MainWindow::OnPickerExit()
+{
+    QCoreApplication::exit();
+}
+
+void MainWindow::OnColorChoise()
+{
+    QColor color = QColorDialog::getColor(Qt::white, this, "choise Color");
+
     QWidget* curentWidget = ui->tabWidget->currentWidget();
+    LeePickerView* current = curentWidget->findChild<LeePickerView*>();
 
-    LeePickerView* pView = curentWidget->findChild<LeePickerView*>();
+    if(current == Q_NULLPTR) return;
 
-    LeePickerScene* pScene = dynamic_cast<LeePickerScene*>(pView->scene());
+    QList<LeePickerItem*> Items = current->SelectedItems();
 
-    if(pScene ==Q_NULLPTR) return;
+    for (int i = 0; i < Items.length(); i++) {
 
-    pScene->CreateItem("ABC");
+        //istext == true ? leeObj[i]->setTextColor(color) : leeObj[i]->ImgChangeColor(color);
+        // if (!istext) {
+        //     Items[i]->ImgChangeColor(color);
+        // }
+        // else
+        //     Items[i]->setTextColor(color);
+        // Items[i]->update();
+
+        qDebug() << "Item Name : " << Qt::endl;
+    }
+
 }
 

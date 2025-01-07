@@ -44,8 +44,11 @@
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <property name="spacing">
+    <property name="horizontalSpacing">
      <number>0</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>1</number>
     </property>
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
@@ -74,7 +77,7 @@
        <attribute name="title">
         <string>Main</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
+       <layout class="QGridLayout" name="TabLayout">
         <property name="leftMargin">
          <number>0</number>
         </property>
@@ -109,7 +112,35 @@
       </widget>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="3" column="0">
+     <widget class="QTextEdit" name="LogPicker">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>1044</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
      <widget class="QProgressBar" name="leeProgress">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -126,11 +157,11 @@
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>15</height>
+        <height>20</height>
        </size>
       </property>
       <property name="value">
-       <number>24</number>
+       <number>99</number>
       </property>
       <property name="alignment">
        <set>Qt::AlignmentFlag::AlignCenter</set>
@@ -140,13 +171,6 @@
       </property>
       <property name="textDirection">
        <enum>QProgressBar::Direction::TopToBottom</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLineEdit" name="LogPicker">
-      <property name="enabled">
-       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -249,7 +273,6 @@
    <addaction name="actionLeeGrid"/>
    <addaction name="SortHorizontalAct"/>
    <addaction name="SortVericalAct"/>
-   <addaction name="Recent"/>
   </widget>
   <action name="NewScene">
    <property name="text">
@@ -280,10 +303,6 @@
    </property>
   </action>
   <action name="Recent">
-   <property name="icon">
-    <iconset resource="leePicker.qrc">
-     <normaloff>:/icons/color.png</normaloff>:/icons/color.png</iconset>
-   </property>
    <property name="text">
     <string>Recent</string>
    </property>
@@ -473,7 +492,7 @@
   </action>
   <action name="actionApi_Reference">
    <property name="text">
-    <string>Api Reference</string>
+    <string>Author</string>
    </property>
   </action>
   <action name="actionCheckUpdate">

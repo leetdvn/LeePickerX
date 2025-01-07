@@ -5,6 +5,7 @@
 #include <leepickerview.h>
 #include <QPointer>
 #include <QLineEdit>
+#include <leeGlobal.hpp>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -19,6 +20,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+
+protected:
+    void AddToLog(const LogType inLog,QString inMessage,bool isClear=0);
 
 private:
     Ui::leePicker *ui;
@@ -49,5 +54,7 @@ private slots:
     void OnTabChanged(int index);
     void OnConnectAppChanged(bool checkable);
     void OnNewItem();
+    void OnPickerExit();
+    void OnColorChoise();
 };
 #endif // MAINWINDOW_H

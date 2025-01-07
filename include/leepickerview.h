@@ -13,6 +13,8 @@ public:
 
     int numberItemOfScene();
 
+    QList<LeePickerItem*> SelectedItems();
+
 protected:
 
     QPointer<LeePickerScene> leeScene=nullptr;

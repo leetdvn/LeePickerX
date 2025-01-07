@@ -8,6 +8,14 @@
 #include <QLabel>
 #include <QString>
 
+enum LogType{
+    Log,
+    Warning,
+    Error,
+    Completed
+};
+
+
 template<class T>
 QWidgetAction* TemplateAction(void*& action, QString label = NULL, QString name = NULL)
 {
@@ -28,6 +36,8 @@ QWidgetAction* TemplateAction(void*& action, QString label = NULL, QString name 
     layout->addWidget((T*)action);
     return _nAct;
 }
+
+
 
 
 #endif

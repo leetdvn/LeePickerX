@@ -20,6 +20,25 @@ int LeePickerView::numberItemOfScene()
     return itemList.length();
 }
 
+QList<LeePickerItem *> LeePickerView::SelectedItems()
+{
+    QList<LeePickerItem*> leeObj{};
+    if (leeScene)
+    {
+        QList<QGraphicsItem*> ilist = leeScene->selectedItems();
+        if (!ilist.isEmpty())
+        {
+            for (QGraphicsItem* it : ilist)
+            {
+                LeePickerItem* mObj = qgraphicsitem_cast<LeePickerItem*>(it);
+                if (mObj)
+                    leeObj.append(mObj);
+            }
+        }
+    }
+    return leeObj;
+}
+
 void LeePickerView::InitializePolicy()
 {
     const QString bgrfile=":/icons/author.png";
