@@ -2,26 +2,45 @@
 #define LEEPICKERITEM_H
 
 #include <QGraphicsItem>
+#include <Definations.h>
 
 class LeePickerItem : public QGraphicsItem
 {
 public:
-    LeePickerItem(QString itemName = NULL, QString Image = nullptr, int objID = -1);
+    LeePickerItem(QString itemName = NULL, QString Image = nullptr, int objID = -1 ,QRectF inRectF = QRectF(0, 0, 80, 80));
 
-    //get rectF object x,y ,width , height
-    virtual QRectF RectF() { return iRectF; }
-    //get rect return other rect x,y,width,height
-    virtual QRect Rect() { return iRectF.toRect(); }
-
+    //Virtual Pure override function
     virtual QRectF boundingRect() const override;
 
     virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = nullptr) override;
-private:
-    QRectF iRectF= QRectF(0, 0, 80, 80);
+
+    //Public Function
+    void SetImagePath(const QString infile);
+
+    void SetItemName(const QString inItemName);
+
+    void SetItemColor(const QColor inColor);
+
+    void SetItemId(const int newId);
+
+    void SetItemPixmap(const QPixmap inPixmap);
+
+    void SetItemPixmap(const QImage inImage);
+
+protected:
+
+    QRectF iRectF;
     QString imgfile;
     QString iName;
     int itemId;
+    QColor iColor;
+    QPixmap iPixmap;
+
+    //private Funtion
+    bool ImageIsValid();
 signals:
+
+
 };
 
 #endif // LEEPICKERITEM_H

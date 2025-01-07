@@ -1,4 +1,7 @@
 #ifndef DEFINATIONS_H
 #define DEFINATIONS_H
 
+#define FOLDINGSTART {
+#define FOLDINGEND }
+
 #endif // DEFINATIONS_H
