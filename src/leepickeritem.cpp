@@ -1,6 +1,10 @@
 #include "leepickeritem.h"
 #include <QPainter>
 #include <QFile>
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneHoverEvent>
+#include <qgraphicsscene.h>
+#include <qmenu.h>
 
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
     :imgfile(Image)
@@ -107,6 +111,44 @@ void LeePickerItem::SetItemPixmap(const QImage inImage)
     iPixmap = QPixmap::fromImage(inImage);
     return this->update();
 }
+
+#pragma region Mouse HoverEvent {
+
+void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
+{
+
+    if (ev->button() == Qt::LeftButton)
+    {
+        //this->~leePatternItem();
+    }
+    else if (ev->button() & Qt::RightButton)
+    {
+        QMenu *menu = new QMenu();
+        QAction  *act = new QAction("abc");
+        menu->addAction(act);
+        const QPoint pos = ev->buttonDownScreenPos(Qt::RightButton);
+        menu->exec(menu->mapToParent(pos));
+    }
+    return QGraphicsItem::mousePressEvent(ev);
+}
+
+void LeePickerItem::hoverEnterEvent(QGraphicsSceneHoverEvent *e)
+{
+    return QGraphicsItem::hoverEnterEvent(e);
+}
+
+void LeePickerItem::hoverMoveEvent(QGraphicsSceneHoverEvent *e)
+{
+    return QGraphicsItem::hoverMoveEvent(e);
+}
+
+void LeePickerItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *e)
+{
+
+    return QGraphicsItem::hoverLeaveEvent(e);
+}
+
+#pragma endregion }
 
 bool LeePickerItem::ImageIsValid()
 {

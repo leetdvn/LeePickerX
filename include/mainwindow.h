@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <leepickerview.h>
+#include <QPointer>
+#include <QLineEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,12 +22,32 @@ public:
 
 private:
     Ui::leePicker *ui;
-    LeePickerView* pView=nullptr;
+
+    QPointer<LeePickerView> pView=nullptr;
 
     void InitializeFuns();
 
-public slots:
+    void CustomNewTab(QString newName,int type=0);
+
+    void AddTabSimple(QString tabname);
+
+    void tabSetup(bool newfile=0);
+
+    ///View
+    LeePickerView* getView(QWidget* tabIndex);
+
+    int currentTab;
+
+private slots:
     ///Connection Slot
     void CreateNewShape(bool ischecked=0);
+    void OnNewTab(int inIdx){   return CustomNewTab("NewTab",currentTab);}
+    void OnNewFile();
+    void OnTabRename(QString inNewName);
+    void OnTabBarClicked(int index);
+    void OnToogleGrid();
+    void OnTabChanged(int index);
+    void OnConnectAppChanged(bool checkable);
+    void OnNewItem();
 };
 #endif // MAINWINDOW_H

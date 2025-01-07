@@ -106,5 +106,7 @@
         <file>../icons/vertical.png</file>
         <file>../icons/xDelete.png</file>
         <file>../icons/leeAi.png</file>
+        <file>../icons/blender.jpg</file>
+        <file>../icons/maya.jpg</file>
     </qresource>
 </RCC>

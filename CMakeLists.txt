@@ -30,7 +30,7 @@ set(PROJECT_SOURCES
         ui/leePicker.qrc
         src/leepickerscene.cpp
         src/leepickerview.cpp
-
+        src/leeGlobal.hpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

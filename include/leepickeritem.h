@@ -29,6 +29,12 @@ public:
 
 protected:
 
+    virtual void mousePressEvent(QGraphicsSceneMouseEvent* ev) override;
+    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* e) override;
+    virtual void hoverMoveEvent(QGraphicsSceneHoverEvent* e) override;
+    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* e) override;
+
+
     QRectF iRectF;
     QString imgfile;
     QString iName;
@@ -38,8 +44,9 @@ protected:
 
     //private Funtion
     bool ImageIsValid();
-
     bool iIsOverlay;
+
+
 signals:
 
 

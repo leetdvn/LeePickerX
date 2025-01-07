@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QGraphicsView>
 #include <leepickerscene.h>
+#include <QPointer>
 
 class LeePickerView : public QGraphicsView
 {
@@ -10,10 +11,15 @@ class LeePickerView : public QGraphicsView
 public:
     explicit LeePickerView(QWidget *parent = nullptr);
 
-protected:
-    LeePickerScene* leeScene=nullptr;
+    int numberItemOfScene();
 
+protected:
+
+    QPointer<LeePickerScene> leeScene=nullptr;
     void InitializePolicy();
+
+private:
+
 
 signals:
 };

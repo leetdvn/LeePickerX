@@ -10,6 +10,16 @@ LeePickerView::LeePickerView(QWidget *parent)
 
 }
 
+int LeePickerView::numberItemOfScene()
+{
+    QGraphicsScene* gScene = scene(); int number{};
+    if (gScene == NULL) return 0;
+    //lDebug("aa.");
+    QList<QGraphicsItem*> itemList = gScene->items();
+
+    return itemList.length();
+}
+
 void LeePickerView::InitializePolicy()
 {
     const QString bgrfile=":/icons/author.png";
@@ -24,5 +34,5 @@ void LeePickerView::InitializePolicy()
     setMouseTracking(true);
     setUpdatesEnabled(true);
     setBackgroundBrush(image);
-
+    setRubberBandSelectionMode(Qt::IntersectsItemBoundingRect);
 }

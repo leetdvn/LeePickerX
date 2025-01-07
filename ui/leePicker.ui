@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>763</width>
-    <height>518</height>
+    <width>1044</width>
+    <height>630</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -47,40 +47,6 @@
     <property name="spacing">
      <number>0</number>
     </property>
-    <item row="1" column="0">
-     <widget class="QProgressBar" name="leeProgress">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
-      </property>
-      <property name="maximumSize">
-       <size>
-        <width>16777215</width>
-        <height>15</height>
-       </size>
-      </property>
-      <property name="value">
-       <number>24</number>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignCenter</set>
-      </property>
-      <property name="textVisible">
-       <bool>true</bool>
-      </property>
-      <property name="textDirection">
-       <enum>QProgressBar::Direction::TopToBottom</enum>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="acceptDrops">
@@ -91,6 +57,9 @@
       </property>
       <property name="currentIndex">
        <number>0</number>
+      </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
       </property>
       <widget class="QWidget" name="mainTab">
        <property name="mouseTracking">
@@ -130,7 +99,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="leeAddTab">
+      <widget class="QWidget" name="leeTabAdditional">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -140,6 +109,47 @@
       </widget>
      </widget>
     </item>
+    <item row="1" column="0">
+     <widget class="QProgressBar" name="leeProgress">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>15</height>
+       </size>
+      </property>
+      <property name="value">
+       <number>24</number>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+      <property name="textVisible">
+       <bool>true</bool>
+      </property>
+      <property name="textDirection">
+       <enum>QProgressBar::Direction::TopToBottom</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLineEdit" name="LogPicker">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -147,7 +157,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>763</width>
+     <width>1044</width>
      <height>21</height>
     </rect>
    </property>
@@ -167,17 +177,51 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Tools</string>
+     <string>Edit</string>
     </property>
+    <addaction name="actionFlip_Horizontal"/>
+    <addaction name="actionFlip_Vertical"/>
+    <addaction name="actionOverlayMode"/>
+    <addaction name="actionPin"/>
+    <addaction name="actionUnpin"/>
+    <addaction name="actionDuplicate"/>
    </widget>
    <widget class="QMenu" name="menuHelp_2">
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionAuth"/>
+    <addaction name="actionApi_Reference"/>
+    <addaction name="actionCheckUpdate"/>
+   </widget>
+   <widget class="QMenu" name="menuAlign">
+    <property name="title">
+     <string>Align</string>
+    </property>
+    <addaction name="actionLefttoRight"/>
+    <addaction name="actionRighttoLeft"/>
+    <addaction name="actionVBottomtoTop"/>
+    <addaction name="actionVToptoBottom"/>
+   </widget>
+   <widget class="QMenu" name="menuCreate">
+    <property name="title">
+     <string>Create</string>
+    </property>
+    <addaction name="actionCreateSingleButton"/>
+    <addaction name="actionCreateCImage"/>
+    <addaction name="actionMultiplyButtonH"/>
+    <addaction name="actionMultiplyButtonV"/>
+   </widget>
+   <widget class="QMenu" name="menuThirparty">
+    <property name="title">
+     <string>Thirparty</string>
+    </property>
+    <addaction name="actionASPICKER"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuAlign"/>
+   <addaction name="menuCreate"/>
+   <addaction name="menuThirparty"/>
    <addaction name="menuHelp_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -199,59 +243,13 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionConnectApp"/>
    <addaction name="NewShapeAct"/>
    <addaction name="ColorAct"/>
+   <addaction name="actionLeeGrid"/>
    <addaction name="SortHorizontalAct"/>
    <addaction name="SortVericalAct"/>
-   <addaction name="actionAuth"/>
-  </widget>
-  <widget class="QToolBar" name="leeLToolBar">
-   <property name="windowTitle">
-    <string>toolBar</string>
-   </property>
-   <property name="movable">
-    <bool>false</bool>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>20</width>
-     <height>20</height>
-    </size>
-   </property>
-   <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonStyle::ToolButtonIconOnly</enum>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>LeftToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="separator"/>
-  </widget>
-  <widget class="QToolBar" name="leeRToolBar">
-   <property name="windowTitle">
-    <string>toolBar_2</string>
-   </property>
-   <property name="movable">
-    <bool>false</bool>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>20</width>
-     <height>20</height>
-    </size>
-   </property>
-   <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonStyle::ToolButtonIconOnly</enum>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>RightToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="separator"/>
+   <addaction name="Recent"/>
   </widget>
   <action name="NewScene">
    <property name="text">
@@ -276,25 +274,24 @@
     <string>Quit</string>
    </property>
   </action>
-  <action name="actionAuth">
-   <property name="text">
-    <string>Author</string>
-   </property>
-  </action>
   <action name="Open">
    <property name="text">
     <string>Open</string>
    </property>
   </action>
   <action name="Recent">
+   <property name="icon">
+    <iconset resource="leePicker.qrc">
+     <normaloff>:/icons/color.png</normaloff>:/icons/color.png</iconset>
+   </property>
    <property name="text">
     <string>Recent</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::TextHeuristicRole</enum>
+   </property>
   </action>
   <action name="NewShapeAct">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="icon">
     <iconset>
      <normalon>:/icons/newsquare.png</normalon>
@@ -343,9 +340,6 @@
    </property>
   </action>
   <action name="SortVericalAct">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
    <property name="icon">
     <iconset>
      <normalon>:/icons/svertical.png</normalon>
@@ -361,8 +355,161 @@
     <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
+  <action name="actionLeeGrid">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/lpGrid.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>LeeGrid</string>
+   </property>
+   <property name="toolTip">
+    <string>toogle on/off Grid</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionConnectApp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/icons/maya.jpg</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>ConnectApp</string>
+   </property>
+   <property name="toolTip">
+    <string>Connect 3D Application</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionLefttoRight">
+   <property name="icon">
+    <iconset resource="leePicker.qrc">
+     <normaloff>:/icons/LtoR.png</normaloff>:/icons/LtoR.png</iconset>
+   </property>
+   <property name="text">
+    <string>H Left to Right</string>
+   </property>
+  </action>
+  <action name="actionRighttoLeft">
+   <property name="icon">
+    <iconset resource="leePicker.qrc">
+     <normaloff>:/icons/RtoL.png</normaloff>:/icons/RtoL.png</iconset>
+   </property>
+   <property name="text">
+    <string>H Right to Left</string>
+   </property>
+  </action>
+  <action name="actionVBottomtoTop">
+   <property name="icon">
+    <iconset resource="leePicker.qrc">
+     <normaloff>:/icons/svertical.png</normaloff>:/icons/svertical.png</iconset>
+   </property>
+   <property name="text">
+    <string>V Bottom to Top</string>
+   </property>
+  </action>
+  <action name="actionVToptoBottom">
+   <property name="icon">
+    <iconset resource="leePicker.qrc">
+     <normaloff>:/icons/svertical.png</normaloff>:/icons/svertical.png</iconset>
+   </property>
+   <property name="text">
+    <string>V Top to Bottom</string>
+   </property>
+  </action>
+  <action name="actionFlip_Horizontal">
+   <property name="icon">
+    <iconset resource="leePicker.qrc">
+     <normaloff>:/icons/horizontal.png</normaloff>:/icons/horizontal.png</iconset>
+   </property>
+   <property name="text">
+    <string>Flip Horizontal</string>
+   </property>
+  </action>
+  <action name="actionFlip_Vertical">
+   <property name="icon">
+    <iconset resource="leePicker.qrc">
+     <normaloff>:/icons/vertical.png</normaloff>:/icons/vertical.png</iconset>
+   </property>
+   <property name="text">
+    <string>Flip Vertical</string>
+   </property>
+  </action>
+  <action name="actionOverlayMode">
+   <property name="text">
+    <string>OverlayMode</string>
+   </property>
+  </action>
+  <action name="actionPin">
+   <property name="icon">
+    <iconset resource="leePicker.qrc">
+     <normaloff>:/icons/leepin.png</normaloff>:/icons/leepin.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pin</string>
+   </property>
+  </action>
+  <action name="actionUnpin">
+   <property name="text">
+    <string>Unpin</string>
+   </property>
+  </action>
+  <action name="actionDuplicate">
+   <property name="text">
+    <string>Duplicate</string>
+   </property>
+  </action>
+  <action name="actionApi_Reference">
+   <property name="text">
+    <string>Api Reference</string>
+   </property>
+  </action>
+  <action name="actionCheckUpdate">
+   <property name="text">
+    <string>CheckUpdate</string>
+   </property>
+  </action>
+  <action name="actionASPICKER">
+   <property name="text">
+    <string>ASPICKER</string>
+   </property>
+  </action>
+  <action name="actionCreateSingleButton">
+   <property name="text">
+    <string>Create Single Button</string>
+   </property>
+  </action>
+  <action name="actionCreateCImage">
+   <property name="text">
+    <string>Create Custom Image</string>
+   </property>
+  </action>
+  <action name="actionMultiplyButtonH">
+   <property name="text">
+    <string>Multiply Button H</string>
+   </property>
+  </action>
+  <action name="actionMultiplyButtonV">
+   <property name="text">
+    <string>Multiply Button V</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="leePicker.qrc"/>
+ </resources>
  <connections/>
 </ui>
