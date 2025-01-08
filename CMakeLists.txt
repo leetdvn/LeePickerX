@@ -22,6 +22,7 @@ set(PROJECT_SOURCES
         include/leepickeritem.h
         include/leepickerscene.h
         include/leepickerview.h
+        include/singleton.h
         ui/leePicker.qrc
         src/main.cpp
         src/mainwindow.cpp
@@ -37,6 +38,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(LeePickerX
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        ui/ScriptEditor.ui
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LeePickerX APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

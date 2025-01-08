@@ -11,11 +11,16 @@
 #include <QLineEdit>
 #include <QPixmap>
 #include <mainwindow.h>
+#include "../ui/ui_ScriptEditor.h"
+#include <QGraphicsWidget>
+
+
 
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
     :imgfile(Image)
     ,iName(itemName)
     ,itemId(objID)
+    ,SEditor(new Ui::ScriptEditor)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -46,7 +51,6 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     }
     else {
         painter->fillRect(boundingRect(), Qt::blue);
-
     }
 
     if (isSelected())
@@ -56,10 +60,19 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         painter->setPen(boder);
         painter->drawRect(boundingRect());
     }
-    //painter->setPen(textPen);
-    //painter->setFont(font);
-    //painter->drawText(rectF, label, QTextOption(Qt::AlignCenter));
-    //painter->setOpacity(alpha);
+
+    UpdateDisplayName(painter);
+    painter->setOpacity(iAlpha);
+
+}
+
+void LeePickerItem::UpdateDisplayName(QPainter *painter)
+{
+    painter->setPen(Qt::white);
+    QFont font("Arial",10, QFont::Bold);
+    painter->setFont(font);
+    if(!DisplayName.isEmpty())
+        painter->drawText(iRectF, DisplayName, QTextOption(Qt::AlignCenter));
 
 }
 
@@ -118,6 +131,14 @@ void LeePickerItem::SetItemPixmap(const QImage inImage)
     return this->update();
 }
 
+void LeePickerItem::SetDisplayName(const QString inText)
+{
+    if(inText.isEmpty() || inText.isNull()) return;
+
+    DisplayName=inText;
+    return this->update();
+}
+
 #pragma region Mouse HoverEvent {
 
 void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
@@ -168,7 +189,7 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
     iItemMenus = new QMenu();
     //_menu->setAttribute(Qt::WA_DeleteOnClose,true);
     //QMenu* edit = _menu->addMenu("edit button");
-    iItemMenus->addAction("assign selection", [&]() { OnAssignSelection();}); //on_assignMayaObject();
+    iItemMenus->addAction("assign selection", [&]() { OnAssignSelection();});
 
     //_menu->addSeparator();
     //_menu->addAction("test Action", [&]() {on_testCommand(); });
@@ -283,13 +304,30 @@ void LeePickerItem::OnAssignSelection()
 
     //AddToLog(Log,"Assign Selection not Working");
 
-    MainWindow::AddToLog(Log,"the Features Coming Soon..");
+    QPointer<MainWindow> Picker = &MainWindow::Instance();
+    Picker->AddToLog(Log,"the Features Coming Soon..");
+}
+
+void LeePickerItem::OnDisplayChanged(QString inText)
+{
+    if(inText.isNull() || inText.isEmpty()) return;
+
+    DisplayName = inText;
+    update();
 }
 
 void LeePickerItem::OnInitScriptEditor()
 {
     qDebug() << "Lee Init ScriptEditor" << Qt::endl;
-    MainWindow::AddToLog(Log,"the Features Coming Soon..");
+    QPointer<MainWindow> Picker = &MainWindow::Instance();
+
+    Picker->AddToLog(Log,"the Features Coming Soon..");
+
+    QWidget* widget=new QWidget();
+    SEditor->setupUi(widget);
+
+    connect(SEditor->lineEdit,SIGNAL(textChanged(QString)),SLOT(OnDisplayChanged(QString)));
+    widget->show();
 
 }
 

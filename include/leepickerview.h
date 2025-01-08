@@ -20,9 +20,23 @@ protected:
     QPointer<LeePickerScene> leeScene=nullptr;
     void InitializePolicy();
 
+    virtual void mousePressEvent(QMouseEvent* e) override;
+    virtual void mouseMoveEvent(QMouseEvent* e) override;
+    virtual void mouseReleaseEvent(QMouseEvent* e) override;
+    virtual void wheelEvent(QWheelEvent* e) override;
+
+
 private:
+    void Zoom(QWheelEvent *e);
 
+    QPoint sScenePos,cursorPos;
+    QPointF iOrigin;
 
+    QPointer<QRubberBand> Rubberband=Q_NULLPTR;
+
+    bool isLocked;
+
+    bool HasItemUnderMouse();
 signals:
 };
 #endif // LEEPICKERVIEW_H

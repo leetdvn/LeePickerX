@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QGraphicsScene>
 #include <leepickeritem.h>
+#include <QRubberBand>
 
 class LeePickerScene : public QGraphicsScene
 {
@@ -12,6 +13,10 @@ public:
     explicit LeePickerScene(QObject *parent = nullptr);
 
     LeePickerItem* CreateItem(const QString inItemName,QString inImage=QString(),int itemId = -1);
+
+
+protected:
+
 
 private:
 

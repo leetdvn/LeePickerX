@@ -7,6 +7,13 @@
 #include <QPointer>
 #include <leeGlobal.hpp>
 
+
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class ScriptEditor;
+}
+QT_END_NAMESPACE
+
 class LeePickerItem : public QGraphicsObject
 {
     Q_OBJECT
@@ -30,6 +37,8 @@ public:
     void SetItemPixmap(const QPixmap inPixmap);
 
     void SetItemPixmap(const QImage inImage);
+
+    void SetDisplayName(const QString inText);
 
 protected:
 
@@ -56,10 +65,16 @@ protected:
 
     QMenu* iItemMenus = Q_NULLPTR;
 
+    QString DisplayName;
+
+    qreal iAlpha;
+
 private:
+    Ui::ScriptEditor*SEditor;
+
     void ZLayerSetup();
 
-
+    void UpdateDisplayName(QPainter* paint);
 
 private slots:
     void OnDelete();
@@ -71,6 +86,8 @@ private slots:
     void OnInitScriptEditor();
 
     void OnAssignSelection();
+
+    void OnDisplayChanged(QString inText);
 };
 
 #endif // LEEPICKERITEM_H

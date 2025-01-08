@@ -6,20 +6,14 @@
 #include <QScrollBar>
 #include <QColorDialog>
 
-static QString USER = qgetenv("USER").isEmpty() ? qgetenv("USERNAME") : qgetenv("USER");
-static QString PICKERICON = "C:/Users/" + USER + "/Documents/GitHub/LeePickerX/build/Debug/icons/";
-
-
-MainWindow* MainWindow::Instance;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::leePicker)
 {
-    if(Instance == nullptr)
-        Instance=this;
 
     ui->setupUi(this);
+
     setDockOptions(QMainWindow::AllowTabbedDocks);
     setContextMenuPolicy(Qt::NoContextMenu);
     pView = new LeePickerView(this);
@@ -65,16 +59,18 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     }
     };
 
-    QString CLog = !isClear ? Instance->ui->LogPicker->toHtml() : "";
+
+    QString CLog = !isClear ? ui->LogPicker->toHtml() : "";
     CLog += result;
-    Instance->ui->LogPicker->setHtml(CLog);
+    ui->LogPicker->setHtml(CLog);
 
     //new Logs
     //set value max down to new Log
-    int valueMax = Instance->ui->LogPicker->verticalScrollBar()->maximum();
-    Instance->ui->LogPicker->verticalScrollBar()->setValue(valueMax);
+    int valueMax = ui->LogPicker->verticalScrollBar()->maximum();
+    ui->LogPicker->verticalScrollBar()->setValue(valueMax);
 
 }
+
 
 void MainWindow::InitializeFuns()
 {
@@ -121,7 +117,7 @@ void MainWindow::OnNewFile()
         for (int i = idx; i >0; i--)
         {
             QWidget* subtab = ui->tabWidget->widget(i);
-            if (subtab->objectName() == "leeAddTab" || ui->tabWidget->tabText(i)=="+") continue;
+            if (subtab->objectName() == "leeTabAdditional" || ui->tabWidget->tabText(i)=="+") continue;
             LeePickerView* v = getView(subtab);
             if (v) {
                 v->resetCachedContent();
@@ -156,7 +152,6 @@ void MainWindow::CustomNewTab(QString newName,int index)
         return;
     }
     //if (index)
-    int count = ui->tabWidget->count();
 
     QMenu* menu = new QMenu();
     menu->setAttribute(Qt::WA_DeleteOnClose,true);
@@ -171,11 +166,10 @@ void MainWindow::CustomNewTab(QString newName,int index)
     menu->addAction(w);
     double px = ui->tabWidget->tabBar()->tabRect(index).x();
     double py = ui->tabWidget->tabBar()->tabRect(index).y();
-    QSize sz = ui->tabWidget->tabBar()->tabRect(index).size() - ui->leeTabAdditional->size();
-    connect(line,SIGNAL(textChanged(QString)), this,SLOT(OnTabRename(QString)));
-    menu->exec(mapToGlobal(QPoint(px, py + 65)));
+    menu->exec(mapToGlobal(QPoint(px, py + 60)));
     line->setFocusPolicy(Qt::StrongFocus);
     line->setFocusProxy(menu);
+    connect(line,SIGNAL(textChanged(QString)), this,SLOT(OnTabRename(QString)));
 
 }
 
@@ -199,7 +193,6 @@ void MainWindow::tabSetup(bool newfile)
     if (title == "+") {
         curr = ui->tabWidget->widget(index - 1);
     };
-    QImage image(PICKERICON + "author.png");
     QHBoxLayout* layout = new QHBoxLayout(curr); // fix new file if tab ==
     layout->setContentsMargins(0, 0, 0, 0);
     curr->setLayout(layout);
@@ -246,7 +239,7 @@ void MainWindow::OnTabRename(QString inNewName)
 
 void MainWindow::OnToogleGrid()
 {
-    QImage image( PICKERICON+ "author.png");
+    QImage image(":/icons/author.png");
 
     QWidget* curentWidget = ui->tabWidget->currentWidget();
 
@@ -309,26 +302,8 @@ void MainWindow::OnPickerExit()
 
 void MainWindow::OnColorChoise()
 {
-    QColor color = QColorDialog::getColor(Qt::white, this, "choise Color");
-    QWidget* curentWidget = ui->tabWidget->currentWidget();
-    LeePickerView* current = curentWidget->findChild<LeePickerView*>();
-
-    if(current == Q_NULLPTR) return;
-
-    QList<LeePickerItem*> Items = current->SelectedItems();
-
-    for (int i = 0; i < Items.length(); i++) {
-
-        //istext == true ? leeObj[i]->setTextColor(color) : leeObj[i]->ImgChangeColor(color);
-        // if (!istext) {
-        //     Items[i]->ImgChangeColor(color);
-        // }
-        // else
-        //     Items[i]->setTextColor(color);
-        // Items[i]->update();
-
-        qDebug() << "Item Name : " << Qt::endl;
-    }
-
+    QColor color= QColorDialog::getColor(Qt::white, this, "choise Color");
+    MColor=color;
+    emit OnColorChanged(color);
 }
 

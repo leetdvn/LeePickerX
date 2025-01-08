@@ -1,4 +1,7 @@
 #include "leepickerscene.h"
+#include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneMoveEvent>
+#include <QRect>
 
 LeePickerScene::LeePickerScene(QObject *parent)
     : QGraphicsScene{parent}
