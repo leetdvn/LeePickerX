@@ -265,13 +265,10 @@ void MainWindow::OnToogleGrid()
 void MainWindow::OnTabChanged(int index)
 {
 
-    QImage image( PICKERICON+ "author.png");
+    QImage image(":/icons/author.png");
 
     QWidget* curentWidget = ui->tabWidget->currentWidget();
-
     LeePickerView* current = curentWidget->findChild<LeePickerView*>();
-    QBrush brush = current->backgroundBrush();
-
     if(ui->actionLeeGrid->isChecked()){
         current->setBackgroundBrush(image);
         current->setCacheMode(QGraphicsView::CacheBackground);
@@ -286,16 +283,14 @@ void MainWindow::OnTabChanged(int index)
 
 void MainWindow::OnConnectAppChanged(bool checkable)
 {
-    QString img = !checkable ? (":/icons/maya.jpg") : (":/icons/blender.jpg");
+    QString img = !checkable ? (":/icons/maya.png") : (":/icons/blender.png");
 
-    QString message = !checkable ? "     Connect To Maya " : "      Connect To Blender";
+    QString message = !checkable ? "     Connect To Maya " : "      Connect To Blender ";
     AddToLog(LogType::Log,message,true);
     QImage image(img);
 
     QAction* appAct = qobject_cast<QAction*>(sender());
-
     appAct->setIcon(QPixmap::fromImage(image));
-
 }
 
 void MainWindow::OnNewItem()
@@ -311,7 +306,6 @@ void MainWindow::OnPickerExit()
 void MainWindow::OnColorChoise()
 {
     QColor color = QColorDialog::getColor(Qt::white, this, "choise Color");
-
     QWidget* curentWidget = ui->tabWidget->currentWidget();
     LeePickerView* current = curentWidget->findChild<LeePickerView*>();
 

@@ -22,6 +22,8 @@ void StyleFusion(const QString &inStyle)
     p.setColor(QPalette::ToolTipText, Qt::white);
     //Window Text Color
     p.setColor(QPalette::WindowText, Qt::white);
+    //Text Color
+    p.setColor(QPalette::Text, Qt::white);
     //Highlight Color
     p.setColor(QPalette::Highlight, QColor(142,45,197));
     qApp->setPalette(p);

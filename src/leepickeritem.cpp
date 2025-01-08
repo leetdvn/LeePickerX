@@ -3,8 +3,12 @@
 #include <QFile>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneHoverEvent>
-#include <qgraphicsscene.h>
-#include <qmenu.h>
+#include <QGraphicsScene>
+#include <QMenu>
+#include <QWidgetAction>
+#include <QComboBox>
+#include <QHBoxLayout>
+#include <QLineEdit>
 
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
     :imgfile(Image)
@@ -121,31 +125,70 @@ void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
     {
         //this->~leePatternItem();
     }
-    else if (ev->button() & Qt::RightButton)
+    else if (ev->button() & Qt::RightButton && isHover)
     {
-        QMenu *menu = new QMenu();
-        QAction  *act = new QAction("abc");
-        menu->addAction(act);
-        const QPoint pos = ev->buttonDownScreenPos(Qt::RightButton);
-        menu->exec(menu->mapToParent(pos));
+        //     QMenu *menu = new QMenu();
+        //     QAction  *act = new QAction("abc");
+        //     menu->addAction(act);
+
+        InitItemMenus(iLastScenePos);//iItemMenus->exec(iItemMenus->mapToParent(iLastScenePos));
     }
     return QGraphicsItem::mousePressEvent(ev);
 }
 
 void LeePickerItem::hoverEnterEvent(QGraphicsSceneHoverEvent *e)
 {
+    isHover=true;
+    iLastScenePos = e->screenPos();
+
     return QGraphicsItem::hoverEnterEvent(e);
 }
 
 void LeePickerItem::hoverMoveEvent(QGraphicsSceneHoverEvent *e)
 {
+
+    iLastScenePos = e->screenPos();
+
     return QGraphicsItem::hoverMoveEvent(e);
 }
 
 void LeePickerItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *e)
 {
-
+    isHover=false;
     return QGraphicsItem::hoverLeaveEvent(e);
+}
+
+void LeePickerItem::InitItemMenus(const QPoint inPosi)
+{
+    int max = scale() * 100;
+    if (max > 1000)
+        max = 1000;
+    iItemMenus = new QMenu();
+    //_menu->setAttribute(Qt::WA_DeleteOnClose,true);
+    //QMenu* edit = _menu->addMenu("edit button");
+    iItemMenus->addAction("assign selection", [&]() { }); //on_assignMayaObject();
+
+    //_menu->addSeparator();
+    //_menu->addAction("test Action", [&]() {on_testCommand(); });
+    iItemMenus->addAction("scripts editor", [&]() {/*inItUserEditor();*/ });
+    //PinActionSetUp();
+    QString  menuStyle(
+        "QMenu::item{"
+        "background-color: rgb(0, 170, 0);"
+        "color: rgb(255, 255, 255);"
+        "}"
+        "QMenu::item:selected{"
+        "background-color: rgb(0, 127, 85);"
+        "color: rgb(255, 255, 255);"
+        "}"
+        );
+    iItemMenus->setStyleSheet(menuStyle);
+    iItemMenus->addAction("change shape", [this]() {/*on_shapeChanged();*/ });
+    iItemMenus->addSeparator();
+    iItemMenus->addAction("delete item", [&]() {OnDelete(); });
+    ZLayerSetup();
+    iItemMenus->exec(iItemMenus->mapToParent(inPosi));
+
 }
 
 #pragma endregion }
@@ -156,6 +199,67 @@ bool LeePickerItem::ImageIsValid()
 
     QPixmap pm;
     return pm.load(imgfile);
+}
+
+void LeePickerItem::ZLayerSetup()
+{
+
+
+    QPointer<QWidgetAction> layer = new QWidgetAction(this);
+    QPointer<QComboBox> layerOder = new QComboBox();
+
+
+    layerOder->addItem("background",Qt::AlignHCenter);
+    layerOder->addItem("on background",Qt::AlignHCenter);
+    for (unsigned i = 0; i < 4; i++)
+        layerOder->addItem("Ground " + QString::number(i + 1),Qt::AlignHCenter);
+    layer->setDefaultWidget(layerOder);
+    if (iItemMenus !=nullptr)
+        iItemMenus->addAction(layer);
+    layerOder->setCurrentIndex(zValue());
+
+    //Sort Alignment
+    layerOder->setEditable(true);
+    layerOder->lineEdit()->setReadOnly(true);
+    layerOder->lineEdit()->setAlignment(Qt::AlignCenter);
+    for (int i = 0 ; i < layerOder->count() ; ++i) {
+        layerOder->setItemData(i, Qt::AlignCenter, Qt::TextAlignmentRole);
+    }
+
+    connect(layerOder,SIGNAL(currentIndexChanged(int)),this,SLOT(OnZLayerChanged(int)));
+}
+
+void LeePickerItem::OnDelete()
+{
+    deleteLater();
+    ///free(this);
+}
+
+void LeePickerItem::OnZLayerChanged(int idx)
+{
+    QComboBox* layerOder = qobject_cast<QComboBox*>(sender());
+
+    if(layerOder == nullptr) return;
+
+
+    if (layerOder != nullptr) {
+        int OrderNumber = layerOder->currentIndex();
+        setZValue(OrderNumber);
+        if (OrderNumber == 0) {
+            // if (MaskColor != nullptr)
+            //     MaskColor = nullptr;
+            // status.isMoving = false;
+            setFlag(QGraphicsItem::ItemIsMovable, false);
+            setFlag(QGraphicsItem::ItemIsSelectable, false);
+        }
+        else {
+            // status.isMoving = true;
+            setFlag(QGraphicsItem::ItemIsMovable, true);
+            setFlag(QGraphicsItem::ItemIsSelectable, true);
+        }
+        update();
+    }
+
 }
 
 #pragma endregion }

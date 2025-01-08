@@ -378,6 +378,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normalon>:/icons/lpGrid.png</normalon>
@@ -398,9 +401,9 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
-     <normalon>:/icons/maya.jpg</normalon>
-    </iconset>
+    <iconset resource="leePicker.qrc">
+     <normaloff>:/icons/maya.png</normaloff>
+     <normalon>:/icons/maya.jpg</normalon>:/icons/maya.png</iconset>
    </property>
    <property name="text">
     <string>ConnectApp</string>

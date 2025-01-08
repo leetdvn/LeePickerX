@@ -1,14 +1,17 @@
 #ifndef LEEPICKERITEM_H
 #define LEEPICKERITEM_H
 
+#include <QGraphicsObject>
 #include <QGraphicsItem>
 #include <Definations.h>
+#include <QPointer>
 
-class LeePickerItem : public QGraphicsItem
+class LeePickerItem : public QGraphicsObject
 {
+    Q_OBJECT
 public:
     LeePickerItem(QString itemName = NULL, QString Image = nullptr, int objID = -1 ,QRectF inRectF = QRectF(0, 0, 80, 80));
-
+    ~LeePickerItem(){deleteLater();}
     //Virtual Pure override function
     virtual QRectF boundingRect() const override;
 
@@ -33,7 +36,7 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* e) override;
     virtual void hoverMoveEvent(QGraphicsSceneHoverEvent* e) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* e) override;
-
+    virtual void InitItemMenus(const QPoint inPosi);
 
     QRectF iRectF;
     QString imgfile;
@@ -46,10 +49,21 @@ protected:
     bool ImageIsValid();
     bool iIsOverlay;
 
+    QPoint iLastScenePos= QPoint();
 
-signals:
+    bool isHover=false;
+
+    QMenu* iItemMenus = Q_NULLPTR;
+
+private:
+    void ZLayerSetup();
 
 
+
+private slots:
+    void OnDelete();
+
+    void OnZLayerChanged(int idx);
 };
 
 #endif // LEEPICKERITEM_H
