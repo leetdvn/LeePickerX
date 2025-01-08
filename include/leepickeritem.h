@@ -5,6 +5,7 @@
 #include <QGraphicsItem>
 #include <Definations.h>
 #include <QPointer>
+#include <leeGlobal.hpp>
 
 class LeePickerItem : public QGraphicsObject
 {
@@ -64,6 +65,12 @@ private slots:
     void OnDelete();
 
     void OnZLayerChanged(int idx);
+
+    void OnShapeChanged();
+
+    void OnInitScriptEditor();
+
+    void OnAssignSelection();
 };
 
 #endif // LEEPICKERITEM_H

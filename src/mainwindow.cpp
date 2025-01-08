@@ -10,10 +10,14 @@ static QString USER = qgetenv("USER").isEmpty() ? qgetenv("USERNAME") : qgetenv(
 static QString PICKERICON = "C:/Users/" + USER + "/Documents/GitHub/LeePickerX/build/Debug/icons/";
 
 
+MainWindow* MainWindow::Instance;
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::leePicker)
 {
+    if(Instance == nullptr)
+        Instance=this;
 
     ui->setupUi(this);
     setDockOptions(QMainWindow::AllowTabbedDocks);
@@ -61,14 +65,14 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     }
     };
 
-    QString CLog = !isClear ? ui->LogPicker->toHtml() : "";
+    QString CLog = !isClear ? Instance->ui->LogPicker->toHtml() : "";
     CLog += result;
-    ui->LogPicker->setHtml(CLog);
+    Instance->ui->LogPicker->setHtml(CLog);
 
     //new Logs
     //set value max down to new Log
-    int valueMax = ui->LogPicker->verticalScrollBar()->maximum();
-    ui->LogPicker->verticalScrollBar()->setValue(valueMax);
+    int valueMax = Instance->ui->LogPicker->verticalScrollBar()->maximum();
+    Instance->ui->LogPicker->verticalScrollBar()->setValue(valueMax);
 
 }
 

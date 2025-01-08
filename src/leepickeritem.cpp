@@ -9,6 +9,8 @@
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
+#include <QPixmap>
+#include <mainwindow.h>
 
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
     :imgfile(Image)
@@ -166,11 +168,11 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
     iItemMenus = new QMenu();
     //_menu->setAttribute(Qt::WA_DeleteOnClose,true);
     //QMenu* edit = _menu->addMenu("edit button");
-    iItemMenus->addAction("assign selection", [&]() { }); //on_assignMayaObject();
+    iItemMenus->addAction("assign selection", [&]() { OnAssignSelection();}); //on_assignMayaObject();
 
     //_menu->addSeparator();
     //_menu->addAction("test Action", [&]() {on_testCommand(); });
-    iItemMenus->addAction("scripts editor", [&]() {/*inItUserEditor();*/ });
+    iItemMenus->addAction("scripts editor", [&]() { OnInitScriptEditor(); });
     //PinActionSetUp();
     QString  menuStyle(
         "QMenu::item{"
@@ -183,7 +185,7 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
         "}"
         );
     iItemMenus->setStyleSheet(menuStyle);
-    iItemMenus->addAction("change shape", [this]() {/*on_shapeChanged();*/ });
+    iItemMenus->addAction("change shape", [this]() {OnShapeChanged();});
     iItemMenus->addSeparator();
     iItemMenus->addAction("delete item", [&]() {OnDelete(); });
     ZLayerSetup();
@@ -211,8 +213,10 @@ void LeePickerItem::ZLayerSetup()
 
     layerOder->addItem("background",Qt::AlignHCenter);
     layerOder->addItem("on background",Qt::AlignHCenter);
+
     for (unsigned i = 0; i < 4; i++)
-        layerOder->addItem("Ground " + QString::number(i + 1),Qt::AlignHCenter);
+        layerOder->addItem("Ground " + QString::number(i+1),Qt::AlignHCenter);
+
     layer->setDefaultWidget(layerOder);
     if (iItemMenus !=nullptr)
         iItemMenus->addAction(layer);
@@ -259,6 +263,33 @@ void LeePickerItem::OnZLayerChanged(int idx)
         }
         update();
     }
+
+}
+
+void LeePickerItem::OnShapeChanged()
+{
+    QString image = BrowserImage();
+    if (!QFile(image).exists()) return;
+
+    SetItemPixmap(QImage(image));
+    iRectF = QImage(image).rect();
+    imgfile = image;
+    update();
+}
+
+void LeePickerItem::OnAssignSelection()
+{
+    qDebug() << "Assign Selection not Working" << Qt::endl;
+
+    //AddToLog(Log,"Assign Selection not Working");
+
+    MainWindow::AddToLog(Log,"the Features Coming Soon..");
+}
+
+void LeePickerItem::OnInitScriptEditor()
+{
+    qDebug() << "Lee Init ScriptEditor" << Qt::endl;
+    MainWindow::AddToLog(Log,"the Features Coming Soon..");
 
 }
 

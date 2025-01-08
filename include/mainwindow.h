@@ -21,10 +21,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    static void AddToLog(const LogType inLog,QString inMessage,bool isClear=0);
 
-protected:
-    void AddToLog(const LogType inLog,QString inMessage,bool isClear=0);
-
+    MainWindow* GetInstance(){return Instance;}
 private:
     Ui::leePicker *ui;
 
@@ -42,6 +41,8 @@ private:
     LeePickerView* getView(QWidget* tabIndex);
 
     int currentTab;
+
+    static MainWindow* Instance;
 
 private slots:
     ///Connection Slot
