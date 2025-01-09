@@ -6,6 +6,7 @@
 #include <Definations.h>
 #include <QPointer>
 #include <leeGlobal.hpp>
+#include <QJsonObject>
 
 
 QT_BEGIN_NAMESPACE
@@ -40,6 +41,8 @@ public:
 
     void SetDisplayName(const QString inText);
 
+    QJsonObject toJsonObject();
+
 protected:
 
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* ev) override;
@@ -63,11 +66,13 @@ protected:
 
     bool isHover=false;
 
+    bool isPined=false;
     QMenu* iItemMenus = Q_NULLPTR;
 
     QString DisplayName;
 
     qreal iAlpha;
+
 
 private:
     Ui::ScriptEditor*SEditor;
@@ -75,6 +80,7 @@ private:
     void ZLayerSetup();
 
     void UpdateDisplayName(QPainter* paint);
+
 
 private slots:
     void OnDelete();

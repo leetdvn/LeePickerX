@@ -240,7 +240,7 @@
    </widget>
    <widget class="QMenu" name="menuThirparty">
     <property name="title">
-     <string>Thirparty</string>
+     <string>Tools</string>
     </property>
     <addaction name="actionASPICKER"/>
    </widget>

@@ -25,6 +25,7 @@ public:
 
     void AddToLog(const LogType inLog,QString inMessage,bool isClear=0);
 
+    static SoftWareApp RemoteApp;
 signals:
     void OnColorChanged(QColor &Color);
 
@@ -45,6 +46,8 @@ private:
     ///View
     LeePickerView* getView(QWidget* tabIndex);
 
+    LeePickerScene* getScene(const QWidget* tabIndex);
+
     int currentTab;
 
     QColor MColor;
@@ -63,5 +66,6 @@ private slots:
     void OnNewItem();
     void OnPickerExit();
     void OnColorChoise();
+    void OnSave();
 };
 #endif // MAINWINDOW_H

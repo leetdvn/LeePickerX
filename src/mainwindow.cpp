@@ -5,7 +5,10 @@
 #include <QLineEdit>
 #include <QScrollBar>
 #include <QColorDialog>
+#include <QJsonArray>
+#include <QJsonDocument>
 
+SoftWareApp MainWindow::RemoteApp;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -90,6 +93,8 @@ void MainWindow::InitializeFuns()
     connect(ui->tabWidget,SIGNAL(tabBarClicked(int)),this,SLOT(OnTabBarClicked(int)));
 
     connect(ui->ColorAct,SIGNAL(triggered(bool)),this,SLOT(OnColorChoise()));
+
+    connect(ui->Save,SIGNAL(triggered(bool)),this,SLOT(OnSave()));
 
 }
 
@@ -221,6 +226,20 @@ LeePickerView *MainWindow::getView(QWidget *tabIndex)
     return nullptr;
 }
 
+LeePickerScene *MainWindow::getScene(const QWidget *tabIndex)
+{
+    QPointer<LeePickerScene> sceneResult=nullptr;
+    QList<LeePickerView*> llui = tabIndex->findChildren<LeePickerView*>();
+    if (llui.length() > 0) {
+        for (LeePickerView* view : llui) {
+            if (view) {
+                return sceneResult = qobject_cast<LeePickerScene*>(view->scene());
+            }
+        }
+    }
+    return sceneResult;
+}
+
 void MainWindow::OnTabBarClicked(int index)
 {
     currentTab= index;
@@ -281,7 +300,7 @@ void MainWindow::OnConnectAppChanged(bool checkable)
     //On Connect With Maya Or Blender
     QString img = !checkable ? (":/icons/maya.png") : (":/icons/blender.png");
 
-    SoftWareApp iApp = !checkable ? Maya  : Blender;
+    RemoteApp = !checkable ? Maya  : Blender;
     QString message = !checkable ? "     Connect To Maya " : "      Connect To Blender ";
     AddToLog(LogType::Log,message,true);
     QImage image(img);
@@ -289,7 +308,9 @@ void MainWindow::OnConnectAppChanged(bool checkable)
     QAction* appAct = qobject_cast<QAction*>(sender());
     appAct->setIcon(QPixmap::fromImage(image));
 
-    iRApp = iApp;
+    QString Info = !checkable ? "Maya" : "Blender";
+
+
 }
 
 void MainWindow::OnNewItem()
@@ -309,5 +330,26 @@ void MainWindow::OnColorChoise()
     QColor color= QColorDialog::getColor(Qt::white, this, "choise Color");
     MColor=color;
     emit OnColorChanged(color);
+}
+
+void MainWindow::OnSave()
+{
+    LeePickerScene* currentScene =  getScene(ui->tabWidget->currentWidget());
+    if(currentScene==Q_NULLPTR) return;
+
+    QJsonArray arr{};
+    for(auto it : currentScene->GetAllItems()){
+        QJsonObject obj = it->toJsonObject();
+        arr.append(obj);
+    }
+
+    QJsonObject total;
+    total["Items"] = arr;
+    QFile jfile("C:\\Users\\thang\\Documents\\GitHub\\LeePickerX\\Saved\\test.json");
+    QByteArray byteArray = QJsonDocument(total).toJson();
+
+    JsonExport(jfile,byteArray);
+    QString message = "Saved  %1";
+    AddToLog(Log,message.arg(jfile.fileName()));
 }
 

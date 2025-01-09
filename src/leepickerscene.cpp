@@ -33,3 +33,18 @@ QList<LeePickerItem*> LeePickerScene::GetSelectedItems()
 
     return pItems;
 }
+
+QList<LeePickerItem *> LeePickerScene::GetAllItems()
+{
+    QList<LeePickerItem*> pItems = QList<LeePickerItem*>();
+    QList<QGraphicsItem*> Items = items();
+
+    for(auto it: Items)
+    {
+        QPointer<LeePickerItem> castIt = qgraphicsitem_cast<LeePickerItem*>(it);
+        if(castIt==Q_NULLPTR) continue;
+        pItems.append(castIt);
+    }
+
+    return pItems;
+}

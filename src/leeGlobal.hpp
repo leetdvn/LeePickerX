@@ -25,8 +25,6 @@ enum SoftWareApp{
     Blender,
 };
 
-static SoftWareApp iRApp;
-
 static QString OLDFOLDER = "./icons/";
 
 static bool isDir(const QString dir) { return QDir(dir).exists(); }
@@ -72,6 +70,20 @@ static QString BrowserImage()
     QString ImgPath = QFileDialog::getOpenFileName(nullptr, " image choise ", OLDFOLDER,filter);
     getCurrentFolder(ImgPath);
     return ImgPath;
+}
+
+static void JsonExport(QFile &file, QByteArray data, bool Hex=0)
+{
+    if (!file.exists() && data.isEmpty() || !file.exists() && data.isNull()) { return; }
+
+    QByteArray copyData=*&data;
+    if (file.open(QIODevice::WriteOnly))
+    {
+        if(Hex) copyData = copyData.toHex();
+        file.write(copyData);
+        file.close();
+    }
+
 }
 
 #endif

@@ -12,6 +12,7 @@
 #include <QPixmap>
 #include <mainwindow.h>
 #include "../ui/ui_ScriptEditor.h"
+#include "Definations.h"
 #include <QGraphicsWidget>
 
 
@@ -73,6 +74,13 @@ void LeePickerItem::UpdateDisplayName(QPainter *painter)
     if(!DisplayName.isEmpty())
         painter->drawText(iRectF, DisplayName, QTextOption(Qt::AlignCenter));
 
+}
+
+QJsonObject LeePickerItem::toJsonObject()
+{
+    QJsonObject obj;
+    LEEJOBJ(obj,"abc",isPined)
+    return obj;
 }
 
 #pragma region Item Functions {
@@ -346,9 +354,9 @@ void LeePickerItem::OnInitScriptEditor()
 
     connect(SEditor->lineEdit,SIGNAL(textChanged(QString)),SLOT(OnDisplayChanged(QString)));
 
-    bool AppC = iRApp == Maya ? false : true;
+    bool AppC = Picker->RemoteApp == Maya ? false : true;
 
-    qDebug() << "Extern" <<    AppC <<  Qt::endl;
+    qDebug() << "Extern" <<  AppC <<  Qt::endl;
     AppC == false ? SEditor->MayaRadio->setChecked(!AppC) :
         SEditor->BlenderRadio->setChecked(AppC) ;
 

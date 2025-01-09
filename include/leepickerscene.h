@@ -15,6 +15,9 @@ public:
     LeePickerItem* CreateItem(const QString inItemName,QString inImage=QString(),int itemId = -1);
 
     QList<LeePickerItem*> GetSelectedItems();
+
+    QList<LeePickerItem*> GetAllItems();
+
 protected:
 
 

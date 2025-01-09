@@ -6,4 +6,6 @@
 
 #define LEEUSER qgetenv("USERNAME")
 
+#define LEEJOBJ(Obj,Key,value)  Obj[Key]=value;
+
 #endif // DEFINATIONS_H
