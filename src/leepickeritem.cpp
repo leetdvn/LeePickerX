@@ -15,7 +15,6 @@
 #include <QGraphicsWidget>
 
 
-
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
     :imgfile(Image)
     ,iName(itemName)
@@ -321,6 +320,18 @@ void LeePickerItem::OnColorChanged(QColor inColor)
     if (!inColor.isValid() && !isSelected()) return;
 
     iColor=inColor;
+    return update();
+}
+
+void LeePickerItem::OnAppConnectChanged(bool isChecked)
+{
+    QRadioButton* radio = qobject_cast<QRadioButton*>(sender());
+
+    QPointer<MainWindow> Picker = &MainWindow::Instance();
+
+    bool AppC = Picker->property("APP3D").toBool();
+
+
 }
 
 void LeePickerItem::OnInitScriptEditor()
@@ -334,6 +345,28 @@ void LeePickerItem::OnInitScriptEditor()
     SEditor->setupUi(widget);
 
     connect(SEditor->lineEdit,SIGNAL(textChanged(QString)),SLOT(OnDisplayChanged(QString)));
+
+    bool AppC = iRApp == Maya ? false : true;
+
+    qDebug() << "Extern" <<    AppC <<  Qt::endl;
+    AppC == false ? SEditor->MayaRadio->setChecked(!AppC) :
+        SEditor->BlenderRadio->setChecked(AppC) ;
+
+    // switch (iRApp) {
+    //     case Maya:{
+    //         SEditor->MayaRadio->setChecked(true);
+    //         break;
+    //     }
+    //     case Blender:{
+    //         SEditor->BlenderRadio->setChecked(true);
+    //         break;
+    //     }
+    //     case NONE:
+    //         break;
+    // }
+    // connect(SEditor->BlenderRadio,SIGNAL(clicked(bool)),this,SLOT(OnAppConnectChanged(bool)));
+    // connect(SEditor->MayaRadio,SIGNAL(clicked(bool)),this,SLOT(OnAppConnectChanged(bool)));
+
     widget->show();
 
 }

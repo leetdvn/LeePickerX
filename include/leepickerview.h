@@ -35,9 +35,8 @@ private:
 
     QPointer<QRubberBand> Rubberband=Q_NULLPTR;
 
-    bool isLocked,isRightClicked=false;
-;
-
+    bool isLocked=false;
+    bool isRightClicked=false;
     bool HasItemUnderMouse();
 signals:
 };

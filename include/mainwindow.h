@@ -7,6 +7,7 @@
 #include <QLineEdit>
 #include <leeGlobal.hpp>
 #include <singleton.h>
+#include <QProperty>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -28,6 +29,7 @@ signals:
     void OnColorChanged(QColor &Color);
 
 private:
+
     Ui::leePicker *ui;
 
     QPointer<LeePickerView> pView=nullptr;

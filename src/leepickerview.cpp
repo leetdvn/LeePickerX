@@ -64,11 +64,11 @@ void LeePickerView::wheelEvent(QWheelEvent *e)
     switch (e->modifiers())
     {
         case Qt::NoModifier:{
-            qDebug() << "Wheel Event" << Qt::endl;
+            //qDebug() << "Wheel Event" << Qt::endl;
             return Zoom(e);
         }
         default: {
-            qDebug() << "Wheel Event 1" << Qt::endl;
+            //qDebug() << "Wheel Event 1" << Qt::endl;
             return QGraphicsView::wheelEvent(e);
         }
     }
@@ -78,11 +78,13 @@ void LeePickerView::wheelEvent(QWheelEvent *e)
 void LeePickerView::Zoom(QWheelEvent *e)
 {
     if (isLocked) return e->ignore();
-    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    //setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     QPointF target = sScenePos- cursorPos;
     qreal deltaScale = 1;
     qreal temple = transform().m11();
+    qDebug() << "Zoom " << temple << "delta " << e->angleDelta().y() <<  Qt::endl;
     deltaScale += e->angleDelta().y() > 0 ? 0.25 : -0.25;
+
     if (temple > 5 && deltaScale > .75) { return QGraphicsView::wheelEvent(e); }
     scale(deltaScale, deltaScale);
     translate(target.x(), target.y());

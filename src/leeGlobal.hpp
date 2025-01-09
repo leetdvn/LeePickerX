@@ -19,9 +19,15 @@ enum LogType{
     Completed
 };
 
+enum SoftWareApp{
+    NONE,
+    Maya,
+    Blender,
+};
+
+static SoftWareApp iRApp;
 
 static QString OLDFOLDER = "./icons/";
-
 
 static bool isDir(const QString dir) { return QDir(dir).exists(); }
 

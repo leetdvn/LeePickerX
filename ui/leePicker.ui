@@ -27,6 +27,9 @@
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
   </property>
+  <property name="App3D" stdset="0">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="acceptDrops">
     <bool>true</bool>
@@ -413,6 +416,9 @@
    </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+   <property name="App3D" stdset="0">
+    <bool>false</bool>
    </property>
   </action>
   <action name="actionLefttoRight">

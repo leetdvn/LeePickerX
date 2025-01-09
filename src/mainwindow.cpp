@@ -71,7 +71,6 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
 
 }
 
-
 void MainWindow::InitializeFuns()
 {
     //Signal SLot Window
@@ -282,12 +281,15 @@ void MainWindow::OnConnectAppChanged(bool checkable)
     //On Connect With Maya Or Blender
     QString img = !checkable ? (":/icons/maya.png") : (":/icons/blender.png");
 
+    SoftWareApp iApp = !checkable ? Maya  : Blender;
     QString message = !checkable ? "     Connect To Maya " : "      Connect To Blender ";
     AddToLog(LogType::Log,message,true);
     QImage image(img);
 
     QAction* appAct = qobject_cast<QAction*>(sender());
     appAct->setIcon(QPixmap::fromImage(image));
+
+    iRApp = iApp;
 }
 
 void MainWindow::OnNewItem()

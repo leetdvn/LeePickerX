@@ -90,6 +90,8 @@ private slots:
     void OnDisplayChanged(QString inText);
 
     void OnColorChanged(QColor inColor);
+
+    void OnAppConnectChanged(bool isChecked);
 };
 
 #endif // LEEPICKERITEM_H

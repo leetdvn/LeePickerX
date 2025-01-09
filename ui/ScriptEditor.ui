@@ -55,14 +55,35 @@
       </layout>
      </item>
      <item alignment="Qt::AlignmentFlag::AlignHCenter">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="PythonLabel">
        <property name="text">
         <string>PYTHON</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QTextEdit" name="textEdit"/>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QRadioButton" name="MayaRadio">
+         <property name="text">
+          <string>MAYA</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item alignment="Qt::AlignmentFlag::AlignHCenter">
+        <widget class="QRadioButton" name="BlenderRadio">
+         <property name="text">
+          <string>BLENDER</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="ScriptEdit"/>
      </item>
     </layout>
    </item>
