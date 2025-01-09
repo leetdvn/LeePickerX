@@ -21,16 +21,16 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
     ,iName(itemName)
     ,itemId(objID)
     ,SEditor(new Ui::ScriptEditor)
+    ,iColor(Qt::blue)
+    ,iRectF(inRectF)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
     setAcceptHoverEvents(true);
-    iRectF =  inRectF;
-    iColor = Qt::blue;
-
     QImage img(imgfile);
     SetItemPixmap(img);
+
 }
 
 QRectF LeePickerItem::boundingRect() const
@@ -50,7 +50,7 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         painter->setCompositionMode(mode);
     }
     else {
-        painter->fillRect(boundingRect(), Qt::blue);
+        painter->fillRect(boundingRect(), iColor);
     }
 
     if (isSelected())
@@ -314,6 +314,13 @@ void LeePickerItem::OnDisplayChanged(QString inText)
 
     DisplayName = inText;
     update();
+}
+
+void LeePickerItem::OnColorChanged(QColor inColor)
+{
+    if (!inColor.isValid() && !isSelected()) return;
+
+    iColor=inColor;
 }
 
 void LeePickerItem::OnInitScriptEditor()

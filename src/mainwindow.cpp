@@ -230,15 +230,14 @@ void MainWindow::OnTabBarClicked(int index)
 void MainWindow::OnTabRename(QString inNewName)
 {
     QLineEdit* line = qobject_cast<QLineEdit*>(sender());
-    if (line) {
-        QString old=ui->tabWidget->tabText(ui->tabWidget->currentIndex());
-        if(!inNewName.isEmpty())
-            ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), inNewName);
+    if (line && !inNewName.isEmpty()) {
+        ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), inNewName);
     }
 }
 
 void MainWindow::OnToogleGrid()
 {
+    //Toolge Show Hide Grid BackGround Brush
     QImage image(":/icons/author.png");
 
     QWidget* curentWidget = ui->tabWidget->currentWidget();
@@ -280,6 +279,7 @@ void MainWindow::OnTabChanged(int index)
 
 void MainWindow::OnConnectAppChanged(bool checkable)
 {
+    //On Connect With Maya Or Blender
     QString img = !checkable ? (":/icons/maya.png") : (":/icons/blender.png");
 
     QString message = !checkable ? "     Connect To Maya " : "      Connect To Blender ";
@@ -292,16 +292,18 @@ void MainWindow::OnConnectAppChanged(bool checkable)
 
 void MainWindow::OnNewItem()
 {
-
+    //Create New Item
 }
 
 void MainWindow::OnPickerExit()
 {
+    //On Quit
     QCoreApplication::exit();
 }
 
 void MainWindow::OnColorChoise()
 {
+    //Change Color
     QColor color= QColorDialog::getColor(Qt::white, this, "choise Color");
     MColor=color;
     emit OnColorChanged(color);

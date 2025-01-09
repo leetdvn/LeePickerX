@@ -88,6 +88,8 @@ private slots:
     void OnAssignSelection();
 
     void OnDisplayChanged(QString inText);
+
+    void OnColorChanged(QColor inColor);
 };
 
 #endif // LEEPICKERITEM_H

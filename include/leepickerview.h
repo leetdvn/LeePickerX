@@ -25,16 +25,18 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent* e) override;
     virtual void wheelEvent(QWheelEvent* e) override;
 
-
 private:
     void Zoom(QWheelEvent *e);
+
+    void MoveSceneRect(QMouseEvent* e);
 
     QPoint sScenePos,cursorPos;
     QPointF iOrigin;
 
     QPointer<QRubberBand> Rubberband=Q_NULLPTR;
 
-    bool isLocked;
+    bool isLocked,isRightClicked=false;
+;
 
     bool HasItemUnderMouse();
 signals:

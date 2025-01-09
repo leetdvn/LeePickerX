@@ -59,12 +59,16 @@ void LeePickerView::InitializePolicy()
 
 void LeePickerView::wheelEvent(QWheelEvent *e)
 {
+
+
     switch (e->modifiers())
     {
         case Qt::NoModifier:{
+            qDebug() << "Wheel Event" << Qt::endl;
             return Zoom(e);
         }
         default: {
+            qDebug() << "Wheel Event 1" << Qt::endl;
             return QGraphicsView::wheelEvent(e);
         }
     }
@@ -73,16 +77,17 @@ void LeePickerView::wheelEvent(QWheelEvent *e)
 
 void LeePickerView::Zoom(QWheelEvent *e)
 {
-    if (isLocked)return e->ignore();
+    if (isLocked) return e->ignore();
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     QPointF target = sScenePos- cursorPos;
     qreal deltaScale = 1;
     qreal temple = transform().m11();
     deltaScale += e->angleDelta().y() > 0 ? 0.25 : -0.25;
-    if (temple > 5 && deltaScale > .75) { return; }
+    if (temple > 5 && deltaScale > .75) { return QGraphicsView::wheelEvent(e); }
     scale(deltaScale, deltaScale);
     translate(target.x(), target.y());
 
+    QGraphicsView::wheelEvent(e);
 }
 
 bool LeePickerView::HasItemUnderMouse()
@@ -98,17 +103,25 @@ void LeePickerView::mousePressEvent(QMouseEvent *e)
 {
     if (HasItemUnderMouse()) return QGraphicsView::mousePressEvent(e);
 
+
     if (e->button() & Qt::LeftButton){
-        //Show Rubberband Square
-        iOrigin = e->globalPosition();
-        if (Rubberband == nullptr)
-            Rubberband = new QRubberBand(QRubberBand::Rectangle,Q_NULLPTR);
+        //Show Rubberband Rectangle
+        iOrigin = e->pos();
+        if (Rubberband == nullptr){
+            Rubberband = new QRubberBand(QRubberBand::Rectangle,this);
+            Rubberband->setGeometry(QRect(iOrigin.toPoint(), QSize()));
+        }
+
         Rubberband->show();
 
     }
     else if (e->button() == Qt::RightButton)
     {
-        e->accept();
+        //e->accept();
+        sScenePos = e->pos();
+        isRightClicked=true;
+        viewport()->setCursor(Qt::ClosedHandCursor);
+
     }
 
     QGraphicsView::mousePressEvent(e);
@@ -119,22 +132,18 @@ void LeePickerView::mouseMoveEvent(QMouseEvent *e)
     cursorPos = e->pos();
     if (Rubberband != nullptr && Rubberband->isVisible())
     {
-        QRect rect(iOrigin.toPoint(),e->globalPosition().toPoint());
+        QRect rect(iOrigin.toPoint(),e->pos());
         Rubberband->setGeometry(rect.normalized());
     }
 
-    if(sScenePos.isNull() && !isLocked)
-    {
-        sScenePos = e->globalPosition().toPoint();
-    }
-    QGraphicsView::mouseMoveEvent(e);
-
+    return MoveSceneRect(e);
 }
 
 void LeePickerView::mouseReleaseEvent(QMouseEvent *e)
 {
-    if(e->button() & Qt::LeftButton)
+    if(e->button() & Qt::LeftButton && Rubberband !=nullptr)
     {
+        qDebug() << "rubberband" << Rubberband->geometry() << Qt::endl;
 
         QRectF rectScene = mapToScene(Rubberband->geometry()).boundingRect();
         QList<QGraphicsItem*> inside = scene()->items(rectScene, Qt::IntersectsItemBoundingRect);
@@ -153,9 +162,39 @@ void LeePickerView::mouseReleaseEvent(QMouseEvent *e)
         }
 
         Rubberband->setGeometry(QRect());
-        Rubberband->hide();
+        Rubberband->deleteLater();
+        Rubberband=Q_NULLPTR;
 
+    }
+    else if(e->button() & Qt::RightButton)
+    {
+        isRightClicked=false;
+        viewport()->setCursor(Qt::ArrowCursor);
     }
     QGraphicsView::mouseReleaseEvent(e);
 
+}
+
+void LeePickerView::MoveSceneRect(QMouseEvent *e)
+{
+
+    //Move Scene Rect Funtions
+    if(!isRightClicked || isLocked) return QGraphicsView::mouseMoveEvent(e);
+
+    QPoint delta = sScenePos - cursorPos;
+    int newX = horizontalScrollBar()->value();
+    int newY = verticalScrollBar()->value();
+    int nX = newX + delta.x();
+    int nY = newY + delta.y();
+    QTransform trans = transform();
+    qreal deltaX=delta.x() / trans.m11();
+    qreal deltaY = delta.y() / trans.m22();
+    setSceneRect(sceneRect().translated(deltaX, deltaY));
+    if (newX != 0)
+        horizontalScrollBar()->setValue(nX);
+    if (newY != 0)
+        verticalScrollBar()->setValue(nY);
+    sScenePos = e->pos();
+
+    QGraphicsView::mouseMoveEvent(e);
 }

@@ -24,7 +24,7 @@ public:
 
     void AddToLog(const LogType inLog,QString inMessage,bool isClear=0);
 
-public: signals:
+signals:
     void OnColorChanged(QColor &Color);
 
 private:
@@ -46,6 +46,7 @@ private:
     int currentTab;
 
     QColor MColor;
+
 
 private slots:
     ///Connection Slot
