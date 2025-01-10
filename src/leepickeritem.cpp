@@ -14,6 +14,7 @@
 #include "../ui/ui_ScriptEditor.h"
 #include "Definations.h"
 #include <QGraphicsWidget>
+#include <LeePickerPython.h>
 
 
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
@@ -146,6 +147,11 @@ void LeePickerItem::SetDisplayName(const QString inText)
     return this->update();
 }
 
+void LeePickerItem::SetRemoteAppScript(const SoftWareApp inApp)
+{
+    iSoftWareApp = inApp;
+}
+
 #pragma region Mouse HoverEvent {
 
 void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
@@ -154,6 +160,7 @@ void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
     if (ev->button() == Qt::LeftButton)
     {
         //this->~leePatternItem();
+
     }
     else if (ev->button() & Qt::RightButton && isHover)
     {
@@ -201,6 +208,11 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
     //_menu->addSeparator();
     //_menu->addAction("test Action", [&]() {on_testCommand(); });
     iItemMenus->addAction("scripts editor", [&]() { OnInitScriptEditor(); });
+
+    iItemMenus->addAction("test Maya Cmds", [&]() { OnTestMayaCmds(); });
+
+    iItemMenus->addAction("test Blender Cmds", [&]() { OnTestBlenderCmds(); });
+
     //PinActionSetUp();
     QString  menuStyle(
         "QMenu::item{"
@@ -337,8 +349,40 @@ void LeePickerItem::OnAppConnectChanged(bool isChecked)
 
     QPointer<MainWindow> Picker = &MainWindow::Instance();
 
-    bool AppC = Picker->property("APP3D").toBool();
 
+
+}
+
+void LeePickerItem::OnTestBlenderCmds()
+{
+    const char* pfile="C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/testCommandPort.py";
+
+    QFile pyfile(pfile);
+
+    QByteArray data{};
+    if(pyfile.open(QIODevice::ReadOnly)){
+        data=pyfile.readAll();
+    }
+    PyExecString(data.constData());
+}
+
+void LeePickerItem::OnTestMayaCmds()
+{
+    const char* sPath= "C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/";
+    const char* funcName = "send_command";
+    const char* fname = "testCommandPort";
+
+    if(isRunning("maya.exe")){
+        qDebug() << "hello maya" << Qt::endl;
+    }
+
+    // try {
+    //     QString result = PyExecResultString(sPath,fname,funcName);
+    //     qDebug() << "hello" << result << Qt::endl;
+    //     DisplayName = result;
+    // } catch (const std::exception & e) {
+    //     qDebug() << e.what() << Qt::endl;
+    // }
 
 }
 

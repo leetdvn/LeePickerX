@@ -16,6 +16,13 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ui)
 
+set(PYTHON_INCLUDE "C:/Program Files/Autodesk/Maya2022/include/Python37/Python/")
+set(PYTHON_LIB "C:/Program Files/Autodesk/Maya2022/lib/python37.lib")
+
+
+include_directories(${PYTHON_INCLUDE})
+link_libraries(${PYTHON_LIB})
+
 set(PROJECT_SOURCES
         include/Definations.h
         include/mainwindow.h
@@ -23,6 +30,7 @@ set(PROJECT_SOURCES
         include/leepickerscene.h
         include/leepickerview.h
         include/singleton.h
+        include/LeePickerPython.h
         ui/leePicker.qrc
         src/main.cpp
         src/mainwindow.cpp
@@ -59,7 +67,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(LeePickerX PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(LeePickerX PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${PYTHON_LIB})
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

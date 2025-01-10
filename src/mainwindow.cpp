@@ -25,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tabWidget->setMovable(true);
     //Tab Create New
     InitializeFuns();
+    RemoteApp = Maya;
+
 }
 
 MainWindow::~MainWindow()
@@ -308,9 +310,6 @@ void MainWindow::OnConnectAppChanged(bool checkable)
     QAction* appAct = qobject_cast<QAction*>(sender());
     appAct->setIcon(QPixmap::fromImage(image));
 
-    QString Info = !checkable ? "Maya" : "Blender";
-
-
 }
 
 void MainWindow::OnNewItem()
@@ -352,4 +351,3 @@ void MainWindow::OnSave()
     QString message = "Saved  %1";
     AddToLog(Log,message.arg(jfile.fileName()));
 }
-

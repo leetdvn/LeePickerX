@@ -8,4 +8,6 @@
 
 #define LEEJOBJ(Obj,Key,value)  Obj[Key]=value;
 
+#define LEEPYTHONPATH "C:/Program Files/Autodesk/Maya2022/bin/"
+
 #endif // DEFINATIONS_H

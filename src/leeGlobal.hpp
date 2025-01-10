@@ -11,6 +11,8 @@
 #include <Definations.h>
 #include <QTextEdit>
 #include <QScrollBar>
+#include <QProcess>
+#include <windows.h>
 
 enum LogType{
     Log,
@@ -85,5 +87,21 @@ static void JsonExport(QFile &file, QByteArray data, bool Hex=0)
     }
 
 }
+
+static bool isRunning(const QString &process) {
+    QProcess tasklist;
+    tasklist.start(
+        "tasklist",
+        QStringList() << "/NH"
+                      << "/FO" << "CSV"
+                      << "/FI" << QString("IMAGENAME eq %1").arg(process));
+    tasklist.waitForFinished();
+    QString output = tasklist.readAllStandardOutput();
+
+    qDebug() << "SoftWare Run " << output << Qt::endl;
+    return output.startsWith(QString("\"%1").arg(process));
+}
+
+
 
 #endif

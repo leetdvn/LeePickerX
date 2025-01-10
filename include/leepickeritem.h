@@ -7,6 +7,7 @@
 #include <QPointer>
 #include <leeGlobal.hpp>
 #include <QJsonObject>
+#include <QProcess>
 
 
 QT_BEGIN_NAMESPACE
@@ -41,6 +42,8 @@ public:
 
     void SetDisplayName(const QString inText);
 
+    void SetRemoteAppScript(const SoftWareApp inApp);
+
     QJsonObject toJsonObject();
 
 protected:
@@ -73,6 +76,7 @@ protected:
 
     qreal iAlpha;
 
+    SoftWareApp iSoftWareApp;
 
 private:
     Ui::ScriptEditor*SEditor;
@@ -98,6 +102,10 @@ private slots:
     void OnColorChanged(QColor inColor);
 
     void OnAppConnectChanged(bool isChecked);
+
+    void OnTestBlenderCmds();
+    void OnTestMayaCmds();
+
 };
 
 #endif // LEEPICKERITEM_H

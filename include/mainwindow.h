@@ -8,6 +8,7 @@
 #include <leeGlobal.hpp>
 #include <singleton.h>
 #include <QProperty>
+#include <LeePickerPython.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -67,5 +68,7 @@ private slots:
     void OnPickerExit();
     void OnColorChoise();
     void OnSave();
+
+
 };
 #endif // MAINWINDOW_H

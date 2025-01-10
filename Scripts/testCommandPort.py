@@ -1,5 +1,5 @@
-import maya.standalone
-maya.standalone.initialize(name='python')
+# import maya.standalone
+# maya.standalone.initialize(name='python')
 import socket
 
 HOST = '127.0.0.1'  # the local host
@@ -10,13 +10,10 @@ ADDR = (HOST, PORT)
 def send_command():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
-    command = 'cmds.polyCube()'
+    command = 'cmds.ls(sl=1)[0]'
 
     message = command
     client.send(str.encode(message))
     data = client.recv(1024)  # receive the result info
     client.close()
-
-    print(data)
-
-send_command()
+    return data.decode()
