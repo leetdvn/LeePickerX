@@ -46,6 +46,8 @@ public:
 
     void SetRemoteAppScript(const SoftWareApp inApp);
 
+    void SetMayaActive(bool isActive, bool isAdd=false);
+
     QJsonObject toJsonObject();
 
 protected:
@@ -88,6 +90,8 @@ private:
     void UpdateDisplayName(QPainter* paint);
 
     void AssignMayaSelection();
+
+    void OnSelectionClicked(bool isSelect=true,bool isAdd=false);
 
 private slots:
     void OnDelete();

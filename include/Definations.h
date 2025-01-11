@@ -10,4 +10,8 @@
 
 #define LEEPYTHONPATH "C:/Program Files/Autodesk/Maya2022/bin/"
 
+#define LEESCRIPTPATH "./Scripts/"
+
+#define LEEPYTHON_ULTILS "testCommandPort"
+
 #endif // DEFINATIONS_H

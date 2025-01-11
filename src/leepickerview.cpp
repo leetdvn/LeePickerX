@@ -117,7 +117,7 @@ void LeePickerView::mousePressEvent(QMouseEvent *e)
         Rubberband->show();
 
     }
-    else if (e->button() == Qt::RightButton)
+    else if (e->button() == Qt::RightButton && !HasItemUnderMouse())
     {
         //e->accept();
         sScenePos = e->pos();
@@ -148,7 +148,10 @@ void LeePickerView::mouseReleaseEvent(QMouseEvent *e)
         qDebug() << "rubberband" << Rubberband->geometry() << Qt::endl;
 
         QRectF rectScene = mapToScene(Rubberband->geometry()).boundingRect();
-        QList<QGraphicsItem*> inside = scene()->items(rectScene, Qt::IntersectsItemBoundingRect);
+        LeePickerScene* LeeScene = qobject_cast<LeePickerScene*>(scene());
+
+        QList<QGraphicsItem*> inside = LeeScene->items(rectScene, Qt::IntersectsItemBoundingRect);
+
         if (inside.length() > 0) {
             for (QGraphicsItem* it : inside)
             {
@@ -156,11 +159,23 @@ void LeePickerView::mouseReleaseEvent(QMouseEvent *e)
                 LeePickerItem* obj = qgraphicsitem_cast<LeePickerItem*>(it);
                 if (obj) {
                     obj->setSelected(!obj->isSelected());
+
+
+                    obj->SetMayaActive(obj->isSelected(),obj->isSelected());
                     // if(obj->isSelected())
                     //     obj->leftClicked(true);
                 }
                 //toogleItemSelection(it);
             }
+
+            QList<LeePickerItem*> AllItems = LeeScene->GetAllItems();
+            for(const auto it : AllItems){
+                if(!it->isSelected())
+                {
+                    it->SetMayaActive(false);
+                }
+            }
+
         }
 
         Rubberband->setGeometry(QRect());

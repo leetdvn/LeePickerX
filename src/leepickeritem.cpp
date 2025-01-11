@@ -154,6 +154,11 @@ void LeePickerItem::SetRemoteAppScript(const SoftWareApp inApp)
     iSoftWareApp = inApp;
 }
 
+void LeePickerItem::SetMayaActive(bool isActive,bool isAdd)
+{
+   return OnSelectionClicked(isActive,isAdd);
+}
+
 #pragma region Mouse HoverEvent {
 
 void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
@@ -162,7 +167,11 @@ void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
     if (ev->button() == Qt::LeftButton)
     {
         //this->~leePatternItem();
+        QString select = property("select").toString();
+        if(select.isEmpty()) return QGraphicsItem::mousePressEvent(ev);
 
+        OnSelectionClicked();
+        qDebug() << select << Qt::endl;
     }
     else if (ev->button() & Qt::RightButton && isHover)
     {
@@ -402,10 +411,7 @@ void LeePickerItem::OnTestMayaCmds()
 
 void LeePickerItem::OnInitScriptEditor()
 {
-    qDebug() << "Lee Init ScriptEditor" << Qt::endl;
 
-    //Picker->Instance().AddToLog(Log,"the Features Coming Soon..");
-    return ;
     QWidget* widget=new QWidget();
     SEditor->setupUi(widget);
 
@@ -414,24 +420,23 @@ void LeePickerItem::OnInitScriptEditor()
 
     bool AppC = LeePicker->RemoteApp == Maya ? false : true;
 
-    qDebug() << "Extern" <<  AppC <<  Qt::endl;
     AppC == false ? SEditor->MayaRadio->setChecked(!AppC) :
         SEditor->BlenderRadio->setChecked(AppC) ;
 
-    // switch (iRApp) {
-    //     case Maya:{
-    //         SEditor->MayaRadio->setChecked(true);
-    //         break;
-    //     }
-    //     case Blender:{
-    //         SEditor->BlenderRadio->setChecked(true);
-    //         break;
-    //     }
-    //     case NONE:
-    //         break;
-    // }
-    // connect(SEditor->BlenderRadio,SIGNAL(clicked(bool)),this,SLOT(OnAppConnectChanged(bool)));
-    // connect(SEditor->MayaRadio,SIGNAL(clicked(bool)),this,SLOT(OnAppConnectChanged(bool)));
+    switch (LeePicker->RemoteApp) {
+        case Maya:{
+            SEditor->MayaRadio->setChecked(true);
+            break;
+        }
+        case Blender:{
+            SEditor->BlenderRadio->setChecked(true);
+            break;
+        }
+        case NONE:
+            return;
+    }
+    connect(SEditor->BlenderRadio,SIGNAL(clicked(bool)),this,SLOT(OnAppConnectChanged(bool)));
+    connect(SEditor->MayaRadio,SIGNAL(clicked(bool)),this,SLOT(OnAppConnectChanged(bool)));
 
     widget->show();
 
@@ -439,29 +444,33 @@ void LeePickerItem::OnInitScriptEditor()
 
 void LeePickerItem::AssignMayaSelection()
 {
-    const char* sPath= "./Scripts/";
     const char* funcName = "PortIsOpen";//"send_command";
-    const char* fname = "testCommandPort";
     MainWindow* LeePicker=MainWindow::Instance();
 
-    //Maya Running
+    //Check Maya Running
     if(isRunning("maya.exe")){
-        QList<QFuture<void> > futures;
-        bool result{};
-        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(sPath,fname,funcName);});
-        future.waitForFinished();
+
         //check Port Commend
+        bool result{};
+        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(LEESCRIPTPATH,LEEPYTHON_ULTILS,funcName);});
+        future.waitForFinished();
+
         if(!result){
-            LeePicker->AddToLog(Error,"Error : Command Ports not found");
+            LeePicker->AddToLog(Error,"Error :  Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";",true);
             return;
         }
+        ///Send MayA Command
         funcName = "send_command";
 
-        QString selections = PyExecResultString(sPath,fname,funcName);
+        ///Init Maya Command
+        const char* MayaPyCmd = "cmds.ls(sl=1)";
+        QString selections = PyExecResultString(LEESCRIPTPATH,LEEPYTHON_ULTILS,funcName,MayaPyCmd);
 
         //save value to assign
-        SaveAssignObject(this,Maya,selections);
+        if(!selections.isEmpty() && !selections.startsWith("[]"))
+            SaveAssignObject(this,Maya,selections);
 
+        //Log Result
         LeePicker->AddToLog(Log,QString("select %1").arg(selections),true);
         qDebug() << selections << Qt::endl;
     }
@@ -471,9 +480,24 @@ void LeePickerItem::AssignMayaSelection()
                            "Maya is not Runing" :
                            "Blender is not Runing";
 
-        QString info = "Error : " + AppC;
+        QString info = "Error :  " + AppC;
         LeePicker->AddToLog(Error,info,true);
     }
 
+}
+
+void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
+{
+    ///check empty property
+    auto pro = property("select").toString();
+    if(pro.isEmpty() || pro.isNull()) return;
+
+    const char* funcName = isSelect ?
+                            isAdd ?
+                            "PickerAddSelect" :
+                            "PickerSelect" :
+                            "PickerDeSelect";
+    auto Args = pro.toStdString();
+    PyExecFuncAsVoid(funcName,Args.c_str());
 }
 #pragma endregion }

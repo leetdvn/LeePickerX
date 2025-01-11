@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <leepickeritem.h>
 #include <QRubberBand>
+#include <LeePickerPython.h>
 
 class LeePickerScene : public QGraphicsScene
 {
@@ -21,9 +22,10 @@ public:
 protected:
 
 
-private:
+private slots:
 
-signals:
+    void OnSelectionChanged();
+
 };
 
 #endif // PICKERSCENE_H

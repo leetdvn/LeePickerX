@@ -5,11 +5,9 @@ PORT = 54322  # The same port as used by the server
 ADDR = (HOST, PORT)
 
 
-def send_command():
+def send_command(command=str):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
-    command = 'cmds.ls(sl=1)'
-
     message = command
     client.send(str.encode(message))
     data = client.recv(1024)  # receive the result info
@@ -28,6 +26,18 @@ def PortIsOpen():
     sock.close()
     return isOpen
 
-def PickerSelections(inObjects=[]):
-    import maya.cmds as cmds
-    cmds.select(inObjects,r=1)
+def PickerSelect(inObjects):
+    command = str("cmds.select({},r=1)").format(inObjects)
+    send_command(command)
+
+def PickerAddSelect(inObjects):
+    command = str("cmds.select({},add=1)").format(inObjects)
+    send_command(command)    
+
+def PickerDeSelect(inObjects):
+    command = str("cmds.select({},d=1)").format(inObjects)
+    send_command(command) 
+
+def PickerClearSelection():
+    command = str("cmds.select(cl=1)")
+    send_command(command)  

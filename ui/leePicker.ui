@@ -14,7 +14,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>leePicker</string>
+   <string>leePicker Editor Windows cross-platform 3D interactive application platform</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -152,7 +152,7 @@
     <item row="3" column="0">
      <widget class="QTextEdit" name="LogPicker">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="maximumSize">
        <size>

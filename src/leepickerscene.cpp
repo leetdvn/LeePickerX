@@ -9,7 +9,11 @@ LeePickerScene::LeePickerScene(QObject *parent)
 {
     QString itemName = "Demo";
     QString inImage(":/icons/color.png");
+    //create item demo
     CreateItem(itemName,inImage);
+
+    //connect selection change
+    connect(this,SIGNAL(selectionChanged()),this,SLOT(OnSelectionChanged()));
 }
 
 LeePickerItem* LeePickerScene::CreateItem(const QString inItemName, QString inImage, int itemId)
@@ -47,4 +51,14 @@ QList<LeePickerItem *> LeePickerScene::GetAllItems()
     }
 
     return pItems;
+}
+
+void LeePickerScene::OnSelectionChanged()
+{
+    if(GetSelectedItems().length() <= 0 )
+    {
+        const char* funcName = "PickerClearSelection";
+        PyExecFuncAsVoid(funcName);
+        qDebug() << "selection Changed." << Qt::endl;
+    }
 }
