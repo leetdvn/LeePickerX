@@ -8,12 +8,17 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 
-SoftWareApp MainWindow::RemoteApp;
+//MainWindow* MainWindow::m_Instance=nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::leePicker)
 {
+
+    if(m_Instance==nullptr)
+    {
+        m_Instance=this;
+    }
 
     ui->setupUi(this);
 
@@ -26,12 +31,12 @@ MainWindow::MainWindow(QWidget *parent)
     //Tab Create New
     InitializeFuns();
     RemoteApp = Maya;
-    setAttribute(Qt::WA_DeleteOnClose,true);
+    inItLog();
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    //delete ui;
 }
 
 void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
@@ -44,21 +49,21 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     QString result;
     switch (inLog) {
     case Log:{
-        result = QString("<font color=\"white\">%1 : </font>").arg(mess);
+        result = QString("<font color=\"white\">%1</font>").arg(mess);
         break;
     }
     case Warning:{
-        result = QString("<font color=\"yellow\">%1 : </font>").arg(title);
+        result = QString("<font color=\"yellow\">%1</font>").arg(title);
         result += mess;
         break;
     }
     case Error:{
-        result = QString("<font color=\"red\">%1 : </font>").arg(title);
+        result = QString("<font color=\"red\">%1</font>").arg(title);
         result += mess;
         break;
     }
     case Completed:{
-        result = QString("<font color=\"green\">%1 : </font>").arg(title);
+        result = QString("<font color=\"green\">%1</font>").arg(title);
         result += mess;
         break;
     }
@@ -73,8 +78,10 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     //set value max down to new Log
     int valueMax = ui->LogPicker->verticalScrollBar()->maximum();
     ui->LogPicker->verticalScrollBar()->setValue(valueMax);
-
+    ui->LogPicker->update();
 }
+
+
 
 void MainWindow::InitializeFuns()
 {
@@ -240,6 +247,10 @@ LeePickerScene *MainWindow::getScene(const QWidget *tabIndex)
         }
     }
     return sceneResult;
+}
+
+void MainWindow::inItLog()
+{
 }
 
 void MainWindow::OnTabBarClicked(int index)

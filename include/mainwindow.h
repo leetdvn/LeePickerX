@@ -16,23 +16,31 @@ class leePicker;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow , public Singleton<MainWindow>
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit  MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
     void AddToLog(const LogType inLog,QString inMessage,bool isClear=0);
 
+    SoftWareApp RemoteApp;
 
+    // static MainWindow* Instance(){
+    //     if(m_Instance == nullptr)
+    //         m_Instance=new MainWindow();
+    //     return m_Instance;
+    // }
 
-    static SoftWareApp RemoteApp;
 signals:
+
     void OnColorChanged(QColor &Color);
 
 private:
+
+    //static MainWindow* m_Instance;
 
     Ui::leePicker *ui;
 
@@ -55,7 +63,7 @@ private:
 
     QColor MColor;
 
-
+    void inItLog();
 private slots:
     ///Connection Slot
     void CreateNewShape(bool ischecked=0);
@@ -74,5 +82,6 @@ private slots:
 
 };
 
-typedef Singleton<MainWindow> Picker;
+
+
 #endif // MAINWINDOW_H

@@ -8,7 +8,7 @@ ADDR = (HOST, PORT)
 def send_command():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
-    command = 'cmds.ls(sl=1)[0]'
+    command = 'cmds.ls(sl=1)'
 
     message = command
     client.send(str.encode(message))
@@ -27,3 +27,7 @@ def PortIsOpen():
         print ("Port is not open")
     sock.close()
     return isOpen
+
+def PickerSelections(inObjects=[]):
+    import maya.cmds as cmds
+    cmds.select(inObjects,r=1)

@@ -16,6 +16,8 @@ class ScriptEditor;
 }
 QT_END_NAMESPACE
 
+class MainWindow;
+
 class LeePickerItem : public QGraphicsObject
 {
     Q_OBJECT
@@ -85,6 +87,7 @@ private:
 
     void UpdateDisplayName(QPainter* paint);
 
+    void AssignMayaSelection();
 
 private slots:
     void OnDelete();
@@ -104,8 +107,8 @@ private slots:
     void OnAppConnectChanged(bool isChecked);
 
     void OnTestBlenderCmds();
-    void OnTestMayaCmds();
 
+    void OnTestMayaCmds();
 };
 
 #endif // LEEPICKERITEM_H

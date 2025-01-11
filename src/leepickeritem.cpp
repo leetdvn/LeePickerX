@@ -19,7 +19,6 @@
 #include <QtConcurrent/QtConcurrent>
 
 
-
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
     :imgfile(Image)
     ,iName(itemName)
@@ -34,6 +33,7 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
     setAcceptHoverEvents(true);
     QImage img(imgfile);
     SetItemPixmap(img);
+
 }
 
 QRectF LeePickerItem::boundingRect() const
@@ -321,11 +321,14 @@ void LeePickerItem::OnShapeChanged()
 
 void LeePickerItem::OnAssignSelection()
 {
-    qDebug() << "Assign Selection not Working" << Qt::endl;
+    MainWindow* LeePicker=MainWindow::Instance();
 
-
-    //Picker::Instance().AddToLog(Log,"Assign Selection not Working");
-    //Picker->AddToLog(Log,"the Features Coming Soon..");
+    switch (LeePicker->RemoteApp) {
+        case Maya: return AssignMayaSelection();
+        case Blender:{return;}
+        case NONE:
+            break;
+    }
 }
 
 void LeePickerItem::OnDisplayChanged(QString inText)
@@ -346,10 +349,8 @@ void LeePickerItem::OnColorChanged(QColor inColor)
 
 void LeePickerItem::OnAppConnectChanged(bool isChecked)
 {
-    QRadioButton* radio = qobject_cast<QRadioButton*>(sender());
-
-
-
+    //Do Something
+    //QRadioButton* radio = qobject_cast<QRadioButton*>(sender());
 
 }
 
@@ -388,29 +389,15 @@ void LeePickerItem::OnTestBlenderCmds()
 
 void LeePickerItem::OnTestMayaCmds()
 {
+    MainWindow* LeePicker=MainWindow::Instance();
 
+    bool AppC = LeePicker->RemoteApp == Maya ? false : true;
 
-    const char* sPath= "C:/Users/thang/Documents/GitHub/LeePickerX/Scripts/";
-    const char* funcName = "PortIsOpen";//"send_command";
-    const char* fname = "testCommandPort";
-
-    if(isRunning("maya.exe")){
-
-
-        QList<QFuture<void> > futures;
-        bool result{};
-        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(sPath,fname,funcName);});
-        future.waitForFinished();
-        //check Port Commend
-
-        if(!result){
-            //Picker ->AddToLog(Error,"Error : Command Ports");
-            Picker::Instance()->AddToLog(Error,"Error : Command Ports");
-        }
-        //Picker->AddToLog(Error,"Error : Command Ports",true);
+    switch (LeePicker->RemoteApp) {
+    case Maya: return AssignMayaSelection();
+    default:
+        break;
     }
-
-
 }
 
 void LeePickerItem::OnInitScriptEditor()
@@ -423,8 +410,9 @@ void LeePickerItem::OnInitScriptEditor()
     SEditor->setupUi(widget);
 
     connect(SEditor->lineEdit,SIGNAL(textChanged(QString)),SLOT(OnDisplayChanged(QString)));
+    MainWindow* LeePicker=MainWindow::Instance();
 
-    bool AppC = Picker::Instance()->RemoteApp == Maya ? false : true;
+    bool AppC = LeePicker->RemoteApp == Maya ? false : true;
 
     qDebug() << "Extern" <<  AppC <<  Qt::endl;
     AppC == false ? SEditor->MayaRadio->setChecked(!AppC) :
@@ -449,4 +437,43 @@ void LeePickerItem::OnInitScriptEditor()
 
 }
 
+void LeePickerItem::AssignMayaSelection()
+{
+    const char* sPath= "./Scripts/";
+    const char* funcName = "PortIsOpen";//"send_command";
+    const char* fname = "testCommandPort";
+    MainWindow* LeePicker=MainWindow::Instance();
+
+    //Maya Running
+    if(isRunning("maya.exe")){
+        QList<QFuture<void> > futures;
+        bool result{};
+        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(sPath,fname,funcName);});
+        future.waitForFinished();
+        //check Port Commend
+        if(!result){
+            LeePicker->AddToLog(Error,"Error : Command Ports not found");
+            return;
+        }
+        funcName = "send_command";
+
+        QString selections = PyExecResultString(sPath,fname,funcName);
+
+        //save value to assign
+        SaveAssignObject(this,Maya,selections);
+
+        LeePicker->AddToLog(Log,QString("select %1").arg(selections),true);
+        qDebug() << selections << Qt::endl;
+    }
+    else{
+        //report error software not running
+        QString AppC = LeePicker->RemoteApp == Maya ?
+                           "Maya is not Runing" :
+                           "Blender is not Runing";
+
+        QString info = "Error : " + AppC;
+        LeePicker->AddToLog(Error,info,true);
+    }
+
+}
 #pragma endregion }

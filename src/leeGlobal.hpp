@@ -13,6 +13,7 @@
 #include <QScrollBar>
 #include <QProcess>
 #include <windows.h>
+#include <QMetaEnum>
 
 enum LogType{
     Log,
@@ -65,7 +66,7 @@ QWidgetAction* TemplateAction(void*& action, QString label = NULL, QString name 
     return _nAct;
 }
 
-
+//Instance Browser Image
 static QString BrowserImage()
 {
     QString filter = "All files (*.*);;JPEG (*.jpg *.jpeg);;TIFF (*.tif);;PNG (*.png)";
@@ -74,6 +75,7 @@ static QString BrowserImage()
     return ImgPath;
 }
 
+//Json Export File
 static void JsonExport(QFile &file, QByteArray data, bool Hex=0)
 {
     if (!file.exists() && data.isEmpty() || !file.exists() && data.isNull()) { return; }
@@ -103,6 +105,20 @@ static bool isRunning(const QString &process) {
     return output.startsWith(QString("\"%1").arg(process));
 }
 
+template<typename QEnum>
+static std::string QtEnumToString (const QEnum value)
+{
+    return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value));
+}
+
+static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inValue)
+{
+    if(inObj==nullptr) return;
+    //save value to assign
+    inObj->setProperty("select",inValue);
+    inObj->setProperty("App",inApp);
+
+}
 
 
 #endif
