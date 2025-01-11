@@ -1,5 +1,3 @@
-# import maya.standalone
-# maya.standalone.initialize(name='python')
 import socket
 
 HOST = '127.0.0.1'  # the local host
@@ -17,3 +15,15 @@ def send_command():
     data = client.recv(1024)  # receive the result info
     client.close()
     return data.decode()
+
+def PortIsOpen():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    result = sock.connect_ex(('127.0.0.1',54322))
+    isOpen = False
+    if result == 0:
+        print("Port is open")
+        isOpen = True
+    else:
+        print ("Port is not open")
+    sock.close()
+    return isOpen

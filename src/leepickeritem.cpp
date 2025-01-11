@@ -15,6 +15,9 @@
 #include "Definations.h"
 #include <QGraphicsWidget>
 #include <LeePickerPython.h>
+#include <QFuture>
+#include <QtConcurrent/QtConcurrent>
+
 
 
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
@@ -31,7 +34,6 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
     setAcceptHoverEvents(true);
     QImage img(imgfile);
     SetItemPixmap(img);
-
 }
 
 QRectF LeePickerItem::boundingRect() const
@@ -321,10 +323,9 @@ void LeePickerItem::OnAssignSelection()
 {
     qDebug() << "Assign Selection not Working" << Qt::endl;
 
-    //AddToLog(Log,"Assign Selection not Working");
 
-    QPointer<MainWindow> Picker = &MainWindow::Instance();
-    Picker->AddToLog(Log,"the Features Coming Soon..");
+    //Picker::Instance().AddToLog(Log,"Assign Selection not Working");
+    //Picker->AddToLog(Log,"the Features Coming Soon..");
 }
 
 void LeePickerItem::OnDisplayChanged(QString inText)
@@ -347,7 +348,6 @@ void LeePickerItem::OnAppConnectChanged(bool isChecked)
 {
     QRadioButton* radio = qobject_cast<QRadioButton*>(sender());
 
-    QPointer<MainWindow> Picker = &MainWindow::Instance();
 
 
 
@@ -355,7 +355,7 @@ void LeePickerItem::OnAppConnectChanged(bool isChecked)
 
 void LeePickerItem::OnTestBlenderCmds()
 {
-    const char* pfile="C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/testCommandPort.py";
+    const char* pfile="C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/connectPort.py";
 
     QFile pyfile(pfile);
 
@@ -363,42 +363,68 @@ void LeePickerItem::OnTestBlenderCmds()
     if(pyfile.open(QIODevice::ReadOnly)){
         data=pyfile.readAll();
     }
-    PyExecString(data.constData());
+    //PyExecString(data.constData());
+
+    QProcess* process = new QProcess(this);
+
+    process->setWorkingDirectory(LEEPYTHONPATH);
+
+    // tasklist.start(
+    //     "tasklist",
+    //     QStringList() << "/NH"
+    //                   << "/FO" << "CSV"
+    //                   << "/FI" << QString("IMAGENAME eq %1").arg(process));
+
+    process->start(
+        "mayapy.exe",
+        QStringList() << "-i"
+                      << "-c" << QString("%1").arg(data)
+        );
+
+    process->waitForFinished();
+
+    qDebug() << data << Qt::endl;
 }
 
 void LeePickerItem::OnTestMayaCmds()
 {
-    const char* sPath= "C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/";
-    const char* funcName = "send_command";
+
+
+    const char* sPath= "C:/Users/thang/Documents/GitHub/LeePickerX/Scripts/";
+    const char* funcName = "PortIsOpen";//"send_command";
     const char* fname = "testCommandPort";
 
     if(isRunning("maya.exe")){
-        qDebug() << "hello maya" << Qt::endl;
+
+
+        QList<QFuture<void> > futures;
+        bool result{};
+        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(sPath,fname,funcName);});
+        future.waitForFinished();
+        //check Port Commend
+
+        if(!result){
+            //Picker ->AddToLog(Error,"Error : Command Ports");
+            Picker::Instance()->AddToLog(Error,"Error : Command Ports");
+        }
+        //Picker->AddToLog(Error,"Error : Command Ports",true);
     }
 
-    // try {
-    //     QString result = PyExecResultString(sPath,fname,funcName);
-    //     qDebug() << "hello" << result << Qt::endl;
-    //     DisplayName = result;
-    // } catch (const std::exception & e) {
-    //     qDebug() << e.what() << Qt::endl;
-    // }
 
 }
 
 void LeePickerItem::OnInitScriptEditor()
 {
     qDebug() << "Lee Init ScriptEditor" << Qt::endl;
-    QPointer<MainWindow> Picker = &MainWindow::Instance();
 
-    Picker->AddToLog(Log,"the Features Coming Soon..");
-
+    //Picker->Instance().AddToLog(Log,"the Features Coming Soon..");
+    return ;
     QWidget* widget=new QWidget();
     SEditor->setupUi(widget);
 
     connect(SEditor->lineEdit,SIGNAL(textChanged(QString)),SLOT(OnDisplayChanged(QString)));
 
-    bool AppC = Picker->RemoteApp == Maya ? false : true;
+    bool AppC = Picker::Instance()->RemoteApp == Maya ? false : true;
 
     qDebug() << "Extern" <<  AppC <<  Qt::endl;
     AppC == false ? SEditor->MayaRadio->setChecked(!AppC) :

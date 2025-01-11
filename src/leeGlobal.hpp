@@ -88,6 +88,7 @@ static void JsonExport(QFile &file, QByteArray data, bool Hex=0)
 
 }
 
+//check Maya Running on Task process
 static bool isRunning(const QString &process) {
     QProcess tasklist;
     tasklist.start(

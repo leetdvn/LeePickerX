@@ -16,15 +16,17 @@ class leePicker;
 }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow , public Singleton<MainWindow>
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
     void AddToLog(const LogType inLog,QString inMessage,bool isClear=0);
+
+
 
     static SoftWareApp RemoteApp;
 signals:
@@ -71,4 +73,6 @@ private slots:
 
 
 };
+
+typedef Singleton<MainWindow> Picker;
 #endif // MAINWINDOW_H

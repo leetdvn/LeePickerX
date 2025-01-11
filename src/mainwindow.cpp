@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     //Tab Create New
     InitializeFuns();
     RemoteApp = Maya;
-
+    setAttribute(Qt::WA_DeleteOnClose,true);
 }
 
 MainWindow::~MainWindow()

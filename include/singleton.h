@@ -2,27 +2,25 @@
 #define SINGLETON_H
 #include <QtGlobal>
 #include <QScopedPointer>
+#include <assert.h>
 
-template <typename T, typename D = T>
-class Singleton
+template <class T>
+class Singleton final
 {
-    friend D;
-    static_assert(std::is_base_of_v<T, D>, "T should be a base type for D");
 
 public:
-    static T& Instance();
+    static T* Instance(){
+        static T m_Instance;
+        return &m_Instance;
+    }
 
 private:
-    Singleton() = default;
+    Singleton()=default;
     ~Singleton() = default;
-    Singleton( const Singleton& ) = delete;
-    Singleton& operator=( const Singleton& ) = delete;
+    Singleton(const Singleton&)=delete;
+    Singleton& operator=(const Singleton& )=delete;
+    Singleton(Singleton&&)=delete;
+    Singleton&operator=(Singleton&&) = delete;
 };
 
-template <typename T, typename D>
-T& Singleton<T, D>::Instance()
-{
-    static D inst;
-    return inst;
-}
 #endif // SINGLETON_H
