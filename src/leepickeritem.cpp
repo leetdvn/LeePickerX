@@ -81,10 +81,35 @@ void LeePickerItem::UpdateDisplayName(QPainter *painter)
 
 }
 
+void LeePickerItem::InitVariant()
+{
+    VItems.insert(0,DisplayName);
+    VItems.insert(1,imgfile);
+    VItems.insert(2,iColor);
+    VItems.insert(3,pos().x());
+    VItems.insert(4,pos().y());
+    VItems.insert(5,isPined);
+    VItems.insert(6,itemId);
+    QByteArray scr = iScript.toUtf8();
+    VItems.insert(7,scr.toHex());
+    VItems.insert(8,property("select"));
+
+}
+
 QJsonObject LeePickerItem::toJsonObject()
 {
+
+    InitVariant();
     QJsonObject obj;
-    LEEJOBJ(obj,"abc",isPined)
+    int count=0;
+    for(auto const iv : ItemVaribles){
+        if(count >= VItems.count()) break;
+        if(VItems[count].isNull() || !VItems[count].isValid()) continue;
+        QString str = VItems[count].toString();
+        LEEJOBJ(obj,iv,str)
+        count++;
+    }
+
     return obj;
 }
 
@@ -534,4 +559,6 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
     auto Args = pro.toStdString();
     PyExecFuncAsVoid(funcName,Args.c_str());
 }
+
+
 #pragma endregion }

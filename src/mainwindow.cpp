@@ -7,6 +7,7 @@
 #include <QColorDialog>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <Definations.h>
 
 //MainWindow* MainWindow::m_Instance=nullptr;
 
@@ -134,28 +135,30 @@ void MainWindow::CreateNewShape(bool ischecked)
 void MainWindow::OnNewFile()
 {
     int idx = ui->tabWidget->count() - 1;
-    if (idx > 1) {
-        for (int i = idx; i >0; i--)
-        {
-            QWidget* subtab = ui->tabWidget->widget(i);
-            if (subtab->objectName() == "leeTabAdditional" || ui->tabWidget->tabText(i)=="+") continue;
-            LeePickerView* v = getView(subtab);
-            if (v) {
-                v->resetCachedContent();
-                delete v;
-            }
-            subtab->deleteLater();
-        }
+
+    if(idx < 2) {
+        CleanUpScene(0);
+
+        qDebug() << "scene " << idx << Qt::endl;
+        return;
     }
-    LeePickerView* leeView = getView(ui->mainTab);
-    if (leeView) {
-        if (leeView->numberItemOfScene() > 0) {
-            delete leeView;
-            ui->tabWidget->setCurrentIndex(0);
-            tabSetup(true);
+
+    for (int i = idx; i >0; i--)
+    {
+        QWidget* subtab = ui->tabWidget->widget(i);
+        if (subtab->objectName() == "leeTabAdditional" || ui->tabWidget->tabText(i)=="+") continue;
+        LeePickerView* v = getView(subtab);
+        if (v) {
+            v->resetCachedContent();
+            delete v;
         }
-        ui->tabWidget->setTabText(0, "Main");
+        subtab->deleteLater();
     }
+
+    CleanUpScene(0);
+    ui->tabWidget->setCurrentIndex(0);
+    return ui->tabWidget->update();
+
 }
 
 #pragma region TabWidget Funtion {
@@ -177,26 +180,26 @@ void MainWindow::CustomNewTab(QString newName,int index)
     QMenu* menu = new QMenu();
     menu->setAttribute(Qt::WA_DeleteOnClose,true);
     QWidgetAction* w = new QWidgetAction(menu);
-    QLineEdit* line = new QLineEdit();
-    line->setAttribute(Qt::WA_DeleteOnClose);
-    line->setPlaceholderText("new name");
+    QPointer<QLineEdit> lineTabName = new QLineEdit(menu);
+    lineTabName->setAttribute(Qt::WA_DeleteOnClose,true);
+    lineTabName->setPlaceholderText("new name");
     qreal textlegth = ui->tabWidget->tabBar()->tabRect(index).width();
-    line->setFixedWidth(textlegth);
-    line->setText(ui->tabWidget->tabText(index));
-    w->setDefaultWidget(line);
+    lineTabName->setFixedWidth(textlegth);
+    lineTabName->setText(ui->tabWidget->tabText(index));
+    w->setDefaultWidget(lineTabName);
     menu->addAction(w);
     double px = ui->tabWidget->tabBar()->tabRect(index).x();
     double py = ui->tabWidget->tabBar()->tabRect(index).y();
+    connect(lineTabName,SIGNAL(textChanged(QString)), this,SLOT(OnTabRename(QString)));
     menu->exec(mapToGlobal(QPoint(px, py + 60)));
-    line->setFocusPolicy(Qt::StrongFocus);
-    line->setFocusProxy(menu);
-    connect(line,SIGNAL(textChanged(QString)), this,SLOT(OnTabRename(QString)));
-
+    lineTabName->setFocusPolicy(Qt::StrongFocus);
+    lineTabName->setFocusProxy(menu);
 }
 
 void MainWindow::AddTabSimple(QString tabname)
 {
     int idx = ui->tabWidget->count() - 1;
+    tabname +=QString::number(idx);
     QWidget* tabX = new QWidget();
     ui->tabWidget->insertTab(idx, tabX, tabname);
     ui->tabWidget->widget(idx);
@@ -209,11 +212,13 @@ void MainWindow::tabSetup(bool newfile)
 {
     // set  up new tab , add leegraphicsviewport on tab
     QWidget* curr = ui->tabWidget->currentWidget();
+
     int index = ui->tabWidget->currentIndex();
     QString title = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
     if (title == "+") {
         curr = ui->tabWidget->widget(index - 1);
     };
+
     QHBoxLayout* layout = new QHBoxLayout(curr); // fix new file if tab ==
     layout->setContentsMargins(0, 0, 0, 0);
     curr->setLayout(layout);
@@ -224,10 +229,24 @@ void MainWindow::tabSetup(bool newfile)
     LeePickerScene* scene = new LeePickerScene();
     scene->setObjectName("leeScene");
     view->setScene(scene);
-    if (curr->objectName() =="mainTab")
+    if (curr->objectName() =="mainTab"){
         ui->GraphicsLayout->addWidget(view);
+    }
     else
         layout->addWidget(view);
+}
+
+void MainWindow::CleanUpScene(int index)
+{
+    LeePickerScene* sceneIdx = getScene(ui->tabWidget->widget(index));
+    if(sceneIdx == nullptr) return;
+    QList<LeePickerItem*> Items = sceneIdx->GetAllItems();
+    if(Items.length() <= 0) return ;
+
+    for(const auto it : Items)
+        it->deleteLater();
+
+    qDebug() << "CleanUp Scene Items" << Qt::endl;
 }
 
 LeePickerView *MainWindow::getView(QWidget *tabIndex)
@@ -266,10 +285,12 @@ void MainWindow::OnTabBarClicked(int index)
     currentTab= index;
 }
 
-void MainWindow::OnTabRename(QString inNewName)
+void MainWindow::OnTabRename(const QString &inNewName)
 {
-    QLineEdit* line = qobject_cast<QLineEdit*>(sender());
-    if (line && !inNewName.isEmpty()) {
+
+    qDebug() << "info " << inNewName << Qt::endl;
+
+    if (!inNewName.isEmpty()) {
         ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), inNewName);
     }
 }
@@ -355,18 +376,26 @@ void MainWindow::OnSave()
     LeePickerScene* currentScene =  getScene(ui->tabWidget->currentWidget());
     if(currentScene==Q_NULLPTR) return;
 
-    QJsonArray arr{};
-    for(auto it : currentScene->GetAllItems()){
-        QJsonObject obj = it->toJsonObject();
-        arr.append(obj);
-    }
+    QJsonArray jsArray  = currentScene->GetDataAllObject();
+
 
     QJsonObject total;
-    total["Items"] = arr;
-    QFile jfile("C:\\Users\\thang\\Documents\\GitHub\\LeePickerX\\Saved\\test.json");
+    LEEJOBJ(total,ui->tabWidget->tabText(0),jsArray);
+
+    QString ePath = QDir::currentPath() + "/Saved/test.Leetdvn";
+
+    QFile jfile(ePath);
     QByteArray byteArray = QJsonDocument(total).toJson();
 
-    JsonExport(jfile,byteArray);
+    JsonExport(jfile,byteArray,true);
     QString message = "Saved  %1";
     AddToLog(Log,message.arg(jfile.fileName()));
+
+    QFile checkFile(ePath.replace("Leetdvn","json"));
+    QByteArray imp =  JsonImport(jfile,true);
+
+    JsonExport(checkFile,imp);
+
+    qDebug() << "data : " << imp << Qt::endl;
+
 }

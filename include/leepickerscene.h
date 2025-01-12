@@ -6,6 +6,9 @@
 #include <leepickeritem.h>
 #include <QRubberBand>
 #include <LeePickerPython.h>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonDocument>
 
 class LeePickerScene : public QGraphicsScene
 {
@@ -19,6 +22,9 @@ public:
 
     QList<LeePickerItem*> GetAllItems();
 
+    QJsonArray GetDataAllObject();
+
+    QJsonObject GetSceneData(const QString &inViewName);
 
 protected:
 

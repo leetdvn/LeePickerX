@@ -58,6 +58,8 @@ private:
 
     void tabSetup(bool newfile=0);
 
+    void CleanUpScene(int index);
+
     ///View
     LeePickerView* getView(QWidget* tabIndex);
 
@@ -76,7 +78,9 @@ private slots:
     void CreateNewShape(bool ischecked=0);
     void OnNewTab(int inIdx){   return CustomNewTab("NewTab",currentTab);}
     void OnNewFile();
-    void OnTabRename(QString inNewName);
+
+    void OnTabRename(const QString &inNewName);
+
     void OnTabBarClicked(int index);
     void OnToogleGrid();
     void OnTabChanged(int index);

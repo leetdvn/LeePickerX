@@ -18,6 +18,22 @@ QT_END_NAMESPACE
 
 class MainWindow;
 
+
+static QStringList ItemVaribles={
+    "DisplayName", //0
+    "Image", //1
+    "Color", //2
+    "PosX", //3
+    "PosY",//4
+    "Pin",//5
+    "ID",
+    "Script",
+    "Select",
+};
+
+
+
+
 class LeePickerItem : public QGraphicsObject
 {
     Q_OBJECT
@@ -76,7 +92,7 @@ protected:
     bool isPined=false;
     QMenu* iItemMenus = Q_NULLPTR;
 
-    QString DisplayName;
+    QString DisplayName,iScript;
 
     qreal iAlpha;
 
@@ -85,6 +101,9 @@ protected:
     QPointer<QAction> PinAct;
 
     SoftWareApp GetInteractApp();
+
+    QList<QVariant> VItems;
+
 
 private:
     Ui::ScriptEditor*SEditor;
@@ -96,6 +115,8 @@ private:
     void AssignMayaSelection();
 
     void OnSelectionClicked(bool isSelect=true,bool isAdd=false);
+
+    void InitVariant();
 
 private slots:
     void OnDelete();

@@ -12,8 +12,13 @@
 #include <QTextEdit>
 #include <QScrollBar>
 #include <QProcess>
+#include <qjsonarray.h>
+#include <qjsondocument.h>
+#include <qjsonobject.h>
 #include <windows.h>
 #include <QMetaEnum>
+#include <string>
+#include <QChar>
 
 enum LogType{
     Log,
@@ -75,20 +80,91 @@ static QString BrowserImage()
     return ImgPath;
 }
 
+static void MakeBinaryData(QFile &file){
+    if (!file.exists()) { return; }
+
+
+    if (file.open(QIODevice::ReadWrite ))
+    {
+        QByteArray copyData = file.readAll();
+
+        QDataStream in(&file);
+        in << copyData;
+
+        file.close();
+    }
+}
+
+static QByteArray ReadBinaryData(QFile &file){
+
+    if (!file.exists()) { return QByteArray(); }
+
+    QByteArray copyData{};
+    if (file.open(QIODevice::ReadOnly))
+    {
+        QDataStream in(&file);
+        in >> copyData;
+        file.close();
+        return copyData;
+    }
+}
+
 //Json Export File
 static void JsonExport(QFile &file, QByteArray data, bool Hex=0)
 {
     if (!file.exists() && data.isEmpty() || !file.exists() && data.isNull()) { return; }
 
     QByteArray copyData=*&data;
-    if (file.open(QIODevice::WriteOnly))
-    {
-        if(Hex) copyData = copyData.toHex();
-        file.write(copyData);
-        file.close();
-    }
+    if (!file.open(QIODevice::WriteOnly)) return;
+
+    if(Hex) copyData = copyData.toHex();
+    file.write(copyData);
+    // QDataStream in(&file);
+    // in << copyData;
+    file.close();
 
 }
+
+
+
+//Json Import File
+static QByteArray JsonImport(QFile &file, bool Hex=0)
+{
+    if (!file.exists()) { QByteArray(); };
+
+    QByteArray data{};
+    if (!file.open(QIODevice::ReadOnly)) return QByteArray();
+
+    // QDataStream in(&file);
+    // in >> data;
+    data = file.readAll();
+    file.close();
+
+    QString copyData{};
+    if(Hex){
+        copyData= data;
+        copyData = QByteArray::fromHex(copyData.toUtf8());
+
+        // data = QByteArray::fromRawData(data,sizeof(data));
+        // QJsonDocument doc = QJsonDocument::fromJson(copyData.toUtf8());
+        // QJsonObject rootObj = doc.object();
+        // QJsonValue vStr = rootObj.value("Main");
+
+        // for(const auto it : vStr.toArray())
+        // {
+        //     QJsonObject obj = it.toObject();
+        //     QJsonValue color = obj.value("Color");
+        //     qDebug() << "data : " << color.toString() <<Qt::endl;
+
+        // }
+        qDebug() << "data : " << copyData.toUtf8() <<Qt::endl;
+
+    }
+
+    //QString cData= QString::fromUtf16((char16_t*)hexEncode.data());
+    return copyData.toUtf8();
+}
+
 
 //check Maya Running on Task process
 static bool isRunning(const QString &process) {
@@ -119,6 +195,5 @@ static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inVa
     inObj->setProperty("App",inApp);
 
 }
-
 
 #endif
