@@ -80,7 +80,11 @@ protected:
 
     qreal iAlpha;
 
-    SoftWareApp iSoftWareApp;
+    SoftWareApp iApp;
+
+    QPointer<QAction> PinAct;
+
+    SoftWareApp GetInteractApp();
 
 private:
     Ui::ScriptEditor*SEditor;
@@ -113,6 +117,8 @@ private slots:
     void OnTestBlenderCmds();
 
     void OnTestMayaCmds();
+
+    void OnPinItem();
 };
 
 #endif // LEEPICKERITEM_H

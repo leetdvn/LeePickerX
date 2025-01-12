@@ -81,6 +81,14 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     ui->LogPicker->update();
 }
 
+bool MainWindow::IsAppAvalible()
+{
+
+    QString app = RemoteApp == Maya ? "maya.exe" : "blender.exe";
+
+    return isRunning(app);
+}
+
 
 
 void MainWindow::InitializeFuns()

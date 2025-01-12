@@ -27,17 +27,23 @@ def PortIsOpen():
     return isOpen
 
 def PickerSelect(inObjects):
+    if not PortIsOpen(): return
     command = str("cmds.select({},r=1)").format(inObjects)
     send_command(command)
 
 def PickerAddSelect(inObjects):
+    #check port Open
+    if not PortIsOpen(): return
     command = str("cmds.select({},add=1)").format(inObjects)
     send_command(command)    
 
 def PickerDeSelect(inObjects):
+    if not PortIsOpen(): return
+    
     command = str("cmds.select({},d=1)").format(inObjects)
     send_command(command) 
 
 def PickerClearSelection():
+    if not PortIsOpen(): return
     command = str("cmds.select(cl=1)")
     send_command(command)  

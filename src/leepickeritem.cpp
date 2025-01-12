@@ -34,6 +34,8 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
     QImage img(imgfile);
     SetItemPixmap(img);
 
+    setProperty("Pin",false);
+
 }
 
 QRectF LeePickerItem::boundingRect() const
@@ -151,7 +153,7 @@ void LeePickerItem::SetDisplayName(const QString inText)
 
 void LeePickerItem::SetRemoteAppScript(const SoftWareApp inApp)
 {
-    iSoftWareApp = inApp;
+    iApp = inApp;
 }
 
 void LeePickerItem::SetMayaActive(bool isActive,bool isAdd)
@@ -212,6 +214,9 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
     if (max > 1000)
         max = 1000;
     iItemMenus = new QMenu();
+
+    QString pinText = property("Pin").toBool() ? "UnPin Item" : "Pin Item";
+    PinAct = new QAction(pinText);
     //_menu->setAttribute(Qt::WA_DeleteOnClose,true);
     //QMenu* edit = _menu->addMenu("edit button");
     iItemMenus->addAction("assign selection", [&]() { OnAssignSelection();});
@@ -219,6 +224,8 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
     //_menu->addSeparator();
     //_menu->addAction("test Action", [&]() {on_testCommand(); });
     iItemMenus->addAction("scripts editor", [&]() { OnInitScriptEditor(); });
+
+    iItemMenus->addAction(pinText, [&]() { OnPinItem(); });
 
     iItemMenus->addAction("test Maya Cmds", [&]() { OnTestMayaCmds(); });
 
@@ -253,6 +260,14 @@ bool LeePickerItem::ImageIsValid()
     QPixmap pm;
     return pm.load(imgfile);
 }
+
+SoftWareApp LeePickerItem::GetInteractApp()
+{
+    MainWindow* LeePicker=MainWindow::Instance();
+
+    return LeePicker->GetInteractionApp();
+}
+
 
 void LeePickerItem::ZLayerSetup()
 {
@@ -332,7 +347,7 @@ void LeePickerItem::OnAssignSelection()
 {
     MainWindow* LeePicker=MainWindow::Instance();
 
-    switch (LeePicker->RemoteApp) {
+    switch (LeePicker->GetInteractionApp()) {
         case Maya: return AssignMayaSelection();
         case Blender:{return;}
         case NONE:
@@ -398,15 +413,22 @@ void LeePickerItem::OnTestBlenderCmds()
 
 void LeePickerItem::OnTestMayaCmds()
 {
-    MainWindow* LeePicker=MainWindow::Instance();
+    SoftWareApp interactApp = GetInteractApp();
+    bool AppC = interactApp == Maya ? false : true;
 
-    bool AppC = LeePicker->RemoteApp == Maya ? false : true;
-
-    switch (LeePicker->RemoteApp) {
+    switch (interactApp) {
     case Maya: return AssignMayaSelection();
     default:
         break;
     }
+}
+
+void LeePickerItem::OnPinItem()
+{
+    isPined = !property("Pin").toBool();
+    //Toogle Change Item Pin
+    setFlag(QGraphicsItem::ItemIsMovable,!isPined);
+    setProperty("Pin",isPined);
 }
 
 void LeePickerItem::OnInitScriptEditor()
@@ -418,12 +440,14 @@ void LeePickerItem::OnInitScriptEditor()
     connect(SEditor->lineEdit,SIGNAL(textChanged(QString)),SLOT(OnDisplayChanged(QString)));
     MainWindow* LeePicker=MainWindow::Instance();
 
-    bool AppC = LeePicker->RemoteApp == Maya ? false : true;
+    SoftWareApp interactApp = LeePicker->GetInteractionApp();
+
+    bool AppC = interactApp == Maya ? false : true;
 
     AppC == false ? SEditor->MayaRadio->setChecked(!AppC) :
         SEditor->BlenderRadio->setChecked(AppC) ;
 
-    switch (LeePicker->RemoteApp) {
+    switch (interactApp) {
         case Maya:{
             SEditor->MayaRadio->setChecked(true);
             break;
@@ -446,6 +470,8 @@ void LeePickerItem::AssignMayaSelection()
 {
     const char* funcName = "PortIsOpen";//"send_command";
     MainWindow* LeePicker=MainWindow::Instance();
+
+    SoftWareApp interactApp = LeePicker->GetInteractionApp();
 
     //Check Maya Running
     if(isRunning("maya.exe")){
@@ -476,7 +502,7 @@ void LeePickerItem::AssignMayaSelection()
     }
     else{
         //report error software not running
-        QString AppC = LeePicker->RemoteApp == Maya ?
+        QString AppC = interactApp == Maya ?
                            "Maya is not Runing" :
                            "Blender is not Runing";
 
@@ -488,6 +514,14 @@ void LeePickerItem::AssignMayaSelection()
 
 void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 {
+    SoftWareApp interactApp = GetInteractApp();
+
+    QString AppName = interactApp == Maya ? "maya.exe" : "blender.exe";
+
+    if(!isRunning(AppName)){
+        qDebug() << "App Not Running";
+        return;
+    }
     ///check empty property
     auto pro = property("select").toString();
     if(pro.isEmpty() || pro.isNull()) return;

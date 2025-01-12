@@ -19,6 +19,7 @@ public:
 
     QList<LeePickerItem*> GetAllItems();
 
+
 protected:
 
 

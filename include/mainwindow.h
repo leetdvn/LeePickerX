@@ -26,8 +26,12 @@ public:
 
     void AddToLog(const LogType inLog,QString inMessage,bool isClear=0);
 
-    SoftWareApp RemoteApp;
 
+    SoftWareApp GetInteractionApp(){return RemoteApp;}
+
+    QColor GetColor(){return MColor;}
+
+    bool IsAppAvalible();
     // static MainWindow* Instance(){
     //     if(m_Instance == nullptr)
     //         m_Instance=new MainWindow();
@@ -64,6 +68,9 @@ private:
     QColor MColor;
 
     void inItLog();
+
+    SoftWareApp RemoteApp;
+
 private slots:
     ///Connection Slot
     void CreateNewShape(bool ischecked=0);

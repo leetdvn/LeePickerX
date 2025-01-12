@@ -3,6 +3,7 @@
 #include <QGraphicsSceneMoveEvent>
 #include <QRect>
 #include <qforeach.h>
+#include <mainwindow.h>
 
 LeePickerScene::LeePickerScene(QObject *parent)
     : QGraphicsScene{parent}
@@ -53,12 +54,16 @@ QList<LeePickerItem *> LeePickerScene::GetAllItems()
     return pItems;
 }
 
+
 void LeePickerScene::OnSelectionChanged()
 {
-    if(GetSelectedItems().length() <= 0 )
+    MainWindow* LeePicker=MainWindow::Instance();
+
+    if(GetSelectedItems().length() <= 0 && LeePicker->IsAppAvalible())
     {
         const char* funcName = "PickerClearSelection";
         PyExecFuncAsVoid(funcName);
         qDebug() << "selection Changed." << Qt::endl;
     }
 }
+
