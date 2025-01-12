@@ -92,6 +92,9 @@ void LeePickerScene::OnSelectionChanged()
 {
     MainWindow* LeePicker=MainWindow::Instance();
 
+
+    if(!LeePicker->IsAppAvalible()) return ;
+
     if(GetSelectedItems().length() <= 0 && LeePicker->IsAppAvalible())
     {
         const char* funcName = "PickerClearSelection";

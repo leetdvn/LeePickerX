@@ -210,13 +210,18 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuRecent">
+     <property name="title">
+      <string>Recent</string>
+     </property>
+    </widget>
     <addaction name="NewScene"/>
     <addaction name="Open"/>
     <addaction name="separator"/>
     <addaction name="Save"/>
     <addaction name="SaveAs"/>
     <addaction name="separator"/>
-    <addaction name="Recent"/>
+    <addaction name="menuRecent"/>
     <addaction name="separator"/>
     <addaction name="Quit"/>
    </widget>
@@ -321,14 +326,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <action name="Open">
    <property name="text">
     <string>Open</string>
-   </property>
-  </action>
-  <action name="Recent">
-   <property name="text">
-    <string>Recent</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::MenuRole::TextHeuristicRole</enum>
    </property>
   </action>
   <action name="NewShapeAct">
@@ -550,6 +547,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <action name="actionMultiplyButtonV">
    <property name="text">
     <string>Multiply Button V</string>
+   </property>
+  </action>
+  <action name="action">
+   <property name="text">
+    <string>abc</string>
    </property>
   </action>
  </widget>

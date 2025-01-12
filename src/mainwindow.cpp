@@ -64,7 +64,7 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
         break;
     }
     case Completed:{
-        result = QString("<font color=\"green\">%1</font>").arg(title);
+        result = QString("<font color=\"cyan\">%1</font>").arg(title);
         result += mess;
         break;
     }
@@ -101,6 +101,10 @@ void MainWindow::InitializeFuns()
     connect(ui->NewShapeAct,SIGNAL(triggered(bool)),this,SLOT(CreateNewShape(bool)));
 
     connect(ui->NewScene,SIGNAL(triggered(bool)),this,SLOT(OnNewFile()));
+
+    connect(ui->Open,&QAction::triggered,this,[&](){OnFileOpen();});
+
+    connect(ui->SaveAs,&QAction::triggered,this,[&](){OnSaveAs();});
 
     connect(ui->Quit,SIGNAL(triggered(bool)),this,SLOT(OnPickerExit()));
     //toogle grid
@@ -398,4 +402,57 @@ void MainWindow::OnSave()
 
     qDebug() << "data : " << imp << Qt::endl;
 
+}
+
+void MainWindow::OnFileOpen()
+{
+    QString fileOpen = fileDialog(this);
+
+    QString message = QString("Open file :  %1").arg(fileOpen);
+    AddToLog(Completed,message,true);
+}
+
+void MainWindow::OnSaveAs()
+{
+    QString fileName = fileDialog(this);
+
+    OnSave();
+    QString message = QString("Saved  :  %1").arg(fileName);
+
+    AddToLog(Completed,message,true);
+
+}
+
+
+
+void MainWindow::AddRecentFile(const QString inName)
+{
+    //Add Recent To Action of Recent Menu
+    if (inName.isEmpty()) return;
+    ui->menuRecent->addAction(inName,[&](){OnRecentFile();});
+
+}
+
+void MainWindow::LoadRecent()
+{
+    //load recent file
+    std::reverse(recentfiles.begin(), recentfiles.end());
+    for (QString rf : recentfiles) {
+        ui->menuRecent->addAction(rf,[&](){OnLoadRecent();});
+    }
+}
+
+void MainWindow::InitRecent()
+{
+    //init recent file from saved data file
+}
+
+void MainWindow::OnRecentFile()
+{
+    //signals On recent file
+}
+
+void MainWindow::OnLoadRecent()
+{
+    //action load Recenet
 }

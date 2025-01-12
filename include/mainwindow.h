@@ -50,6 +50,8 @@ private:
 
     QPointer<LeePickerView> pView=nullptr;
 
+    QStringList recentfiles;
+
     void InitializeFuns();
 
     void CustomNewTab(QString newName,int type=0);
@@ -73,6 +75,12 @@ private:
 
     SoftWareApp RemoteApp;
 
+    void AddRecentFile(const QString inName);
+
+    void LoadRecent();
+
+    void InitRecent();
+
 private slots:
     ///Connection Slot
     void CreateNewShape(bool ischecked=0);
@@ -90,6 +98,13 @@ private slots:
     void OnColorChoise();
     void OnSave();
 
+    void OnFileOpen();
+
+    void OnSaveAs();
+
+    void OnRecentFile();
+
+    void OnLoadRecent();
 
 };
 

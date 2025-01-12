@@ -107,6 +107,7 @@ static QByteArray ReadBinaryData(QFile &file){
         file.close();
         return copyData;
     }
+    return copyData;
 }
 
 //Json Export File
@@ -195,5 +196,12 @@ static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inVa
     inObj->setProperty("App",inApp);
 
 }
+
+static QString fileDialog(QWidget* main)
+{
+    QString filter = "LeePicker (*.Leetdvn)";
+    return QFileDialog::getOpenFileName(main, ("lee Picker file Open Window"), OLDFOLDER, filter, &filter);
+}
+
 
 #endif

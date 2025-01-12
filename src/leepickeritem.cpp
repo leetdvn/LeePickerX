@@ -102,7 +102,7 @@ QJsonObject LeePickerItem::toJsonObject()
     InitVariant();
     QJsonObject obj;
     int count=0;
-    for(auto const iv : ItemVaribles){
+    for(auto iv : ItemVaribles){
         if(count >= VItems.count()) break;
         if(VItems[count].isNull() || !VItems[count].isValid()) continue;
         QString str = VItems[count].toString();
@@ -133,7 +133,7 @@ void LeePickerItem::SetItemName(const QString inItemName)
     if(inItemName.isEmpty() || inItemName.isNull()) return;
 
     iName = inItemName;
-    return this->update();
+    return update();
 }
 
 void LeePickerItem::SetItemColor(const QColor inColor)
@@ -141,7 +141,7 @@ void LeePickerItem::SetItemColor(const QColor inColor)
     if(!inColor.isValid()) return;
 
     iColor=inColor;
-    return this->update();
+    return update();
 }
 
 void LeePickerItem::SetItemId(const int newId)
@@ -149,7 +149,7 @@ void LeePickerItem::SetItemId(const int newId)
     if(newId < 0 || newId == itemId) return ;
 
     itemId = newId;
-    return this->update();
+    return update();
 }
 
 void LeePickerItem::SetItemPixmap(const QPixmap inPixmap)
@@ -157,7 +157,7 @@ void LeePickerItem::SetItemPixmap(const QPixmap inPixmap)
     if(inPixmap.isNull()) return;
     iPixmap=inPixmap;
 
-    return this->update();
+    return update();
 }
 
 void LeePickerItem::SetItemPixmap(const QImage inImage)
@@ -165,7 +165,7 @@ void LeePickerItem::SetItemPixmap(const QImage inImage)
     if(inImage.isNull()) return;
 
     iPixmap = QPixmap::fromImage(inImage);
-    return this->update();
+    return update();
 }
 
 void LeePickerItem::SetDisplayName(const QString inText)
@@ -173,7 +173,7 @@ void LeePickerItem::SetDisplayName(const QString inText)
     if(inText.isEmpty() || inText.isNull()) return;
 
     DisplayName=inText;
-    return this->update();
+    return update();
 }
 
 void LeePickerItem::SetRemoteAppScript(const SoftWareApp inApp)
