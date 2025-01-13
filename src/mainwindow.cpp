@@ -536,6 +536,12 @@ void MainWindow::OnSocketConnected()
              << "Blender " << BlenderHasConnected
              << "Port" << Socket->localPort() <<   Qt::endl;
 
+    QTextStream T(Socket);
+
+    T << "print(\"thang dang do hoi cham gi nhanh vai dai\")";
+
+    Socket->flush();
+
 }
 
 void MainWindow::OnSocketDisconneted()
