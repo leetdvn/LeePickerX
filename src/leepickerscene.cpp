@@ -92,10 +92,10 @@ void LeePickerScene::OnSelectionChanged()
 {
     MainWindow* LeePicker=MainWindow::Instance();
 
+    QList<LeePickerItem*> Items = GetSelectedItems();
+    if(!LeePicker->IsAppAvalible() || Items.length() <= 0) return ;
 
-    if(!LeePicker->IsAppAvalible()) return ;
-
-    if(GetSelectedItems().length() <= 0 && LeePicker->IsAppAvalible())
+    if(LeePicker->IsAppAvalible())
     {
         const char* funcName = "PickerClearSelection";
         PyExecFuncAsVoid(funcName);

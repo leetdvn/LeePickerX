@@ -37,7 +37,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    //delete ui;
+    delete ui;
+    m_Instance = nullptr;
+    deleteLater();
 }
 
 void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)

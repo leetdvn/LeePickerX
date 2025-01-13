@@ -64,6 +64,9 @@ public:
 
     void SetMayaActive(bool isActive, bool isAdd=false);
 
+    //check Item Has Assinged
+    bool IsAssigned();
+
     QJsonObject toJsonObject();
 
 protected:

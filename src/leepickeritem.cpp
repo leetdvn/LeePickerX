@@ -186,6 +186,13 @@ void LeePickerItem::SetMayaActive(bool isActive,bool isAdd)
    return OnSelectionClicked(isActive,isAdd);
 }
 
+bool LeePickerItem::IsAssigned()
+{
+    QVariant selectV = property("select");
+
+    return selectV.isNull() || !selectV.isValid() ? false : true;
+}
+
 #pragma region Mouse HoverEvent {
 
 void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
@@ -194,11 +201,11 @@ void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
     if (ev->button() == Qt::LeftButton)
     {
         //this->~leePatternItem();
-        QString select = property("select").toString();
-        if(select.isEmpty()) return QGraphicsItem::mousePressEvent(ev);
+        QVariant selectV = property("select");
+        if(!selectV.isValid() || selectV.isNull()) return QGraphicsItem::mousePressEvent(ev);
 
+        qDebug() << "info left mouse click." << Qt::endl;
         OnSelectionClicked();
-        qDebug() << select << Qt::endl;
     }
     else if (ev->button() & Qt::RightButton && isHover)
     {
@@ -539,6 +546,9 @@ void LeePickerItem::AssignMayaSelection()
 
 void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 {
+
+    if(!IsAssigned()) return ;
+
     SoftWareApp interactApp = GetInteractApp();
 
     QString AppName = interactApp == Maya ? "maya.exe" : "blender.exe";

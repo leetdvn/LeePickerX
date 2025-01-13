@@ -267,11 +267,23 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </property>
     <addaction name="actionASPICKER"/>
    </widget>
+   <widget class="QMenu" name="menuMaya">
+    <property name="title">
+     <string>Maya</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuBlender">
+    <property name="title">
+     <string>Blender</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
    <addaction name="menuAlign"/>
    <addaction name="menuCreate"/>
    <addaction name="menuThirparty"/>
+   <addaction name="menuMaya"/>
+   <addaction name="menuBlender"/>
    <addaction name="menuHelp_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">

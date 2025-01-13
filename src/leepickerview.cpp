@@ -158,9 +158,11 @@ void LeePickerView::mouseReleaseEvent(QMouseEvent *e)
                 qDebug() << "Name " << it  <<  Qt::endl;
                 LeePickerItem* obj = qgraphicsitem_cast<LeePickerItem*>(it);
                 if (obj) {
+                    //Select Toogle Object
                     obj->setSelected(!obj->isSelected());
 
-
+                    if(!obj->IsAssigned()) continue;
+                    ///Set Active Script
                     obj->SetMayaActive(obj->isSelected(),obj->isSelected());
                     // if(obj->isSelected())
                     //     obj->leftClicked(true);
