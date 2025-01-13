@@ -66,6 +66,9 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         painter->drawRect(boundingRect());
     }
 
+    if(isFlipHorizontal || isFlipVertical)
+        painter->setTransform(transform().inverted(),true);
+
     UpdateDisplayName(painter);
     painter->setOpacity(iAlpha);
 
@@ -191,6 +194,49 @@ bool LeePickerItem::IsAssigned()
     QVariant selectV = property("select");
 
     return selectV.isNull() || !selectV.isValid() ? false : true;
+}
+
+void LeePickerItem::SetFlip(bool isVertical)
+{
+    QTransform current(this->transform());
+
+    qreal m11 = current.m11();    // Horizontal scaling
+    qreal m12 = current.m12();    // Vertical shearing
+    qreal m13 = current.m13();    // Horizontal Projection
+    qreal m21 = current.m21();    // Horizontal shearing
+    qreal m22 = current.m22();    // vertical scaling
+    qreal m23 = current.m23();    // Vertical Projection
+    qreal m31 = current.m31();    // Horizontal Position (DX)
+    qreal m32 = current.m32();    // Vertical Position (DY)
+    qreal m33 = current.m33();    // Addtional Projection Factor
+
+    // We need this in a minute
+    qreal Hscale = m11;
+    qreal Vscale = m22;
+
+    //texTransform.setMatrix(m11, m12, m13, m21, m22, m23, m31, m32, m33);
+    if (!isVertical) {
+        // Horizontal flip
+        m11 = -m11;
+        if (m31 > 0)
+            m31 = 0;
+        else
+            m31 = (boundingRect().width() * Hscale);
+        isFlipHorizontal = !isFlipHorizontal;
+    }
+    else {
+        // Vertical flip
+        m22 = -m22;
+        if (m32 > 0)
+            m32 = 0;
+        else
+            m32 = (boundingRect().height() * Vscale);
+        isFlipVertical = !isFlipVertical;
+    }
+    current.setMatrix(m11, m12, m13, m21, m22, m23, m31, m32, m33);
+    setTransform(QTransform(current));
+    update();
+
 }
 
 #pragma region Mouse HoverEvent {

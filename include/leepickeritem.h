@@ -67,6 +67,9 @@ public:
     //check Item Has Assinged
     bool IsAssigned();
 
+    //Set Flip
+    void SetFlip(bool isVertial);
+
     QJsonObject toJsonObject();
 
 protected:
@@ -93,6 +96,8 @@ protected:
     bool isHover=false;
 
     bool isPined=false;
+    bool isFlipHorizontal=false;
+    bool isFlipVertical=false;
     QMenu* iItemMenus = Q_NULLPTR;
 
     QString DisplayName,iScript;
@@ -143,6 +148,7 @@ private slots:
     void OnTestMayaCmds();
 
     void OnPinItem();
+
 };
 
 #endif // LEEPICKERITEM_H

@@ -33,6 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
     InitializeFuns();
     RemoteApp = Maya;
     inItLog();
+
+    QHostAddress host("127.0.0.1");
+    quint16 bPort = 5000;
+    quint16 mPort = 54322;
+    InitSocket(host,mPort);
+
 }
 
 MainWindow::~MainWindow()
@@ -119,6 +125,11 @@ void MainWindow::InitializeFuns()
     connect(ui->ColorAct,SIGNAL(triggered(bool)),this,SLOT(OnColorChoise()));
 
     connect(ui->Save,SIGNAL(triggered(bool)),this,SLOT(OnSave()));
+
+    //Flip Action
+    connect(ui->actionFlip_Horizontal,&QAction::triggered,this,[&](){OnFlip(false);});
+
+    connect(ui->actionFlip_Vertical ,&QAction::triggered,this,[&](){OnFlip(true);});
 
 }
 
@@ -280,6 +291,29 @@ LeePickerScene *MainWindow::getScene(const QWidget *tabIndex)
         }
     }
     return sceneResult;
+}
+
+QList<LeePickerItem *> MainWindow::GetSelectedItems()
+{
+    QList<LeePickerItem*> selectedItems{};
+    LeePickerScene* mScene = getScene(ui->tabWidget->currentWidget());
+    if (mScene)
+    {
+        QList<QGraphicsItem*> ilist = mScene->selectedItems();
+        if (!ilist.isEmpty())
+        {
+            for (QGraphicsItem* it : ilist)
+            {
+                LeePickerItem* mObj = qgraphicsitem_cast<LeePickerItem*>(it);
+
+                /*  leePatternItem* pItem = qgraphicsitem_cast<leePatternItem*>(it);
+                if (pItem) leeObj.clear(); break;*/
+                if (mObj)
+                    selectedItems.append(mObj);
+            }
+        }
+    }
+    return selectedItems;
 }
 
 void MainWindow::inItLog()
@@ -449,6 +483,24 @@ void MainWindow::InitRecent()
     //init recent file from saved data file
 }
 
+void MainWindow::InitSocket(QHostAddress inhost, quint16 inPort)
+{
+    m_pTcpSocket = new QTcpSocket(this);
+
+    if(!(QAbstractSocket::ConnectedState == m_pTcpSocket->state())){
+        m_pTcpSocket->connectToHost(inhost,inPort,QIODevice::ReadWrite);
+
+        // connect(m_pTcpSocket,SIGNAL(readyRead()),SLOT(readSocketData()),Qt::UniqueConnection);
+        // connect(m_pTcpSocket,SIGNAL(error(QAbstractSocket::SocketError)),SIGNAL(connectionError(QAbstractSocket::SocketError)),Qt::UniqueConnection);
+        // connect(m_pTcpSocket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),SIGNAL(tcpSocketState(QAbstractSocket::SocketState)),Qt::UniqueConnection);
+
+        connect(m_pTcpSocket,SIGNAL(connected()),SLOT(OnSocketConnected()),Qt::UniqueConnection);
+        connect(m_pTcpSocket,SIGNAL(disconnected()),this,SLOT(OnSocketDisconneted()),Qt::UniqueConnection);
+    }
+    qDebug() << "Socket...init.." << Qt::endl;
+
+}
+
 void MainWindow::OnRecentFile()
 {
     //signals On recent file
@@ -457,4 +509,46 @@ void MainWindow::OnRecentFile()
 void MainWindow::OnLoadRecent()
 {
     //action load Recenet
+}
+
+void MainWindow::OnFlip(bool isVertical)
+{
+    QList<LeePickerItem*> selectedItems = GetSelectedItems();
+    if (!selectedItems.isEmpty())
+    {
+        for (int i=0; i < selectedItems.length(); i++)
+            selectedItems[i]->SetFlip(isVertical);
+    }
+
+}
+
+void MainWindow::OnSocketConnected()
+{
+
+    QTcpSocket* Socket = qobject_cast<QTcpSocket*>(sender());
+    if(Socket==nullptr) return ;
+
+    Socket->localPort()==5000 ?
+            BlenderHasConnected=true :
+            MayaHasConnected = true;
+
+    qDebug()<< "Maya"  << MayaHasConnected
+             << "Blender " << BlenderHasConnected
+             << "Port" << Socket->localPort() <<   Qt::endl;
+
+}
+
+void MainWindow::OnSocketDisconneted()
+{
+    QTcpSocket* Socket = qobject_cast<QTcpSocket*>(sender());
+    if(Socket==nullptr) return ;
+
+    Socket->localPort()==5000 ?
+        BlenderHasConnected=true :
+        MayaHasConnected = true;
+
+    qDebug()<< "Maya"  << MayaHasConnected
+            << "Blender " << BlenderHasConnected
+            << "Port" << Socket->localPort() <<   Qt::endl;
+
 }

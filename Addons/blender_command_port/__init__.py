@@ -94,3 +94,4 @@ def unregister():
     bpy.utils.unregister_class(CloseCommandPortOperator)
     unregister_command_port()
     bpy.utils.unregister_class(BLENDERCOMMANDPORT1_PT_Panel)
+

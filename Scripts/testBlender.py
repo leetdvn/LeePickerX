@@ -15,9 +15,8 @@ def send_command(command=str):
     return data.decode()
 
 cmd = '''
-import bpy
 bpy.data.objects["Cube"].select_set(True)
-print("taoday")
+print(taoday())
 '''
 cmd2='''
 print("taoday")

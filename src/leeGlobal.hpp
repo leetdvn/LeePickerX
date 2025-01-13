@@ -19,6 +19,7 @@
 #include <QMetaEnum>
 #include <string>
 #include <QChar>
+#include <QTcpSocket>
 
 enum LogType{
     Log,

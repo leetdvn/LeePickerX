@@ -37,6 +37,9 @@ public:
     //         m_Instance=new MainWindow();
     //     return m_Instance;
     // }
+    bool IsConnectedWithMaya(){return MayaHasConnected;}
+
+    bool isConnectedWIthBlender(){return BlenderHasConnected;}
 
 signals:
 
@@ -45,10 +48,11 @@ signals:
 private:
 
     //static MainWindow* m_Instance;
-
+    bool MayaHasConnected,BlenderHasConnected;
     Ui::leePicker *ui;
 
     QPointer<LeePickerView> pView=nullptr;
+    QPointer<QTcpSocket> m_pTcpSocket=nullptr;
 
     QStringList recentfiles;
 
@@ -67,6 +71,8 @@ private:
 
     LeePickerScene* getScene(const QWidget* tabIndex);
 
+    QList<LeePickerItem*> GetSelectedItems();
+
     int currentTab;
 
     QColor MColor;
@@ -80,6 +86,8 @@ private:
     void LoadRecent();
 
     void InitRecent();
+
+    void InitSocket(QHostAddress inhost,quint16 inPort);
 
 private slots:
     ///Connection Slot
@@ -106,6 +114,10 @@ private slots:
 
     void OnLoadRecent();
 
+    void OnFlip(bool isVertical);
+
+    void OnSocketConnected();
+    void OnSocketDisconneted();
 };
 
 
