@@ -3,11 +3,11 @@ Window Application Interactive with 3D software AutoDesk Maya and Blender
 
 ## How to use
 ### Installing
-# AutoDesk Maya
+### AutoDesk Maya
 
 inside folder startup copy file UserSetup.mel into "C:/Users/[username]/Documents/maya/Scripts"
 
-# Blender Install
+### Blender Install
 
 
 1.copy folder Blender_command_Port into folder Addon  of Blender 
