@@ -37,6 +37,13 @@ static QStringList ItemVaribles={
 class LeePickerItem : public QGraphicsObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString imgfile READ LeeImagePath WRITE SetImagePath NOTIFY nameChanged FINAL)
+    Q_PROPERTY(QString DisplayName READ LeeDisplayName WRITE SetDisplayName NOTIFY DisplayNameChanged FINAL)
+    Q_PROPERTY(bool isPined READ LeePined WRITE SetPin NOTIFY isPinedChanged FINAL)
+    Q_PROPERTY(QString iColorStr READ LeeColor WRITE SetItemColor NOTIFY iColorChanged FINAL)
+    Q_PROPERTY(int itemId READ Id WRITE SetItemId NOTIFY IdChanged FINAL)
+    Q_PROPERTY(bool isFlipHorizontal READ isHorizontal WRITE SetHorizontal NOTIFY HorizontalChanged FINAL)
 public:
     LeePickerItem(QString itemName = NULL, QString Image = nullptr, int objID = -1 ,QRectF inRectF = QRectF(0, 0, 80, 80));
     ~LeePickerItem(){deleteLater();}
@@ -48,9 +55,23 @@ public:
     //Public Function
     void SetImagePath(const QString infile);
 
+    //Read Property
+
+    QString LeeImagePath(){return imgfile;}
+    QString LeeDisplayName(){return DisplayName;}
+    bool LeePined() {return isPined;}
+    void SetPin(bool isPined){isPined = isPined;}
+    QString LeeColor(){return iColor.name();}
+    int Id(){return itemId;}
+
+    bool isHorizontal(){return isFlipHorizontal;}
+    bool isVertial() {return isFlipVertical;}
+
+    void SetHorizontal(bool isHz){isFlipHorizontal=isHz;}
+
     void SetItemName(const QString inItemName);
 
-    void SetItemColor(const QColor inColor);
+    void SetItemColor(const QString inColor);
 
     void SetItemId(const int newId);
 
@@ -70,7 +91,17 @@ public:
     //Set Flip
     void SetFlip(bool isVertial);
 
+    void extracted(QJsonObject &obj, int &count);
     QJsonObject toJsonObject();
+
+signals:
+    //Notify
+    void nameChanged(const QString& newName);
+    void DisplayNameChanged(const QString& newName) ;
+    void isPinedChanged(const bool& newName) ;
+    void iColorChanged(const QString& newName);//{qDebug() << "Color changed";}
+    void IdChanged(const int newId);
+    void HorizontalChanged(const bool newHoz);
 
 protected:
 
@@ -85,6 +116,7 @@ protected:
     QString iName;
     int itemId;
     QColor iColor;
+    QString iColorStr;
     QPixmap iPixmap;
 
     //private Funtion

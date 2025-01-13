@@ -8,6 +8,8 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <Definations.h>
+#include <QAbstractSocket>
+#include <qtimer.h>
 
 //MainWindow* MainWindow::m_Instance=nullptr;
 
@@ -88,14 +90,26 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     int valueMax = ui->LogPicker->verticalScrollBar()->maximum();
     ui->LogPicker->verticalScrollBar()->setValue(valueMax);
     ui->LogPicker->update();
+
+    // QTimer *timer = new QTimer(this);
+    // connect(timer, &QTimer::timeout, this, [&](){ui->LogPicker->clear();});
+    // timer->start(5000);
+    if(timeId > 0)
+        killTimer(timeId);
+    timeId = startTimer(6000);
+    qDebug() << timeId << "time " << Qt::endl;
 }
 
 bool MainWindow::IsAppAvalible()
 {
-
     QString app = RemoteApp == Maya ? "maya.exe" : "blender.exe";
 
     return isRunning(app);
+}
+
+void MainWindow::timerEvent(QTimerEvent *event)
+{
+    ui->LogPicker->clear();
 }
 
 
@@ -383,13 +397,18 @@ void MainWindow::OnConnectAppChanged(bool checkable)
     QString img = !checkable ? (":/icons/maya.png") : (":/icons/blender.png");
 
     RemoteApp = !checkable ? Maya  : Blender;
-    QString message = !checkable ? "     Connect To Maya " : "      Connect To Blender ";
-    AddToLog(LogType::Log,message,true);
+
     QImage image(img);
 
     QAction* appAct = qobject_cast<QAction*>(sender());
     appAct->setIcon(QPixmap::fromImage(image));
 
+    QHostAddress host("127.0.0.1");
+    quint16 Port = RemoteApp == Maya ? 54322 : 5000;
+
+    InitSocket(host,Port);
+    QString message = !checkable ? "     Remote App Maya " : "      Remote App Blender ";
+    AddToLog(LogType::Log,message,true);
 }
 
 void MainWindow::OnNewItem()
@@ -491,7 +510,7 @@ void MainWindow::InitSocket(QHostAddress inhost, quint16 inPort)
         m_pTcpSocket->connectToHost(inhost,inPort,QIODevice::ReadWrite);
 
         // connect(m_pTcpSocket,SIGNAL(readyRead()),SLOT(readSocketData()),Qt::UniqueConnection);
-        // connect(m_pTcpSocket,SIGNAL(error(QAbstractSocket::SocketError)),SIGNAL(connectionError(QAbstractSocket::SocketError)),Qt::UniqueConnection);
+        connect(m_pTcpSocket,&QTcpSocket::errorOccurred,this,&MainWindow::OnConnectionError,Qt::UniqueConnection);
         // connect(m_pTcpSocket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),SIGNAL(tcpSocketState(QAbstractSocket::SocketState)),Qt::UniqueConnection);
 
         connect(m_pTcpSocket,SIGNAL(connected()),SLOT(OnSocketConnected()),Qt::UniqueConnection);
@@ -538,10 +557,11 @@ void MainWindow::OnSocketConnected()
 
     QTextStream T(Socket);
 
-    T << "print(\"thang dang do hoi cham gi nhanh vai dai\")";
-
+    T << "import maya.cmds as cmds\nprint(\"LeePicker Connected..\")";
     Socket->flush();
 
+    QString msg = RemoteApp == Maya ? QString("   Maya Connected") : QString("   Blender Connected");
+    AddToLog(Completed,msg,true);
 }
 
 void MainWindow::OnSocketDisconneted()
@@ -556,5 +576,20 @@ void MainWindow::OnSocketDisconneted()
     qDebug()<< "Maya"  << MayaHasConnected
             << "Blender " << BlenderHasConnected
             << "Port" << Socket->localPort() <<   Qt::endl;
+
+}
+
+void MainWindow::OnConnectionError(QAbstractSocket::SocketError inError)
+{
+    QTcpSocket* Socket = qobject_cast<QTcpSocket*>(sender());
+    if(Socket==nullptr) return ;
+    Socket->localPort()==5000 ?
+        BlenderHasConnected=false :
+        MayaHasConnected = false;
+
+    if(QAbstractSocket::ConnectionRefusedError==inError){
+        qDebug() << "Socket init error " << Qt::endl;
+
+    }
 
 }

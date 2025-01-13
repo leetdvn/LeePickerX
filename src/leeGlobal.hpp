@@ -21,6 +21,7 @@
 #include <QChar>
 #include <QTcpSocket>
 
+
 enum LogType{
     Log,
     Warning,
@@ -33,6 +34,7 @@ enum SoftWareApp{
     Maya,
     Blender,
 };
+
 
 static QString OLDFOLDER = "./icons/";
 
@@ -178,15 +180,18 @@ static bool isRunning(const QString &process) {
                       << "/FI" << QString("IMAGENAME eq %1").arg(process));
     tasklist.waitForFinished();
     QString output = tasklist.readAllStandardOutput();
-
-    qDebug() << "SoftWare Run " << output << Qt::endl;
     return output.startsWith(QString("\"%1").arg(process));
 }
 
 template<typename QEnum>
-static std::string QtEnumToString (const QEnum value)
+static QString QtEnumToString (const QEnum value)
 {
-    return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value));
+    return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value)).c_str();
+}
+
+static int QtStringToEnum(QString inEnumStr){
+    const char* str = inEnumStr.toUtf8();
+    return QMetaType::type(str);
 }
 
 static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inValue)

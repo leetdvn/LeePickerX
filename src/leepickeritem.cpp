@@ -97,6 +97,15 @@ void LeePickerItem::InitVariant()
     VItems.insert(7,scr.toHex());
     VItems.insert(8,property("select"));
 
+    for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
+    {
+        qDebug() << metaObject()->property(i).name() << metaObject()->property(i).read(this) << Qt::endl;
+        metaObject()->property(i);
+
+        QString img = property(metaObject()->property(i).name()).toString();
+
+        qDebug() << img << Qt::endl;
+    }
 }
 
 QJsonObject LeePickerItem::toJsonObject()
@@ -136,14 +145,16 @@ void LeePickerItem::SetItemName(const QString inItemName)
     if(inItemName.isEmpty() || inItemName.isNull()) return;
 
     iName = inItemName;
+    emit nameChanged(inItemName);
     return update();
 }
 
-void LeePickerItem::SetItemColor(const QColor inColor)
+void LeePickerItem::SetItemColor(const QString inColor)
 {
-    if(!inColor.isValid()) return;
+    if(!inColor.isEmpty() || inColor.isNull()) return;
 
-    iColor=inColor;
+    iColor=QColor(inColor);
+    emit iColorChanged(inColor);
     return update();
 }
 
@@ -152,6 +163,7 @@ void LeePickerItem::SetItemId(const int newId)
     if(newId < 0 || newId == itemId) return ;
 
     itemId = newId;
+    emit IdChanged(newId);
     return update();
 }
 
@@ -168,6 +180,7 @@ void LeePickerItem::SetItemPixmap(const QImage inImage)
     if(inImage.isNull()) return;
 
     iPixmap = QPixmap::fromImage(inImage);
+
     return update();
 }
 
@@ -176,6 +189,7 @@ void LeePickerItem::SetDisplayName(const QString inText)
     if(inText.isEmpty() || inText.isNull()) return;
 
     DisplayName=inText;
+    emit DisplayNameChanged(inText);
     return update();
 }
 

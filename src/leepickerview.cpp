@@ -155,7 +155,6 @@ void LeePickerView::mouseReleaseEvent(QMouseEvent *e)
         if (inside.length() > 0) {
             for (QGraphicsItem* it : inside)
             {
-                qDebug() << "Name " << it  <<  Qt::endl;
                 LeePickerItem* obj = qgraphicsitem_cast<LeePickerItem*>(it);
                 if (obj) {
                     //Select Toogle Object

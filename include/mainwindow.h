@@ -45,8 +45,11 @@ signals:
 
     void OnColorChanged(QColor &Color);
 
-private:
+protected:
+    void timerEvent(QTimerEvent *event) override;
+    int timeId=-1;
 
+private:
     //static MainWindow* m_Instance;
     bool MayaHasConnected,BlenderHasConnected;
     Ui::leePicker *ui;
@@ -80,6 +83,7 @@ private:
     void inItLog();
 
     SoftWareApp RemoteApp;
+    Q_ENUM(SoftWareApp)
 
     void AddRecentFile(const QString inName);
 
@@ -88,6 +92,7 @@ private:
     void InitRecent();
 
     void InitSocket(QHostAddress inhost,quint16 inPort);
+
 
 private slots:
     ///Connection Slot
@@ -118,6 +123,11 @@ private slots:
 
     void OnSocketConnected();
     void OnSocketDisconneted();
+
+    void OnConnectionError(QAbstractSocket::SocketError inError);
+
+
+
 };
 
 
