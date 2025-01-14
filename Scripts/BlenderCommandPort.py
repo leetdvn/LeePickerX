@@ -43,7 +43,14 @@ def PickerDeSelect(inObjects):
     print(command)
     send_command(command) 
 
-def PickerClearSelection():
-    cmd = '''bpy.ops.object.select_all(action='DESELECT')'''
-    print("blender..")
+def PickerClearSelection(inApp=str):
+    global PORT
+    cmd =''
+    if str(inApp).startswith("blender"):
+        PORT=5000
+        cmd='''bpy.ops.object.select_all(action='DESELECT')'''
+    else:
+        PORT=54322
+        cmd="cmds.select(cl=1)"
+    print(cmd,PORT)
     return send_command(cmd)

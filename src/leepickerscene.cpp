@@ -87,41 +87,28 @@ QJsonObject LeePickerScene::GetSceneData(const QString &inViewName)
     return sceneData;
 }
 
+void LeePickerScene::ClearSelectionProcess()
+{
+    MainWindow* LeePicker=MainWindow::Instance();
+    QList<LeePickerItem*> Items = GetSelectedItems();
+
+    SoftWareApp app = LeePicker->GetInteractionApp();
+    QString str = app == Maya ? "maya" : "blender";
+    if(Items.length() <= 0 && LeePicker->IsAppAvalible()){
+        //command
+        QString Cmd = QString("PickerClearSelection('%1')").arg(str);
+        PythonProcessCmd(this,app,Cmd);
+
+        qDebug() << Cmd << Qt::endl;
+
+    }
+
+}
+
 
 void LeePickerScene::OnSelectionChanged()
 {
-    MainWindow* LeePicker=MainWindow::Instance();
 
-    QList<LeePickerItem*> Items = GetSelectedItems();
-    if(Items.length() <= 0)
-    {
-        if(LeePicker->IsAppAvalible()){
-
-            ///Test Maya Only
-            switch (LeePicker->GetInteractionApp()) {
-            case Maya:{
-                    const char* funcName = "PickerClearSelection";
-                    PyExecFuncAsVoid(funcName);
-                    qDebug() << "selection Changed." << Qt::endl;
-                    break ;
-                }
-
-                case NONE:{break;}
-                case Blender:{
-                    const char* funcName = "PickerClearSelection";
-                    PyExecFuncAsVoid(funcName);
-                    qDebug() << "selection Changed." << Qt::endl;
-                    break ;
-                }
-            }
-        }
-    }
-
-    // if(Items.)
-    // {
-    //     const char* funcName = "PickerClearSelection";
-    //     PyExecFuncAsVoid(funcName);
-    //     qDebug() << "selection Changed." << Qt::endl;
-    // }
+    ClearSelectionProcess();
 }
 

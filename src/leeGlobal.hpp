@@ -35,7 +35,6 @@ enum SoftWareApp{
     Blender,
 };
 
-
 static QString OLDFOLDER = "./icons/";
 
 static bool isDir(const QString dir) { return QDir(dir).exists(); }
@@ -184,7 +183,7 @@ static bool isRunning(const QString &process) {
 }
 
 template<typename QEnum>
-static QString QtEnumToString (const QEnum value)
+static QString QtEnumToString(const QEnum value)
 {
     return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value)).c_str();
 }
@@ -210,4 +209,40 @@ static QString fileDialog(QWidget* main)
 }
 
 
+static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString inCmd)
+{
+    QProcess* process = new QProcess(obj);
+    QString workingDir(QDir::currentPath() + "/Scripts/");
+    qDebug() << "path" << workingDir << Qt::endl;
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    const char* AppEnv = inApp == Maya ? LEEMAYAENV : LEEBLENDERENV;
+    const char* pyApp = inApp == Maya ? "mayapy.exe" : "python";
+    env.insert("PYTHONPATH",AppEnv);
+
+    process->setWorkingDirectory(workingDir);
+
+    process->setProcessEnvironment(env);
+
+    QStringList params;
+
+    params << "-c" << LEECMDS.arg(inCmd);
+
+    process->start(pyApp,params);
+
+    // process->start(
+    //     pyApp,
+    //     QStringList() << "-c"
+    //                   << LEECMDS.arg(inCmd));
+
+    //process->start("python",params);
+
+    process->waitForFinished(-1);
+
+    qDebug() << workingDir << Qt::endl;
+    qDebug() << process->readAllStandardOutput() << Qt::endl;
+    qDebug() << process->readAllStandardError() << Qt::endl;
+    qDebug() << pyApp << Qt::endl;
+
+    process->close();
+}
 #endif

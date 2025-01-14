@@ -8,4 +8,7 @@ exec(compile(open(filename).read(), filename, 'exec'))
 ##bpy.ops.wm.open_command_port()
 
 '''File target'''
-#-y -P "C:\Users\leepl\Documents\GitHub\LeePickerX\Scripts\BlenderStartup.py"
+#-y -P "C:\Users\thang\Documents\GitHub\LeePickerX\build\Debug\startup\BlenderStartup.py"
+
+'''Task Kill ID'''
+#taskkill /F /PID 1111

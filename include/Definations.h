@@ -10,9 +10,9 @@
 
 #define LEEJOBJ(Obj,Key,value)  Obj[Key]=value;
 
-#define LEEMAYA_PYTHONPATH "C:/Program Files/Autodesk/Maya2022/bin/"
+#define LEEMAYAENV "C:/Program Files/Autodesk/Maya2022/bin/"
 
-#define LEEBLENDER_PYTHONPATH "C:/Program Files/Blender Foundation/Blender 3.4/3.4/python/bin"
+#define LEEBLENDERENV "C:/Program Files/Blender Foundation/Blender 3.4/3.4/python/bin/"
 
 #define LEESCRIPTPATH  QString("%1/Scripts/").arg(QDir::currentPath()).toUtf8()
 
@@ -20,5 +20,6 @@
 
 #define LEEBLENDER_ULTILS "BlenderCommandPort"
 
+#define LEECMDS QString("import BlenderCommandPort as LeeCmds\nLeeCmds.%1")
 
 #endif // DEFINATIONS_H

@@ -475,6 +475,10 @@ void LeePickerItem::OnAppConnectChanged(bool isChecked)
 
 void LeePickerItem::OnTestBlenderCmds()
 {
+
+    MainWindow* LeePicker=MainWindow::Instance();
+
+
     const char* pfile="C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/connectPort.py";
 
     QFile pyfile(pfile);
@@ -485,28 +489,11 @@ void LeePickerItem::OnTestBlenderCmds()
     }
     //PyExecString(data.constData());
 
-    QProcess* process = new QProcess(this);
+    QString Cmd = "import BlenderCommandPort\nPickerClearSelection()";
+    PythonProcessCmd(this,Maya,Cmd);
 
-    QString workingDir("C:/Users/leepl/Documents/GitHub/LeePickerX/build/Debug/Scripts/BlenderCommandPort.py");
 
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("PYTHONPATH", "C:\\Python27\\Lib");
-    process->setWorkingDirectory(workingDir);
-
-    QStringList params;
-
-    params << workingDir;
-    // tasklist.start(
-    //     "tasklist",
-    //     QStringList() << "/NH"
-    //                   << "/FO" << "CSV"
-    //                   << "/FI" << QString("IMAGENAME eq %1").arg(process));
-
-    process->start("python",params);
-
-    process->waitForFinished(-1);
-
-    qDebug() << process->readAllStandardOutput() << Qt::endl;
+    qDebug() << data << Qt::endl;
 }
 
 void LeePickerItem::OnTestMayaCmds()
