@@ -623,8 +623,8 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
                             "PickerSelect" :
                             "PickerDeSelect";
     auto Args = pro.toStdString();
-    // QString Cmd = QString("PickerSelect(%1)").arg(pro);
-    // PythonProcessCmd(this,interactApp,Cmd);
+    QString Cmd = QString("PickerSelect(%1)").arg(pro);
+    PythonProcessCmd(this,interactApp,Cmd);
 
 }
 

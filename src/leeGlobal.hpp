@@ -269,7 +269,7 @@ static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString
 
     QStringList params;
 
-    params << "-c" << BLENDERCMDS.arg(inCmd);
+    params << "-c" << AppCmd.arg(inCmd);
     process->start(pyApp,params);
 
     // process->start(
@@ -283,7 +283,7 @@ static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString
 
     qDebug() << process->readAllStandardOutput() << Qt::endl;
     qDebug() << process->readAllStandardError() << Qt::endl;
-    qDebug() << BLENDERCMDS.arg(inCmd) << Qt::endl;
+    qDebug() << AppCmd.arg(inCmd) << Qt::endl;
 
     process->close();
 }

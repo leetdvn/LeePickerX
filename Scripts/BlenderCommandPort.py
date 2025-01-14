@@ -9,7 +9,7 @@ def send_command(command=str):
     client.connect(ADDR)
     message = command
     client.send(str.encode(message))
-    data = client.recvfrom(1024)  # receive the result info
+    data = client.recv(1024)  # receive the result info
     client.close()
     return data.decode()
 
