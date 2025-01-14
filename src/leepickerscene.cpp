@@ -96,13 +96,10 @@ void LeePickerScene::ClearSelectionProcess()
     QString str = app == Maya ? "maya" : "blender";
     if(Items.length() <= 0 && LeePicker->IsAppAvalible()){
         //command
-        QString Cmd = QString("PickerClearSelection('%1')").arg(str);
+        QString Cmd = QString("PickerClearSelection()");
         PythonProcessCmd(this,app,Cmd);
 
-        qDebug() << Cmd << Qt::endl;
-
     }
-
 }
 
 

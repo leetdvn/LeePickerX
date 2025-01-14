@@ -44,7 +44,5 @@ def PickerDeSelect(inObjects):
     send_command(command) 
 
 def PickerClearSelection():
-    if not PortIsOpen(): return
     command = str("cmds.select(cl=1)")
-    print("Maya")
     send_command(command)  

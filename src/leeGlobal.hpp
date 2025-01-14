@@ -182,6 +182,7 @@ static bool isRunning(const QString &process) {
     return output.startsWith(QString("\"%1").arg(process));
 }
 
+
 template<typename QEnum>
 static QString QtEnumToString(const QEnum value)
 {
@@ -202,21 +203,64 @@ static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inVa
 
 }
 
+
+//file dialog
 static QString fileDialog(QWidget* main)
 {
     QString filter = "LeePicker (*.Leetdvn)";
     return QFileDialog::getOpenFileName(main, ("Lee Picker file Open Window"), OLDFOLDER, filter, &filter);
 }
 
+static QString GetAppCommand(const SoftWareApp inApp){
+    switch (inApp) {
+        LEECASE(Maya,MAYACMDS)
+        LEECASE(Blender,BLENDERCMDS)
+        LEECASE(NONE,QString())
+    }
+    return NULL;
+}
 
+static const char* GetAppEnv(const SoftWareApp inApp){
+    switch (inApp) {
+        LEECASE(Maya,LEEMAYAENV)
+        LEECASE(Blender,LEEBLENDERENV)
+        LEECASE(NONE,NULL)
+    }
+    return NULL;
+}
+
+static const char* GetAppExec(const SoftWareApp inApp){
+    switch (inApp) {
+        LEECASE(Maya,"mayapy")
+        LEECASE(Blender,"python")
+        LEECASE(NONE,NULL)
+    }
+    return NULL;
+}
+
+static bool isRunning(const SoftWareApp inApp){
+    switch (inApp) {
+        LEECASE(Maya,isRunning("maya.exe"))
+        LEECASE(Blender,isRunning("blender.exe"))
+        LEECASE(NONE,false)
+    }
+    return false;
+}
+
+///python command process app
 static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString inCmd)
 {
     QProcess* process = new QProcess(obj);
     QString workingDir(QDir::currentPath() + "/Scripts/");
     qDebug() << "path" << workingDir << Qt::endl;
+
+    ///get path and app name from identity
+    const char* AppEnv = GetAppEnv(inApp);
+    const char* pyApp = GetAppExec(inApp);
+    QString AppCmd = GetAppCommand(inApp);
+
+    //init environment
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    const char* AppEnv = inApp == Maya ? LEEMAYAENV : LEEBLENDERENV;
-    const char* pyApp = inApp == Maya ? "mayapy.exe" : "python";
     env.insert("PYTHONPATH",AppEnv);
 
     process->setWorkingDirectory(workingDir);
@@ -225,8 +269,7 @@ static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString
 
     QStringList params;
 
-    params << "-c" << LEECMDS.arg(inCmd);
-
+    params << "-c" << BLENDERCMDS.arg(inCmd);
     process->start(pyApp,params);
 
     // process->start(
@@ -235,13 +278,12 @@ static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString
     //                   << LEECMDS.arg(inCmd));
 
     //process->start("python",params);
-
     process->waitForFinished(-1);
+    qDebug() << "App " << AppEnv << "app2 " << pyApp <<Qt::endl;
 
-    qDebug() << workingDir << Qt::endl;
     qDebug() << process->readAllStandardOutput() << Qt::endl;
     qDebug() << process->readAllStandardError() << Qt::endl;
-    qDebug() << pyApp << Qt::endl;
+    qDebug() << BLENDERCMDS.arg(inCmd) << Qt::endl;
 
     process->close();
 }

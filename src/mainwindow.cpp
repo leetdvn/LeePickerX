@@ -523,6 +523,7 @@ void MainWindow::InitSocket(QHostAddress inhost, quint16 inPort)
     }
     qDebug() << "Socket...init.." << Qt::endl;
 
+
 }
 
 void MainWindow::OnRecentFile()
@@ -552,13 +553,13 @@ void MainWindow::OnSocketConnected()
     QTcpSocket* Socket = qobject_cast<QTcpSocket*>(sender());
     if(Socket==nullptr) return ;
 
-    Socket->localPort()==bPort ?
+    RemoteApp==Blender ?
             BlenderHasConnected=true :
             MayaHasConnected = true;
 
     qDebug() << "Maya"  << MayaHasConnected
              << "Blender " << BlenderHasConnected
-             << "Port" << Socket->localPort() <<   Qt::endl;
+             << "Port" << Socket->peerPort() <<   Qt::endl;
 
     //init Connections
     QTextStream T(Socket);
@@ -569,7 +570,6 @@ void MainWindow::OnSocketConnected()
     QString cmd = RemoteApp == Maya ? "import MayaCommandPort" : "import BlenderCommandPort";
     cmd += "\nprint(\"print import completed.\")";
     T << cmd;
-
 
     QString msg = RemoteApp == Maya ? QString("   Maya Connected") : QString("   Blender Connected");
     AddToLog(Completed,msg,true);
@@ -588,6 +588,8 @@ void MainWindow::OnSocketDisconneted()
     qDebug()<< "Maya"  << MayaHasConnected
             << "Blender " << BlenderHasConnected
             << "Port" << Socket->localPort() <<   Qt::endl;
+
+
 
 }
 

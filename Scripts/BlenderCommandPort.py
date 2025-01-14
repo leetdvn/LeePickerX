@@ -9,21 +9,27 @@ def send_command(command=str):
     client.connect(ADDR)
     message = command
     client.send(str.encode(message))
-    data = client.recv(1024)  # receive the result info
+    data = client.recvfrom(1024)  # receive the result info
     client.close()
     return data.decode()
 
 def PortIsOpen():
-    s =  socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = s.connect_ex(ADDR)
-    s.close()
-    if result: return False
-    else: return True
+    return True
+    # try:
+    #     client.send("print('abc')")
+    #     return True
+    # except:
+    #     return False
     
     
 def PickerSelect(inObjects):
     if not PortIsOpen(): return
-    command = str("cmds.select({},r=1)").format(inObjects)
+    command =str('''
+    for o in bpy.data.objects:
+        if o.name in {}:
+            o.select_set(True)
+    ''').format(inObjects)
+    #command = str("cmds.select({},r=1)").format(inObjects)
     send_command(command)
 
 def PickerAddSelect(inObjects):
@@ -43,14 +49,7 @@ def PickerDeSelect(inObjects):
     print(command)
     send_command(command) 
 
-def PickerClearSelection(inApp=str):
-    global PORT
-    cmd =''
-    if str(inApp).startswith("blender"):
-        PORT=5000
-        cmd='''bpy.ops.object.select_all(action='DESELECT')'''
-    else:
-        PORT=54322
-        cmd="cmds.select(cl=1)"
-    print(cmd,PORT)
+def PickerClearSelection():
+
+    cmd='''bpy.ops.object.select_all(action='DESELECT')'''
     return send_command(cmd)

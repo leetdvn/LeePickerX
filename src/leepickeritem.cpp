@@ -556,17 +556,17 @@ void LeePickerItem::AssignMayaSelection()
     MainWindow* LeePicker=MainWindow::Instance();
 
     SoftWareApp interactApp = LeePicker->GetInteractionApp();
+    const char* appUltils = interactApp == Maya ? "MayaCommandPort" : "BlenderCommandPort";
 
-    const char* app = interactApp == Maya ? "maya.exe" : "blender.exe";
-    const char* appUltils = interactApp == Maya ? LEEMAYA_ULTILS : LEEBLENDER_ULTILS;
     //Check Maya Running
-    if(isRunning(app) || interactApp==NONE){
+    if(isRunning(interactApp)){
 
         //check Port Commend
         bool result{};
-        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(LEESCRIPTPATH,appUltils,funcName);});
-        future.waitForFinished();
+        // auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(LEESCRIPTPATH,appUltils,funcName);});
+        // future.waitForFinished();
 
+        result = interactApp == Maya ? LeePicker->IsConnectedWithMaya() : LeePicker->isConnectedWIthBlender();
         if(!result){
             LeePicker->AddToLog(Error,"Error :  Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";",true);
             return;
@@ -577,8 +577,8 @@ void LeePickerItem::AssignMayaSelection()
         ///Init Maya Command
         const char* Cmd = interactApp == Maya ?
                                                 "cmds.ls(sl=1)" :
-                                                "import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]";
-        QString selections = PyExecResultString(LEESCRIPTPATH,LEEMAYA_ULTILS,funcName,Cmd);
+                                                "import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]\nprint(selected_obj)";
+        QString selections = PyExecResultString(LEESCRIPTPATH,appUltils,funcName,Cmd);
 
         qDebug() << selections << Qt::endl;
         //save value to assign
@@ -608,9 +608,8 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 
     SoftWareApp interactApp = GetInteractApp();
 
-    QString AppName = interactApp == Maya ? "maya.exe" : "blender.exe";
 
-    if(!isRunning(AppName)){
+    if(!isRunning(interactApp)){
         qDebug() << "App Not Running";
         return;
     }
@@ -624,7 +623,9 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
                             "PickerSelect" :
                             "PickerDeSelect";
     auto Args = pro.toStdString();
-    PyExecFuncAsVoid(funcName,Args.c_str());
+    // QString Cmd = QString("PickerSelect(%1)").arg(pro);
+    // PythonProcessCmd(this,interactApp,Cmd);
+
 }
 
 

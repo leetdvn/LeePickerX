@@ -171,7 +171,7 @@ static void PyExecFuncAsVoid(const char* inFunc,const char* Args=NULL)
     PyRun_SimpleString("import sys\n");
     PyRun_SimpleString(cstr_cmd);
     // import module(predication.py), it's a python script file name
-    pModule = PyImport_ImportModule(LEEMAYA_ULTILS);
+    pModule = PyImport_ImportModule("MayaCommandPort");
 
     if(pModule !=NULL){
         pFunc = PyObject_GetAttrString(pModule, inFunc);
