@@ -442,7 +442,9 @@ void LeePickerItem::OnAssignSelection()
 
     switch (LeePicker->GetInteractionApp()) {
         case Maya: return AssignMayaSelection();
-        case Blender:{return;}
+        case Blender:{
+            qDebug() << "Blender..." << Qt::endl;
+            return AssignMayaSelection();}
         case NONE:
             break;
     }
@@ -485,23 +487,26 @@ void LeePickerItem::OnTestBlenderCmds()
 
     QProcess* process = new QProcess(this);
 
-    process->setWorkingDirectory(LEEPYTHONPATH);
+    QString workingDir("C:/Users/leepl/Documents/GitHub/LeePickerX/build/Debug/Scripts/BlenderCommandPort.py");
 
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    env.insert("PYTHONPATH", "C:\\Python27\\Lib");
+    process->setWorkingDirectory(workingDir);
+
+    QStringList params;
+
+    params << workingDir;
     // tasklist.start(
     //     "tasklist",
     //     QStringList() << "/NH"
     //                   << "/FO" << "CSV"
     //                   << "/FI" << QString("IMAGENAME eq %1").arg(process));
 
-    process->start(
-        "mayapy.exe",
-        QStringList() << "-i"
-                      << "-c" << QString("%1").arg(data)
-        );
+    process->start("python",params);
 
-    process->waitForFinished();
+    process->waitForFinished(-1);
 
-    qDebug() << data << Qt::endl;
+    qDebug() << process->readAllStandardOutput() << Qt::endl;
 }
 
 void LeePickerItem::OnTestMayaCmds()
@@ -565,12 +570,14 @@ void LeePickerItem::AssignMayaSelection()
 
     SoftWareApp interactApp = LeePicker->GetInteractionApp();
 
+    const char* app = interactApp == Maya ? "maya.exe" : "blender.exe";
+    const char* appUltils = interactApp == Maya ? LEEMAYA_ULTILS : LEEBLENDER_ULTILS;
     //Check Maya Running
-    if(isRunning("maya.exe")){
+    if(isRunning(app) || interactApp==NONE){
 
         //check Port Commend
         bool result{};
-        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(LEESCRIPTPATH,LEEMAYA_ULTILS,funcName);});
+        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(LEESCRIPTPATH,appUltils,funcName);});
         future.waitForFinished();
 
         if(!result){
@@ -581,8 +588,10 @@ void LeePickerItem::AssignMayaSelection()
         funcName = "send_command";
 
         ///Init Maya Command
-        const char* MayaPyCmd = "cmds.ls(sl=1)";
-        QString selections = PyExecResultString(LEESCRIPTPATH,LEEMAYA_ULTILS,funcName,MayaPyCmd);
+        const char* Cmd = interactApp == Maya ?
+                                                "cmds.ls(sl=1)" :
+                                                "import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]";
+        QString selections = PyExecResultString(LEESCRIPTPATH,LEEMAYA_ULTILS,funcName,Cmd);
 
         qDebug() << selections << Qt::endl;
         //save value to assign

@@ -45,10 +45,5 @@ def PickerDeSelect(inObjects):
 
 def PickerClearSelection():
     cmd = '''bpy.ops.object.select_all(action='DESELECT')'''
+    print("blender..")
     return send_command(cmd)
-
-
-cmd = '''
-bpy.ops.object.select_all(action='DESELECT')
-'''
-print(PickerClearSelection())
