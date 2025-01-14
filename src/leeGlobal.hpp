@@ -189,10 +189,10 @@ static QString QtEnumToString (const QEnum value)
     return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value)).c_str();
 }
 
-static int QtStringToEnum(QString inEnumStr){
-    const char* str = inEnumStr.toUtf8();
-    return QMetaType::type(str);
-}
+// static int QtStringToEnum(QString inEnumStr){
+//     const char* str = inEnumStr.toUtf8();
+//     return QMetaType::type(str);
+// }
 
 static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inValue)
 {
@@ -206,7 +206,7 @@ static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inVa
 static QString fileDialog(QWidget* main)
 {
     QString filter = "LeePicker (*.Leetdvn)";
-    return QFileDialog::getOpenFileName(main, ("lee Picker file Open Window"), OLDFOLDER, filter, &filter);
+    return QFileDialog::getOpenFileName(main, ("Lee Picker file Open Window"), OLDFOLDER, filter, &filter);
 }
 
 

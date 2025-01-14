@@ -1,6 +1,8 @@
 #ifndef DEFINATIONS_H
 #define DEFINATIONS_H
 
+#include <QDir>
+
 #define FOLDINGSTART {
 #define FOLDINGEND }
 
@@ -10,8 +12,11 @@
 
 #define LEEPYTHONPATH "C:/Program Files/Autodesk/Maya2022/bin/"
 
-#define LEESCRIPTPATH "./Scripts/"
+#define LEESCRIPTPATH  QString("%1/Scripts/").arg(QDir::currentPath()).toUtf8()
 
-#define LEEPYTHON_ULTILS "testCommandPort"
+#define LEEMAYA_ULTILS "MayaCommandPort"
+
+#define LEEBLENDER_ULTILS "BlenderCommandPort"
+
 
 #endif // DEFINATIONS_H

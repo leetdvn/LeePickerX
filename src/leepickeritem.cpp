@@ -114,7 +114,7 @@ QJsonObject LeePickerItem::toJsonObject()
     InitVariant();
     QJsonObject obj;
     int count=0;
-    for(auto iv : ItemVaribles){
+    for(auto& iv : ItemVaribles){
         if(count >= VItems.count()) break;
         if(VItems[count].isNull() || !VItems[count].isValid()) continue;
         QString str = VItems[count].toString();
@@ -207,7 +207,7 @@ bool LeePickerItem::IsAssigned()
 {
     QVariant selectV = property("select");
 
-    return selectV.isNull() || !selectV.isValid() ? false : true;
+    return selectV.toString().isEmpty() ? false : true;
 }
 
 void LeePickerItem::SetFlip(bool isVertical)
@@ -302,9 +302,7 @@ void LeePickerItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *e)
 
 void LeePickerItem::InitItemMenus(const QPoint inPosi)
 {
-    int max = scale() * 100;
-    if (max > 1000)
-        max = 1000;
+
     iItemMenus = new QMenu();
 
     QString pinText = property("Pin").toBool() ? "UnPin Item" : "Pin Item";
@@ -439,6 +437,9 @@ void LeePickerItem::OnAssignSelection()
 {
     MainWindow* LeePicker=MainWindow::Instance();
 
+    // if(LeePicker->IsAppAvalible())
+    //     LeePicker->ReInitSocket(LeePicker->GetInteractionApp());
+
     switch (LeePicker->GetInteractionApp()) {
         case Maya: return AssignMayaSelection();
         case Blender:{return;}
@@ -506,7 +507,6 @@ void LeePickerItem::OnTestBlenderCmds()
 void LeePickerItem::OnTestMayaCmds()
 {
     SoftWareApp interactApp = GetInteractApp();
-    bool AppC = interactApp == Maya ? false : true;
 
     switch (interactApp) {
     case Maya: return AssignMayaSelection();
@@ -570,7 +570,7 @@ void LeePickerItem::AssignMayaSelection()
 
         //check Port Commend
         bool result{};
-        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(LEESCRIPTPATH,LEEPYTHON_ULTILS,funcName);});
+        auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(LEESCRIPTPATH,LEEMAYA_ULTILS,funcName);});
         future.waitForFinished();
 
         if(!result){
@@ -582,8 +582,9 @@ void LeePickerItem::AssignMayaSelection()
 
         ///Init Maya Command
         const char* MayaPyCmd = "cmds.ls(sl=1)";
-        QString selections = PyExecResultString(LEESCRIPTPATH,LEEPYTHON_ULTILS,funcName,MayaPyCmd);
+        QString selections = PyExecResultString(LEESCRIPTPATH,LEEMAYA_ULTILS,funcName,MayaPyCmd);
 
+        qDebug() << selections << Qt::endl;
         //save value to assign
         if(!selections.isEmpty() && !selections.startsWith("[]"))
             SaveAssignObject(this,Maya,selections);

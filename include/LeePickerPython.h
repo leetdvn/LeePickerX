@@ -48,7 +48,7 @@ static void cleanup(const QString text) {
 static QString PyExecResultString(const char* inScriptFolder,const char* inFileName,const char* inFunc,const char* inCmd=NULL)
 {
     if (!QDir(inScriptFolder).exists()){
-        qDebug() << "Folder Does not exists" << Qt::endl;
+        qDebug() << "Folder Does not exists" << inScriptFolder <<  Qt::endl;
         return QString();
     }
 
@@ -60,7 +60,9 @@ static QString PyExecResultString(const char* inScriptFolder,const char* inFileN
     // set system path to find correct python script
     //C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/
     QString rawpath = QString("sys.path.append(\'%1\')").arg(inScriptFolder);
-    const char* chdir_cmd = rawpath.toStdString().c_str();
+
+    qDebug() << "path : " << rawpath << Qt::endl;
+    const char* chdir_cmd = rawpath.toUtf8();
 
     const char* cstr_cmd = chdir_cmd;
     // use sys to locate the script
@@ -157,7 +159,6 @@ static void PyExecFuncAsVoid(const char* inFunc,const char* Args=NULL)
 
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs=NULL, *pValue,*pResult;
-    char const *str="";
     // Initilaize Python
     Py_Initialize();
     // set system path to find correct python script
@@ -170,7 +171,7 @@ static void PyExecFuncAsVoid(const char* inFunc,const char* Args=NULL)
     PyRun_SimpleString("import sys\n");
     PyRun_SimpleString(cstr_cmd);
     // import module(predication.py), it's a python script file name
-    pModule = PyImport_ImportModule(LEEPYTHON_ULTILS);
+    pModule = PyImport_ImportModule(LEEMAYA_ULTILS);
 
     if(pModule !=NULL){
         pFunc = PyObject_GetAttrString(pModule, inFunc);

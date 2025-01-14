@@ -20,6 +20,8 @@ class MainWindow : public QMainWindow , public Singleton<MainWindow>
 {
     Q_OBJECT
 
+    const quint16 mPort =54322;
+    const quint16 bPort =5000;
 public:
     explicit  MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -40,6 +42,8 @@ public:
     bool IsConnectedWithMaya(){return MayaHasConnected;}
 
     bool isConnectedWIthBlender(){return BlenderHasConnected;}
+
+    void ReInitSocket(const SoftWareApp inApp);
 
 signals:
 
@@ -93,6 +97,7 @@ private:
 
     void InitSocket(QHostAddress inhost,quint16 inPort);
 
+    ///
 
 private slots:
     ///Connection Slot

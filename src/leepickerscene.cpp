@@ -93,13 +93,23 @@ void LeePickerScene::OnSelectionChanged()
     MainWindow* LeePicker=MainWindow::Instance();
 
     QList<LeePickerItem*> Items = GetSelectedItems();
-    if(!LeePicker->IsAppAvalible() || Items.length() <= 0) return ;
-
-    if(LeePicker->IsAppAvalible())
+    if(Items.length() <= 0)
     {
-        const char* funcName = "PickerClearSelection";
-        PyExecFuncAsVoid(funcName);
-        qDebug() << "selection Changed." << Qt::endl;
+        if(LeePicker->IsAppAvalible()){
+
+            ///Test Maya Only
+            const char* funcName = "PickerClearSelection";
+            PyExecFuncAsVoid(funcName);
+            qDebug() << "selection Changed." << Qt::endl;
+            return ;
+        }
     }
+
+    // if(Items.)
+    // {
+    //     const char* funcName = "PickerClearSelection";
+    //     PyExecFuncAsVoid(funcName);
+    //     qDebug() << "selection Changed." << Qt::endl;
+    // }
 }
 

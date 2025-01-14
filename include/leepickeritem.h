@@ -44,6 +44,7 @@ class LeePickerItem : public QGraphicsObject
     Q_PROPERTY(QString iColorStr READ LeeColor WRITE SetItemColor NOTIFY iColorChanged FINAL)
     Q_PROPERTY(int itemId READ Id WRITE SetItemId NOTIFY IdChanged FINAL)
     Q_PROPERTY(bool isFlipHorizontal READ isHorizontal WRITE SetHorizontal NOTIFY HorizontalChanged FINAL)
+    Q_PROPERTY(bool isFlipVertical READ isVertial WRITE SetVertical NOTIFY FlipVerticalChanged FINAL)
 public:
     LeePickerItem(QString itemName = NULL, QString Image = nullptr, int objID = -1 ,QRectF inRectF = QRectF(0, 0, 80, 80));
     ~LeePickerItem(){deleteLater();}
@@ -56,7 +57,6 @@ public:
     void SetImagePath(const QString infile);
 
     //Read Property
-
     QString LeeImagePath(){return imgfile;}
     QString LeeDisplayName(){return DisplayName;}
     bool LeePined() {return isPined;}
@@ -66,8 +66,13 @@ public:
 
     bool isHorizontal(){return isFlipHorizontal;}
     bool isVertial() {return isFlipVertical;}
+    double PosX(){return pos().x();}
+    double PosY(){return pos().y();}
 
+
+    //WRITE
     void SetHorizontal(bool isHz){isFlipHorizontal=isHz;}
+    void SetVertical(bool isHz){isFlipVertical=isHz;}
 
     void SetItemName(const QString inItemName);
 
@@ -91,7 +96,6 @@ public:
     //Set Flip
     void SetFlip(bool isVertial);
 
-    void extracted(QJsonObject &obj, int &count);
     QJsonObject toJsonObject();
 
 signals:
@@ -102,6 +106,7 @@ signals:
     void iColorChanged(const QString& newName);//{qDebug() << "Color changed";}
     void IdChanged(const int newId);
     void HorizontalChanged(const bool newHoz);
+    void FlipVerticalChanged(const bool isVertical);
 
 protected:
 
