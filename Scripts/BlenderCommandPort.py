@@ -35,13 +35,7 @@ def PickerAddSelect(inObjects):
     send_command(command)    
 
 def PickerDeSelect(inObjects):
-    command =str('''
-    try : bpy.ops.object.mode_set(mode = "OBJECT")
-    except : pass
-    for obj in inObjects:
-        if obj in inObjects:
-            obj.select_set(True)
-    ''').format(inObjects)
+    command =str('''import bpy\nfor o in bpy.data.objects:\n\tif o.name in {}:\n\t\to.select_set(False)''').format(inObjects)
     print(command)
     send_command(command) 
 

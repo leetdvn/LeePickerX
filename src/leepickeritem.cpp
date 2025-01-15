@@ -617,16 +617,13 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
     auto pro = property("select").toString();
     if(pro.isEmpty() || pro.isNull()) return;
 
-    const char* funcName = isSelect ?
-                            isAdd ?
-                            "PickerAddSelect" :
-                            "PickerSelect" :
-                            "PickerDeSelect";
-    auto Args = pro.toStdString();
-    QString Cmd = QString("PickerSelect(%1)").arg(pro);
-    PythonProcessCmd(this,interactApp,Cmd);
 
-    qDebug() << Cmd << Qt::endl;
+    auto Args = pro.toStdString();
+    QString Cmds = QString("PickerSelect(\"%1\")").arg(pro);
+    PythonProcessCmd(this,interactApp,Cmds);
+
+
+    qDebug() << Cmds << Qt::endl;
 }
 
 

@@ -248,12 +248,12 @@ static bool isRunning(const SoftWareApp inApp){
 }
 
 ///python command process app
-static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString inCmd)
+static qint64 PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString inCmd)
 {
     QProcess* process = new QProcess(obj);
     QString workingDir(QDir::currentPath() + "/Scripts/");
-    qDebug() << "path" << workingDir << Qt::endl;
 
+    qint64 ProcessID;
     ///get path and app name from identity
     const char* AppEnv = GetAppEnv(inApp);
     const char* pyApp = GetAppExec(inApp);
@@ -270,22 +270,17 @@ static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString
     QStringList params;
 
     params << "-c" << AppCmd.arg(inCmd);
-    process->execute(pyApp,QStringList() << "-c" << "import BlenderCommandPort as LeeCmds");
-    process->start(pyApp,params);
+    process->startDetached(pyApp,params,workingDir,&ProcessID);
 
-    // process->start(
-    //     pyApp,
-    //     QStringList() << "-c"
-    //                   << LEECMDS.arg(inCmd));
-
-    //process->start("python",params);
     process->waitForFinished(-1);
-    qDebug() << "App " << AppEnv << "app2 " << pyApp <<Qt::endl;
+    qDebug() << "App " << AppEnv << "app2 " << ProcessID <<Qt::endl;
 
     qDebug() << process->readAllStandardOutput() << Qt::endl;
     qDebug() << process->readAllStandardError() << Qt::endl;
     qDebug() << AppCmd.arg(inCmd) << Qt::endl;
 
     process->close();
+    //QProcess::execute(QString("taskkill /f /pid %1").arg(ProcessID));
+    return ProcessID;
 }
 #endif
