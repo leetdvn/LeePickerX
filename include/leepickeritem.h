@@ -8,6 +8,7 @@
 #include <leeGlobal.hpp>
 #include <QJsonObject>
 #include <QProcess>
+#include <leeSendCommands.h>
 
 
 QT_BEGIN_NAMESPACE

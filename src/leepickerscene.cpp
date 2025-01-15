@@ -90,50 +90,33 @@ QJsonObject LeePickerScene::GetSceneData(const QString &inViewName)
 void LeePickerScene::ClearSelectionProcess()
 {
     MainWindow* LeePicker=MainWindow::Instance();
+    bool isAvalible = LeePicker->IsAppAvalible();
+
+    if(!isAvalible) {
+        LeePicker->AddToLog(Error,"Maya is Not Runing..");
+        return;
+    }
+
     QList<LeePickerItem*> Items = GetSelectedItems();
 
     SoftWareApp app = LeePicker->GetInteractionApp();
     QString str = app == Maya ? "maya" : "blender";
-    if(Items.length() <= 0 && LeePicker->IsAppAvalible()){
 
-        QString Cmds = "PickerSelect(\"['Cube','Light']\")";
 
-        PythonProcessCmd(this,app,Cmds);
+    if(Items.length() <= 0 && isAvalible){
 
-        qDebug() << "Commnad " << Cmds << Qt::endl;
-        // QPointer<QTcpSocket> socket = LeePicker->GetTcpSocket();
+        QString Cmds = "PickerClearSelection()";//"PickerSelect(\"['Cube','Light']\")";
 
-        // if(!socket->isValid()) return;
+        QPointer<LeeSendCommand> process = new LeeSendCommand(app,Cmds);
+        process->SendCommand();
+        // PythonProcessCmd(this,app,Cmds);
 
-        // if(QTcpSocket::ConnectedState == socket->state()){
-        //     socket->disconnect();
-
-        //     // QTextStream T(socket);
-        //     // T << "import sys" <<"\n" << "sys.path.append('C:/Users/thang/Documents/GitHub/LeePickerX/build/Debug/Scripts/')" << "\n";
-        //     // T.flush();
-        //     // T << "import BlenderCommandPort as LeeCmds" << "\n";
-        //     // T.flush();
-        //     // T << "LeeCmds.PickerClearSelection()" << "\n";
-        //     // T.flush();
-        //     //T << "import bpy" << "\n" << "bpy.ops.object.select_all(action='DESELECT')";
-
-        //     QString operation = socket->readLine();
-        //     // T << QString("sys.append('%1')").arg(LEESCRIPTPATH);
-        //     // T << BLENDERCMDS.arg("PickerClearSelection()");
-
-        //     qDebug() << "send" << operation <<  Cmds << Qt::endl;
-        // }
-        // else{
-
-        //     qDebug() << "Not Connected" << socket->state() << socket->peerPort() <<  Qt::endl;
-        // }
+        // qDebug() << "Commnad " << Cmds << Qt::endl;
     }
 }
 
 
-void LeePickerScene::OnSelectionChanged()
-{
-
+void LeePickerScene::OnSelectionChanged(){
     ClearSelectionProcess();
 }
 

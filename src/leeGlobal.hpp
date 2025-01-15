@@ -248,39 +248,40 @@ static bool isRunning(const SoftWareApp inApp){
 }
 
 ///python command process app
-static qint64 PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString inCmd)
-{
-    QProcess* process = new QProcess(obj);
-    QString workingDir(QDir::currentPath() + "/Scripts/");
+// static qint64 PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString inCmd)
+// {
+//     QProcess* process = new QProcess(obj);
+//     QString workingDir(QDir::currentPath() + "/Scripts/");
 
-    qint64 ProcessID;
-    ///get path and app name from identity
-    const char* AppEnv = GetAppEnv(inApp);
-    const char* pyApp = GetAppExec(inApp);
-    QString AppCmd = GetAppCommand(inApp);
+//     qint64 ProcessID;
+//     ///get path and app name from identity
+//     const char* AppEnv = GetAppEnv(inApp);
+//     const char* pyApp = GetAppExec(inApp);
+//     QString AppCmd = GetAppCommand(inApp);
 
-    //init environment
-    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("PYTHONPATH",AppEnv);
+//     //init environment
+//     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+//     env.insert("PYTHONPATH",AppEnv);
 
-    process->setWorkingDirectory(workingDir);
+//     process->setWorkingDirectory(workingDir);
 
-    process->setProcessEnvironment(env);
+//     process->setProcessEnvironment(env);
 
-    QStringList params;
+//     QStringList params;
 
-    params << "-c" << AppCmd.arg(inCmd);
-    process->startDetached(pyApp,params,workingDir,&ProcessID);
+//     params << "-c" << AppCmd.arg(inCmd);
+//     process->startDetached(pyApp,params,workingDir,&ProcessID);
 
-    process->waitForFinished(-1);
-    qDebug() << "App " << AppEnv << "app2 " << ProcessID <<Qt::endl;
+//     process->waitForFinished(-1);
+//     qDebug() << "App " << AppEnv << "app2 " << ProcessID <<Qt::endl;
 
-    qDebug() << process->readAllStandardOutput() << Qt::endl;
-    qDebug() << process->readAllStandardError() << Qt::endl;
-    qDebug() << AppCmd.arg(inCmd) << Qt::endl;
+//     qDebug() << process->readAllStandardOutput() << Qt::endl;
+//     qDebug() << process->error() << Qt::endl;
+//     qDebug() << AppCmd.arg(inCmd) << Qt::endl;
 
-    process->close();
-    //QProcess::execute(QString("taskkill /f /pid %1").arg(ProcessID));
-    return ProcessID;
-}
+//     process->close();
+//     //QProcess::execute(QString("taskkill /f /pid %1").arg(ProcessID));
+//     return ProcessID;
+// }
+
 #endif

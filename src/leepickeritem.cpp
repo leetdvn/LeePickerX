@@ -490,7 +490,9 @@ void LeePickerItem::OnTestBlenderCmds()
     //PyExecString(data.constData());
 
     QString Cmd = "import BlenderCommandPort\nPickerClearSelection()";
-    PythonProcessCmd(this,Maya,Cmd);
+    //PythonProcessCmd(this,Maya,Cmd);
+    QPointer<LeeSendCommand> process = new LeeSendCommand(Blender,Cmd);
+    process->SendCommand();
 
 
     qDebug() << data << Qt::endl;
@@ -620,7 +622,9 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 
     auto Args = pro.toStdString();
     QString Cmds = QString("PickerSelect(\"%1\")").arg(pro);
-    PythonProcessCmd(this,interactApp,Cmds);
+    QPointer<LeeSendCommand> process = new LeeSendCommand(interactApp,Cmds);
+    process->SendCommand();
+
 
 
     qDebug() << Cmds << Qt::endl;
