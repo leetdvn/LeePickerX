@@ -1,7 +1,7 @@
 #include <leeSendCommands.h>
 
 LeeSendCommand::LeeSendCommand(const SoftWareApp inApp, const QString Cmds)
-    :iProcess(new QProcess)
+    :iProcess(new QProcess(this))
     ,iApp(inApp)
     ,ICommand(Cmds)
 {
@@ -79,5 +79,5 @@ void LeeSendCommand::OnThreadFinished()
 {
     qDebug() << "Process : Thread Finished"  << Qt::endl;
 
-    //deleteLater();
+    deleteLater();
 }
