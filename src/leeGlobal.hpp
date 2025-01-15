@@ -270,6 +270,7 @@ static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString
     QStringList params;
 
     params << "-c" << AppCmd.arg(inCmd);
+    process->execute(pyApp,QStringList() << "-c" << "import BlenderCommandPort as LeeCmds");
     process->start(pyApp,params);
 
     // process->start(
@@ -278,7 +279,7 @@ static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString
     //                   << LEECMDS.arg(inCmd));
 
     //process->start("python",params);
-    process->waitForFinished(5);
+    process->waitForFinished(-1);
     qDebug() << "App " << AppEnv << "app2 " << pyApp <<Qt::endl;
 
     qDebug() << process->readAllStandardOutput() << Qt::endl;

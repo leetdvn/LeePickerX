@@ -35,9 +35,9 @@ MainWindow::MainWindow(QWidget *parent)
     InitializeFuns();
     RemoteApp = Maya;
     inItLog();
-    QHostAddress host("127.0.0.1");
+    // QHostAddress host("127.0.0.1");
 
-    InitSocket(host,mPort);
+    // InitSocket(host,mPort);
 
 }
 
@@ -121,8 +121,9 @@ void MainWindow::ReInitSocket(const SoftWareApp inApp)
 QPointer<QTcpSocket> MainWindow::GetTcpSocket()
 {
     //Get pointer TcpSocket
-    if(QAbstractSocket::UnconnectedState == m_pTcpSocket->state() || m_pTcpSocket->peerPort() == 0){
-        m_pTcpSocket->close();
+    if(m_pTcpSocket->state() != QAbstractSocket::ConnectedState){
+        delete m_pTcpSocket;
+        m_pTcpSocket = nullptr;
         ReInitSocket(RemoteApp);
     }
     //Get pointer TcpSocket
@@ -431,7 +432,7 @@ void MainWindow::OnConnectAppChanged(bool checkable)
     QHostAddress host("127.0.0.1");
     quint16 Port = RemoteApp == Maya ? mPort : 5000;
 
-    InitSocket(host,Port);
+    //InitSocket(host,Port);
     QString message = !checkable ? "     Remote App Maya " : "      Remote App Blender ";
     AddToLog(LogType::Log,message,true);
 }
@@ -538,9 +539,9 @@ void MainWindow::InitSocket(QHostAddress inhost, quint16 inPort)
         //connect(m_pTcpSocket,&QTcpSocket::errorOccurred,this,&MainWindow::OnConnectionError,Qt::UniqueConnection);
         connect(m_pTcpSocket,SIGNAL(connected()),SLOT(OnSocketConnected()),Qt::UniqueConnection);
         connect(m_pTcpSocket,SIGNAL(disconnected()),this,SLOT(OnSocketDisconneted()),Qt::UniqueConnection);
+        //m_pTcpSocket->waitForConnected(5);
     }
-
-
+    m_pTcpSocket->close();
 }
 
 void MainWindow::OnRecentFile()

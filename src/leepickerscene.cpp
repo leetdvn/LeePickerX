@@ -96,29 +96,37 @@ void LeePickerScene::ClearSelectionProcess()
     QString str = app == Maya ? "maya" : "blender";
     if(Items.length() <= 0 && LeePicker->IsAppAvalible()){
 
-        QPointer<QTcpSocket> socket = LeePicker->GetTcpSocket();
+        QString Cmds = "PickerSelect(\"['Cube','Light']\")";
 
-        if(!socket->isValid()) return;
+        PythonProcessCmd(this,app,Cmds);
 
-        if(QTcpSocket::ConnectingState == socket->state()){
-            socket->waitForConnected(-1);
-        }
+        qDebug() << "Commnad " << Cmds << Qt::endl;
+        // QPointer<QTcpSocket> socket = LeePicker->GetTcpSocket();
 
-        if(QTcpSocket::ConnectedState == socket->state()){
+        // if(!socket->isValid()) return;
 
-            QString workingDir = QString("import sys\nsys.path.append('%1')\n%2").arg(LEESCRIPTPATH,BLENDERCMDS.arg("PickerClearSelection()"));
-            QTextStream T(socket);
-            T << "import bpy\nbpy.ops.object.select_all(action='DESELECT')" ;
+        // if(QTcpSocket::ConnectedState == socket->state()){
+        //     socket->disconnect();
 
+        //     // QTextStream T(socket);
+        //     // T << "import sys" <<"\n" << "sys.path.append('C:/Users/thang/Documents/GitHub/LeePickerX/build/Debug/Scripts/')" << "\n";
+        //     // T.flush();
+        //     // T << "import BlenderCommandPort as LeeCmds" << "\n";
+        //     // T.flush();
+        //     // T << "LeeCmds.PickerClearSelection()" << "\n";
+        //     // T.flush();
+        //     //T << "import bpy" << "\n" << "bpy.ops.object.select_all(action='DESELECT')";
 
-            // T << QString("sys.append('%1')").arg(LEESCRIPTPATH);
-            // T << BLENDERCMDS.arg("PickerClearSelection()");
-            socket->flush();
-            qDebug() << "send" << socket->state() <<  socket->peerPort() <<  Qt::endl;
-        }
-        else{
-            qDebug() << "Not Connected" << socket->state() << socket->peerPort() <<  Qt::endl;
-        }
+        //     QString operation = socket->readLine();
+        //     // T << QString("sys.append('%1')").arg(LEESCRIPTPATH);
+        //     // T << BLENDERCMDS.arg("PickerClearSelection()");
+
+        //     qDebug() << "send" << operation <<  Cmds << Qt::endl;
+        // }
+        // else{
+
+        //     qDebug() << "Not Connected" << socket->state() << socket->peerPort() <<  Qt::endl;
+        // }
     }
 }
 
