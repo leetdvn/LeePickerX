@@ -113,19 +113,24 @@ void MainWindow::ReInitSocket(const SoftWareApp inApp)
 {
     QHostAddress host("127.0.0.1");
 
-    return InitSocket(host,inApp == Maya ? mPort : bPort);
+    InitSocket(host,inApp == Maya ? mPort : bPort);
+
+    qDebug() << m_pTcpSocket->peerPort() << "check port " << Qt::endl;
 }
 
 QPointer<QTcpSocket> MainWindow::GetTcpSocket()
 {
     //Get pointer TcpSocket
-    if(QAbstractSocket::UnconnectedState == m_pTcpSocket->state()){
+    if(QAbstractSocket::UnconnectedState == m_pTcpSocket->state() || m_pTcpSocket->peerPort() == 0){
+        m_pTcpSocket->close();
         ReInitSocket(RemoteApp);
-        return GetTcpSocket();
     }
+    //Get pointer TcpSocket
 
     return m_pTcpSocket;
 }
+
+
 
 void MainWindow::timerEvent(QTimerEvent *event)
 {
@@ -529,14 +534,11 @@ void MainWindow::InitSocket(QHostAddress inhost, quint16 inPort)
     if(!(QAbstractSocket::ConnectedState == m_pTcpSocket->state())){
         m_pTcpSocket->connectToHost(inhost,inPort,QIODevice::ReadWrite);
 
-        // connect(m_pTcpSocket,SIGNAL(readyRead()),SLOT(readSocketData()),Qt::UniqueConnection);
-        connect(m_pTcpSocket,&QTcpSocket::errorOccurred,this,&MainWindow::OnConnectionError,Qt::UniqueConnection);
-        // connect(m_pTcpSocket,SIGNAL(stateChanged(QAbstractSocket::SocketState)),SIGNAL(tcpSocketState(QAbstractSocket::SocketState)),Qt::UniqueConnection);
-
+        connect(m_pTcpSocket,SIGNAL(readyRead()),this,SLOT(OnReadSocketData()),Qt::UniqueConnection);
+        //connect(m_pTcpSocket,&QTcpSocket::errorOccurred,this,&MainWindow::OnConnectionError,Qt::UniqueConnection);
         connect(m_pTcpSocket,SIGNAL(connected()),SLOT(OnSocketConnected()),Qt::UniqueConnection);
         connect(m_pTcpSocket,SIGNAL(disconnected()),this,SLOT(OnSocketDisconneted()),Qt::UniqueConnection);
     }
-    qDebug() << "Socket...init.." << Qt::endl;
 
 
 }
@@ -621,4 +623,10 @@ void MainWindow::OnConnectionError(QAbstractSocket::SocketError inError)
         Socket->close();
     }
 
+}
+
+void MainWindow::OnReadSocketData()
+{
+    qDebug() << "Ready SocketData " << Qt::endl;
+    mIsConnected=true;
 }

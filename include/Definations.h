@@ -21,5 +21,6 @@
 #define BLENDERCMDS QString("import BlenderCommandPort as LeeCmds\nLeeCmds.%1")
 
 #define LEECASE(X,A) case X:{ return A;}
+#define LEECASEB(X,R,A) case X:{ R=A;break;}
 
 #endif // DEFINATIONS_H

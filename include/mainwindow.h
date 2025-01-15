@@ -46,6 +46,8 @@ public:
     void ReInitSocket(const SoftWareApp inApp);
 
     QPointer<QTcpSocket> GetTcpSocket();
+
+    bool IsConnected();
 signals:
 
     void OnColorChanged(QColor &Color);
@@ -58,7 +60,7 @@ private:
     //static MainWindow* m_Instance;
     bool MayaHasConnected,BlenderHasConnected;
 
-    QTcpSocket LeeTStream;
+    bool mIsConnected=false;
 
     Ui::leePicker *ui;
 
@@ -135,6 +137,7 @@ private slots:
 
     void OnConnectionError(QAbstractSocket::SocketError inError);
 
+    void OnReadSocketData();
 
 
 };

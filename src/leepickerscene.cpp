@@ -95,20 +95,30 @@ void LeePickerScene::ClearSelectionProcess()
     SoftWareApp app = LeePicker->GetInteractionApp();
     QString str = app == Maya ? "maya" : "blender";
     if(Items.length() <= 0 && LeePicker->IsAppAvalible()){
-        //command
-        // QString Cmd = QString("PickerClearSelection()");
-        // PythonProcessCmd(this,app,Cmd);
-
-        qDebug() << "Connect Maya : " << LeePicker->IsConnectedWithMaya() << Qt::endl;
-        qDebug() << "Connect Blender : " << LeePicker->isConnectedWIthBlender() << Qt::endl;
 
         QPointer<QTcpSocket> socket = LeePicker->GetTcpSocket();
 
-        if(socket.isNull() || socket == nullptr) return;
+        if(!socket->isValid()) return;
 
-        QTextStream T(socket);
-        T << "bpy.ops.object.select_all(action='DESELECT')";
-        qDebug() << "send" << socket->state() << Qt::endl;
+        if(QTcpSocket::ConnectingState == socket->state()){
+            socket->waitForConnected(-1);
+        }
+
+        if(QTcpSocket::ConnectedState == socket->state()){
+
+            QString workingDir = QString("import sys\nsys.path.append('%1')\n%2").arg(LEESCRIPTPATH,BLENDERCMDS.arg("PickerClearSelection()"));
+            QTextStream T(socket);
+            T << "import bpy\nbpy.ops.object.select_all(action='DESELECT')" ;
+
+
+            // T << QString("sys.append('%1')").arg(LEESCRIPTPATH);
+            // T << BLENDERCMDS.arg("PickerClearSelection()");
+            socket->flush();
+            qDebug() << "send" << socket->state() <<  socket->peerPort() <<  Qt::endl;
+        }
+        else{
+            qDebug() << "Not Connected" << socket->state() << socket->peerPort() <<  Qt::endl;
+        }
     }
 }
 
