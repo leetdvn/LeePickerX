@@ -24,11 +24,8 @@ def PortIsOpen():
     
 def PickerSelect(inObjects):
     if not PortIsOpen(): return
-    command =str('''
-    for o in bpy.data.objects:
-        if o.name in {}:
-            o.select_set(True)
-    ''').format(inObjects)
+    command =str('''for o in bpy.data.objects:if o.name in {}:o.select_set(True)''').format(inObjects)
+    print(command)
     #command = str("cmds.select({},r=1)").format(inObjects)
     send_command(command)
 
@@ -50,6 +47,5 @@ def PickerDeSelect(inObjects):
     send_command(command) 
 
 def PickerClearSelection():
-
     cmd='''bpy.ops.object.select_all(action='DESELECT')'''
     return send_command(cmd)

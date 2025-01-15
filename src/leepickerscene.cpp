@@ -96,9 +96,19 @@ void LeePickerScene::ClearSelectionProcess()
     QString str = app == Maya ? "maya" : "blender";
     if(Items.length() <= 0 && LeePicker->IsAppAvalible()){
         //command
-        QString Cmd = QString("PickerClearSelection()");
-        PythonProcessCmd(this,app,Cmd);
+        // QString Cmd = QString("PickerClearSelection()");
+        // PythonProcessCmd(this,app,Cmd);
 
+        qDebug() << "Connect Maya : " << LeePicker->IsConnectedWithMaya() << Qt::endl;
+        qDebug() << "Connect Blender : " << LeePicker->isConnectedWIthBlender() << Qt::endl;
+
+        QPointer<QTcpSocket> socket = LeePicker->GetTcpSocket();
+
+        if(socket.isNull() || socket == nullptr) return;
+
+        QTextStream T(socket);
+        T << "bpy.ops.object.select_all(action='DESELECT')";
+        qDebug() << "send" << socket->state() << Qt::endl;
     }
 }
 

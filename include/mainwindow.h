@@ -45,6 +45,7 @@ public:
 
     void ReInitSocket(const SoftWareApp inApp);
 
+    QPointer<QTcpSocket> GetTcpSocket();
 signals:
 
     void OnColorChanged(QColor &Color);
@@ -56,6 +57,9 @@ protected:
 private:
     //static MainWindow* m_Instance;
     bool MayaHasConnected,BlenderHasConnected;
+
+    QTcpSocket LeeTStream;
+
     Ui::leePicker *ui;
 
     QPointer<LeePickerView> pView=nullptr;

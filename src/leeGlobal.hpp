@@ -278,7 +278,7 @@ static void PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString
     //                   << LEECMDS.arg(inCmd));
 
     //process->start("python",params);
-    process->waitForFinished(-1);
+    process->waitForFinished(5);
     qDebug() << "App " << AppEnv << "app2 " << pyApp <<Qt::endl;
 
     qDebug() << process->readAllStandardOutput() << Qt::endl;

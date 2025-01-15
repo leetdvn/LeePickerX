@@ -626,6 +626,7 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
     QString Cmd = QString("PickerSelect(%1)").arg(pro);
     PythonProcessCmd(this,interactApp,Cmd);
 
+    qDebug() << Cmd << Qt::endl;
 }
 
 

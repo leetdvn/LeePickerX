@@ -45,6 +45,10 @@ MainWindow::~MainWindow()
 {
     delete ui;
     m_Instance = nullptr;
+    m_pTcpSocket->flush();
+    m_pTcpSocket->close();
+    free(m_pTcpSocket);
+    m_pTcpSocket = Q_NULLPTR;
     deleteLater();
 }
 
@@ -110,6 +114,17 @@ void MainWindow::ReInitSocket(const SoftWareApp inApp)
     QHostAddress host("127.0.0.1");
 
     return InitSocket(host,inApp == Maya ? mPort : bPort);
+}
+
+QPointer<QTcpSocket> MainWindow::GetTcpSocket()
+{
+    //Get pointer TcpSocket
+    if(QAbstractSocket::UnconnectedState == m_pTcpSocket->state()){
+        ReInitSocket(RemoteApp);
+        return GetTcpSocket();
+    }
+
+    return m_pTcpSocket;
 }
 
 void MainWindow::timerEvent(QTimerEvent *event)
@@ -562,18 +577,17 @@ void MainWindow::OnSocketConnected()
              << "Port" << Socket->peerPort() <<   Qt::endl;
 
     //init Connections
-    QTextStream T(Socket);
+    // QTextStream T(Socket);
 
-    QString scrLocation = QDir::currentPath() + "/Scripts/";
-    T << QString("import maya.cmds as cmds\nimport sys\nsys.path.append('%1')\nprint(\"LeePicker Connected..%1\")").arg(scrLocation);
-    Socket->flush();
-    QString cmd = RemoteApp == Maya ? "import MayaCommandPort" : "import BlenderCommandPort";
-    cmd += "\nprint(\"print import completed.\")";
-    T << cmd;
+    // QString scrLocation = QDir::currentPath() + "/Scripts/";
+    // T << QString("import sys\nsys.path.append('%1')\nprint(\"LeePicker Connected..%1\")").arg(scrLocation);
+    // QString cmd = RemoteApp == Maya ? "import MayaCommandPort" : "import BlenderCommandPort";
+    // cmd += "\nprint(\"print import completed.\")";
+    // T << cmd;
 
     QString msg = RemoteApp == Maya ? QString("   Maya Connected") : QString("   Blender Connected");
     AddToLog(Completed,msg,true);
-    Socket->close();
+    //Socket->flush();
 }
 
 void MainWindow::OnSocketDisconneted()
@@ -603,7 +617,8 @@ void MainWindow::OnConnectionError(QAbstractSocket::SocketError inError)
 
     if(QAbstractSocket::ConnectionRefusedError==inError){
         qDebug() << "Socket init error " << Qt::endl;
-
+        Socket->flush();
+        Socket->close();
     }
 
 }
