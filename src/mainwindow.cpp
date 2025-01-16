@@ -55,10 +55,10 @@ MainWindow::~MainWindow()
 void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
 {
     if(inMessage =="") return;
-    QStringList splitMes =  inMessage.split(" : ");
+    QStringList splitMes =  inMessage.split(":");
     QString title = splitMes.count() >=0 ? splitMes[0] : inMessage;
 
-    QString mess = splitMes.count() >=2  ? splitMes[1] : splitMes[0];
+    QString mess = splitMes.count() >=2  ? splitMes[1] : QString();
     QString result;
     switch (inLog) {
     case Log:{
@@ -83,10 +83,9 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     };
 
 
-    QString CLog = !isClear ? ui->LogPicker->toHtml() : "";
+    QString CLog = !isClear ? ui->LogPicker->toHtml() : QString();
     CLog += result;
     ui->LogPicker->setHtml(CLog);
-
     //new Logs
     //set value max down to new Log
     int valueMax = ui->LogPicker->verticalScrollBar()->maximum();

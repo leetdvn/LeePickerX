@@ -5,7 +5,15 @@ LeeSendCommand::LeeSendCommand(const SoftWareApp inApp, const QString Cmds)
     ,iApp(inApp)
     ,ICommand(Cmds)
 {
-    iProcess->moveToThread(&CommandThread);
+
+    this->moveToThread(&CommandThread);
+
+    //connections
+    connect(&CommandThread,&QThread::finished, this, &LeeSendCommand::OnThreadFinished);
+    connect(iProcess,&QProcess::finished,this,&LeeSendCommand::OnThreadFinished);
+    connect(iProcess,&QProcess::errorOccurred,this,&LeeSendCommand::OnError);
+    connect(iProcess,&QProcess::readyReadStandardOutput,this,&LeeSendCommand::OnReadyReadLog);
+
     CommandThread.start();
     //QProcess::execute(QString("taskkill /f /pid %1").arg(ProcessID));
 
@@ -35,11 +43,6 @@ void LeeSendCommand::SendCommand()
 
     iProcess->setProcessEnvironment(env);
 
-    //connections
-    connect(&CommandThread,&QThread::finished, this, &LeeSendCommand::OnThreadFinished);
-    connect(iProcess,&QProcess::finished,this,&LeeSendCommand::OnThreadFinished);
-    connect(iProcess,&QProcess::errorOccurred,this,&LeeSendCommand::OnError);
-    connect(iProcess,&QProcess::readyReadStandardOutput,this,&LeeSendCommand::OnReadyReadLog);
 
     QStringList params;
 

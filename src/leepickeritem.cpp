@@ -401,24 +401,25 @@ void LeePickerItem::OnZLayerChanged(int idx)
 
     if(layerOder == nullptr) return;
 
+    qDebug () << "index ZLayer" << idx << Qt::endl;
 
-    if (layerOder != nullptr) {
-        int OrderNumber = layerOder->currentIndex();
-        setZValue(OrderNumber);
-        if (OrderNumber == 0) {
-            // if (MaskColor != nullptr)
-            //     MaskColor = nullptr;
-            // status.isMoving = false;
-            setFlag(QGraphicsItem::ItemIsMovable, false);
-            setFlag(QGraphicsItem::ItemIsSelectable, false);
-        }
-        else {
-            // status.isMoving = true;
-            setFlag(QGraphicsItem::ItemIsMovable, true);
-            setFlag(QGraphicsItem::ItemIsSelectable, true);
-        }
-        update();
+
+    int OrderNumber = layerOder->currentIndex();
+    setZValue(OrderNumber);
+    if (OrderNumber == 0) {
+        // if (MaskColor != nullptr)
+        //     MaskColor = nullptr;
+        // status.isMoving = false;
+        setFlag(QGraphicsItem::ItemIsMovable, false);
+        setFlag(QGraphicsItem::ItemIsSelectable, false);
     }
+    else {
+        // status.isMoving = true;
+        setFlag(QGraphicsItem::ItemIsMovable, true);
+        setFlag(QGraphicsItem::ItemIsSelectable, true);
+    }
+    update();
+
 
 }
 
@@ -598,7 +599,7 @@ void LeePickerItem::AssignMayaSelection()
                            "Blender is not Runing";
 
         QString info = "Error :  " + AppC;
-        LeePicker->AddToLog(Error,info,true);
+        LeePicker->AddToLog(Error,info,false);
     }
 
 }

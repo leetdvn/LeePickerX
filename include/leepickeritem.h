@@ -46,6 +46,8 @@ class LeePickerItem : public QGraphicsObject
     Q_PROPERTY(int itemId READ Id WRITE SetItemId NOTIFY IdChanged FINAL)
     Q_PROPERTY(bool isFlipHorizontal READ isHorizontal WRITE SetHorizontal NOTIFY HorizontalChanged FINAL)
     Q_PROPERTY(bool isFlipVertical READ isVertial WRITE SetVertical NOTIFY FlipVerticalChanged FINAL)
+    Q_PROPERTY(qreal iZLayer READ ZDeepthLayer WRITE SetZLayer NOTIFY LayerZChanged FINAL)
+
 public:
     LeePickerItem(QString itemName = NULL, QString Image = nullptr, int objID = -1 ,QRectF inRectF = QRectF(0, 0, 80, 80));
     ~LeePickerItem(){deleteLater();}
@@ -69,11 +71,12 @@ public:
     bool isVertial() {return isFlipVertical;}
     double PosX(){return pos().x();}
     double PosY(){return pos().y();}
-
+    qreal ZDeepthLayer(){return iZLayer;}
 
     //WRITE
     void SetHorizontal(bool isHz){isFlipHorizontal=isHz;}
     void SetVertical(bool isHz){isFlipVertical=isHz;}
+    void SetZLayer(qreal newDeepth) {iZLayer=newDeepth;}
 
     void SetItemName(const QString inItemName);
 
@@ -108,6 +111,7 @@ signals:
     void IdChanged(const int newId);
     void HorizontalChanged(const bool newHoz);
     void FlipVerticalChanged(const bool isVertical);
+    void LayerZChanged(const qreal inZLayer);
 
 protected:
 
@@ -141,6 +145,7 @@ protected:
     QString DisplayName,iScript;
 
     qreal iAlpha;
+    qreal iZLayer;
 
     SoftWareApp iApp;
 
@@ -186,7 +191,6 @@ private slots:
     void OnTestMayaCmds();
 
     void OnPinItem();
-
 };
 
 #endif // LEEPICKERITEM_H

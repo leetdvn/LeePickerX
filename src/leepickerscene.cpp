@@ -93,7 +93,7 @@ void LeePickerScene::ClearSelectionProcess()
     bool isAvalible = LeePicker->IsAppAvalible();
 
     if(!isAvalible) {
-        LeePicker->AddToLog(Error,"Maya is Not Runing..");
+        LeePicker->AddToLog(Error,"Maya is Not Runing..",true);
         return;
     }
 
