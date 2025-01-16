@@ -4,6 +4,8 @@ HOST = '127.0.0.1'  # the local host
 PORT = 5000  # The same port as used by the server
 ADDR = (HOST, PORT)
 
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 def send_command(command=str):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
@@ -41,5 +43,12 @@ def PickerDeSelect(inObjects):
 
 def PickerClearSelection():
     cmd='''bpy.ops.object.select_all(action='DESELECT')'''
-    return send_command(cmd)
+    try:
+        send_command(cmd)
+    except socket.error: print("connection false: Error:Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";")
 
+def PickerGetSelection():
+    command="import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]\nprint(selected_obj)"
+    
+    try: send_command(command)
+    except socket.error: print("connection false: Error:Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";")

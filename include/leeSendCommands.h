@@ -13,7 +13,7 @@ class LeeSendCommand : public QObject
     Q_OBJECT
     QThread CommandThread;
 public:
-    LeeSendCommand(const SoftWareApp inApp,const QString Cmds);
+    LeeSendCommand(QObject* parent,const SoftWareApp inApp,const QString Cmds);
     ~LeeSendCommand();
 
     QPointer<QProcess> GetProcess(){return iProcess;}
@@ -21,6 +21,8 @@ public:
     qint64 GetPID(){return processId;}
 
     void SendCommand();
+
+    bool isError(){return iError;}
 private:
     QPointer<QProcess> iProcess=Q_NULLPTR;
 
@@ -28,16 +30,17 @@ private:
 
     SoftWareApp iApp;
     QString ICommand;
+    bool iError=false;
 signals:
     void Finished();
     void ReadyOutPut(const QString& output);
     void Errored(QProcess::ProcessError error);
 
-protected slots:
+public slots:
     //on finish
     void OnFinished(int exitCode, QProcess::ExitStatus exitStatus = QProcess::NormalExit);
     //Error
-    void OnError(QProcess::ProcessError error);
+    void OnError();
     //log
     void OnReadyReadLog();
     //Thread Finished

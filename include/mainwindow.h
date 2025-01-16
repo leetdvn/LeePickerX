@@ -26,7 +26,7 @@ public:
     explicit  MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void AddToLog(const LogType inLog,QString inMessage,bool isClear=0);
+    void AddToLog(const LogType inLog,QString inMessage,bool isClear=0,int inSecond=6000);
 
 
     SoftWareApp GetInteractionApp(){return RemoteApp;}

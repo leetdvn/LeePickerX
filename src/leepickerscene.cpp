@@ -93,30 +93,28 @@ void LeePickerScene::ClearSelectionProcess()
     bool isAvalible = LeePicker->IsAppAvalible();
 
     if(!isAvalible) {
-        LeePicker->AddToLog(Error,"Maya is Not Runing..",true);
+        //LeePicker->AddToLog(Error,"Maya is Not Runing..",true);
         return;
     }
-
-    QList<LeePickerItem*> Items = GetSelectedItems();
 
     SoftWareApp app = LeePicker->GetInteractionApp();
     QString str = app == Maya ? "maya" : "blender";
 
+    LeePicker->AddToLog(Log,"Clear Selections",true,2);
+    QString Cmds = "PickerClearSelection()";//"PickerSelect(\"['Cube','Light']\")";
+    QPointer<LeeSendCommand> process = new LeeSendCommand(this,app,Cmds);
+    process->SendCommand();
+    // PythonProcessCmd(this,app,Cmds);
 
-    if(Items.length() <= 0 && isAvalible){
-
-        QString Cmds = "PickerClearSelection()";//"PickerSelect(\"['Cube','Light']\")";
-
-        QPointer<LeeSendCommand> process = new LeeSendCommand(app,Cmds);
-        process->SendCommand();
-        // PythonProcessCmd(this,app,Cmds);
-
-        // qDebug() << "Commnad " << Cmds << Qt::endl;
-    }
+    // qDebug() << "Commnad " << Cmds << Qt::endl;
 }
 
 
 void LeePickerScene::OnSelectionChanged(){
-    ClearSelectionProcess();
+
+    QList<LeePickerItem*> Items = GetSelectedItems();
+    if(Items.length() <= 0){
+        return ClearSelectionProcess();
+    }
 }
 

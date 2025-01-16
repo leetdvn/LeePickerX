@@ -35,7 +35,8 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
     SetItemPixmap(img);
 
     setProperty("Pin",false);
-
+    //Default Bgr Layer 1
+    setZValue(1);
 }
 
 QRectF LeePickerItem::boundingRect() const
@@ -492,7 +493,7 @@ void LeePickerItem::OnTestBlenderCmds()
 
     QString Cmd = "import BlenderCommandPort\nPickerClearSelection()";
     //PythonProcessCmd(this,Maya,Cmd);
-    QPointer<LeeSendCommand> process = new LeeSendCommand(Blender,Cmd);
+    QPointer<LeeSendCommand> process = new LeeSendCommand(this,Blender,Cmd);
     process->SendCommand();
 
 
@@ -512,10 +513,13 @@ void LeePickerItem::OnTestMayaCmds()
 
 void LeePickerItem::OnPinItem()
 {
+    MainWindow* LeePicker=MainWindow::Instance();
+
     isPined = !property("Pin").toBool();
     //Toogle Change Item Pin
     setFlag(QGraphicsItem::ItemIsMovable,!isPined);
     setProperty("Pin",isPined);
+    LeePicker->AddToLog(Log,isPined ? QString("Pined"):QString("UnPined"),true);
 }
 
 void LeePickerItem::OnInitScriptEditor()
@@ -555,7 +559,6 @@ void LeePickerItem::OnInitScriptEditor()
 
 void LeePickerItem::AssignMayaSelection()
 {
-    const char* funcName = "PortIsOpen";//"send_command";
     MainWindow* LeePicker=MainWindow::Instance();
 
     SoftWareApp interactApp = LeePicker->GetInteractionApp();
@@ -563,34 +566,51 @@ void LeePickerItem::AssignMayaSelection()
 
     //Check Maya Running
     if(isRunning(interactApp)){
-
         //check Port Commend
         bool result{};
         // auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(LEESCRIPTPATH,appUltils,funcName);});
         // future.waitForFinished();
 
-        result = interactApp == Maya ? LeePicker->IsConnectedWithMaya() : LeePicker->isConnectedWIthBlender();
+        result = LeePicker->IsAppAvalible();
         if(!result){
-            LeePicker->AddToLog(Error,"Error :  Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";",true);
+            LeePicker->AddToLog(Error,"Error:Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";",true);
             return;
         }
         ///Send MayA Command
-        funcName = "send_command";
+        const char* funcName = "send_command";
 
         ///Init Maya Command
         const char* Cmd = interactApp == Maya ?
                                                 "cmds.ls(sl=1)" :
                                                 "import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]\nprint(selected_obj)";
-        QString selections = PyExecResultString(LEESCRIPTPATH,appUltils,funcName,Cmd);
 
-        qDebug() << selections << Qt::endl;
-        //save value to assign
-        if(!selections.isEmpty() && !selections.startsWith("[]"))
-            SaveAssignObject(this,Maya,selections);
+        QPointer<LeeSendCommand> process = new LeeSendCommand(this,interactApp,"PickerGetSelection()");
+        process->SendCommand();
 
-        //Log Result
-        LeePicker->AddToLog(Log,QString("select %1").arg(selections),true);
-        qDebug() << selections << Qt::endl;
+
+        // QString selections{};
+
+        // try{
+        //     selections = PyExecResultString(LEESCRIPTPATH,appUltils,funcName,Cmd);
+        // }
+        // catch (std::exception &e){
+
+        //     qDebug() <<"log Exception:" << e.what() << Qt::endl;
+        //     exit(0);
+        // }
+        // catch(...)
+        // {
+        //     exit(0);
+        // }
+
+        // qDebug() << selections << Qt::endl;
+        // //save value to assign
+        // if(!selections.isEmpty() && !selections.startsWith("[]"))
+        //     SaveAssignObject(this,Maya,selections);
+
+        // //Log Result
+        // LeePicker->AddToLog(Log,QString("select %1").arg(selections),true);
+        // qDebug() << selections << Qt::endl;
     }
     else{
         //report error software not running
@@ -606,11 +626,8 @@ void LeePickerItem::AssignMayaSelection()
 
 void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 {
-
     if(!IsAssigned()) return ;
-
     SoftWareApp interactApp = GetInteractApp();
-
 
     if(!isRunning(interactApp)){
         qDebug() << "App Not Running";
@@ -623,7 +640,7 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 
     auto Args = pro.toStdString();
     QString Cmds = QString("PickerSelect(\"%1\")").arg(pro);
-    QPointer<LeeSendCommand> process = new LeeSendCommand(interactApp,Cmds);
+    QPointer<LeeSendCommand> process = new LeeSendCommand(this,interactApp,Cmds);
     process->SendCommand();
 
 

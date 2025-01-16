@@ -1,20 +1,22 @@
 #include <leeSendCommands.h>
 
-LeeSendCommand::LeeSendCommand(const SoftWareApp inApp, const QString Cmds)
-    :iProcess(new QProcess(this))
-    ,iApp(inApp)
+LeeSendCommand::LeeSendCommand(QObject* parent,const SoftWareApp inApp, const QString Cmds)
+    :iApp(inApp)
     ,ICommand(Cmds)
 {
 
     this->moveToThread(&CommandThread);
-
+    CommandThread.start();
+    iProcess = new QProcess(parent);
+    //iProcess->setProcessChannelMode(QProcess::ForwardedOutputChannel);
     //connections
     connect(&CommandThread,&QThread::finished, this, &LeeSendCommand::OnThreadFinished);
     connect(iProcess,&QProcess::finished,this,&LeeSendCommand::OnThreadFinished);
+
     connect(iProcess,&QProcess::errorOccurred,this,&LeeSendCommand::OnError);
+
     connect(iProcess,&QProcess::readyReadStandardOutput,this,&LeeSendCommand::OnReadyReadLog);
 
-    CommandThread.start();
     //QProcess::execute(QString("taskkill /f /pid %1").arg(ProcessID));
 
 }
@@ -27,6 +29,7 @@ LeeSendCommand::~LeeSendCommand()
 
 void LeeSendCommand::SendCommand()
 {
+    if(iProcess == Q_NULLPTR) return;
     QString workingDir(QDir::currentPath() + "/Scripts/");
 
     qint64 ProcessID;
@@ -47,12 +50,14 @@ void LeeSendCommand::SendCommand()
     QStringList params;
 
     params << "-c" << AppCmd.arg(ICommand);
-    iProcess->startDetached(pyApp,params,workingDir,&processId);
+    iProcess->start(pyApp,params,QIODevice::ReadWrite);
+    qDebug() <<"Command : " << AppCmd.arg(ICommand) <<  iProcess->readAllStandardOutput() << Qt::endl;
 
+    iProcess->waitForFinished(-1);
+    if(iProcess->error()){
+        qDebug() <<"error : "  << Qt::endl;
 
-    iProcess->waitForStarted();
-
-    qDebug() <<"Command : " << AppCmd.arg(ICommand) << Qt::endl;
+    }
 
 }
 
@@ -63,10 +68,12 @@ void LeeSendCommand::OnFinished(int exitCode, QProcess::ExitStatus exitStatus)
     emit Finished();
 }
 
-void LeeSendCommand::OnError(QProcess::ProcessError error)
+void LeeSendCommand::OnError()
 {
-    qDebug() << "process Erro : " << error << Qt::endl;
+    qDebug() << "process Error : " << iProcess->errorString() << Qt::endl;
 
+    QProcess::ProcessError error = iProcess->error();
+    iError=true;
     emit Errored(error);
 }
 
@@ -74,7 +81,10 @@ void LeeSendCommand::OnReadyReadLog()
 {
     QString log = iProcess->readAllStandardOutput();
 
-    qDebug() << "Process : " << log << Qt::endl;
+    qDebug() << "Process Ready : " << log << Qt::endl;
+
+
+
     emit ReadyOutPut(log);
 }
 
@@ -82,5 +92,5 @@ void LeeSendCommand::OnThreadFinished()
 {
     qDebug() << "Process : Thread Finished"  << Qt::endl;
 
-    deleteLater();
+    //deleteLater();
 }

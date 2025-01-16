@@ -10,6 +10,7 @@
 #include <Definations.h>
 #include <QAbstractSocket>
 #include <qtimer.h>
+#include <QtSerialPort/QSerialPortInfo>
 
 //MainWindow* MainWindow::m_Instance=nullptr;
 
@@ -39,6 +40,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     // InitSocket(host,mPort);
 
+    QString message = IsAppAvalible() ?
+                                        "Maya is Runing":
+                                        "Maya is Not Running";
+    AddToLog(Log,message,true);
+
+    // QList<QSerialPortInfo> m_availablePorts = QSerialPortInfo::availablePorts();
+
+    // for (auto &p : m_availablePorts){
+    //     qDebug () << "Port : " << p.portName() << Qt::endl;
+    // }
 }
 
 MainWindow::~MainWindow()
@@ -52,7 +63,7 @@ MainWindow::~MainWindow()
     deleteLater();
 }
 
-void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
+void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear, int inSecond)
 {
     if(inMessage =="") return;
     QStringList splitMes =  inMessage.split(":");
@@ -62,7 +73,8 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     QString result;
     switch (inLog) {
     case Log:{
-        result = QString("<font color=\"white\">%1</font>").arg(mess);
+        result = QString("<font color=\"white\">%1</font>").arg(title);
+        result +=mess;
         break;
     }
     case Warning:{
@@ -82,7 +94,7 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     }
     };
 
-
+    qDebug () << "Reuslt : " << result << Qt::endl;
     QString CLog = !isClear ? ui->LogPicker->toHtml() : QString();
     CLog += result;
     ui->LogPicker->setHtml(CLog);
@@ -97,8 +109,8 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear)
     // timer->start(5000);
     if(timeId > 0)
         killTimer(timeId);
-    timeId = startTimer(6000);
-    qDebug() << timeId << "time " << Qt::endl;
+    timeId = startTimer(inSecond*1000);
+    qDebug() << "TimerId : " <<  timeId << Qt::endl;
 }
 
 bool MainWindow::IsAppAvalible()
@@ -214,7 +226,6 @@ void MainWindow::OnNewFile()
     CleanUpScene(0);
     ui->tabWidget->setCurrentIndex(0);
     return ui->tabWidget->update();
-
 }
 
 #pragma region TabWidget Funtion {
@@ -224,7 +235,6 @@ void MainWindow::CustomNewTab(QString newName,int index)
     // create new tab 2 option is addtional and read file open
     QWidget* curr = ui->tabWidget->currentWidget();
     if (curr->objectName() == "leeTabAdditional") {
-        newName += QString::number(index);
         return AddTabSimple(newName);
     }
 
@@ -428,12 +438,15 @@ void MainWindow::OnConnectAppChanged(bool checkable)
     QAction* appAct = qobject_cast<QAction*>(sender());
     appAct->setIcon(QPixmap::fromImage(image));
 
-    QHostAddress host("127.0.0.1");
-    quint16 Port = RemoteApp == Maya ? mPort : 5000;
+    // QHostAddress host("127.0.0.1");
+    // quint16 Port = RemoteApp == Maya ? mPort : 5000;
 
     //InitSocket(host,Port);
-    QString message = !checkable ? "     Remote App Maya " : "      Remote App Blender ";
-    AddToLog(LogType::Log,message,true);
+    QString messageApp = RemoteApp == Maya ? "Maya Running" : "Blender Running";
+    QString message = !checkable ? "Execute in Maya " : "Execute in Blender ";
+
+    QString finalMsg = IsAppAvalible() ? messageApp : message;
+    AddToLog(Log,finalMsg,true);
 }
 
 void MainWindow::OnNewItem()
@@ -535,12 +548,17 @@ void MainWindow::InitSocket(QHostAddress inhost, quint16 inPort)
         m_pTcpSocket->connectToHost(inhost,inPort,QIODevice::ReadWrite);
 
         connect(m_pTcpSocket,SIGNAL(readyRead()),this,SLOT(OnReadSocketData()),Qt::UniqueConnection);
-        //connect(m_pTcpSocket,&QTcpSocket::errorOccurred,this,&MainWindow::OnConnectionError,Qt::UniqueConnection);
+        connect(m_pTcpSocket,&QTcpSocket::errorOccurred,this,&MainWindow::OnConnectionError,Qt::UniqueConnection);
         connect(m_pTcpSocket,SIGNAL(connected()),SLOT(OnSocketConnected()),Qt::UniqueConnection);
         connect(m_pTcpSocket,SIGNAL(disconnected()),this,SLOT(OnSocketDisconneted()),Qt::UniqueConnection);
-        //m_pTcpSocket->waitForConnected(5);
+        m_pTcpSocket->waitForDisconnected(-1);
     }
+    m_pTcpSocket->disconnect();
+    m_pTcpSocket->waitForDisconnected(-1);
+
     m_pTcpSocket->close();
+
+    m_pTcpSocket->deleteLater();
 }
 
 void MainWindow::OnRecentFile()
@@ -613,14 +631,19 @@ void MainWindow::OnConnectionError(QAbstractSocket::SocketError inError)
 {
     QTcpSocket* Socket = qobject_cast<QTcpSocket*>(sender());
     if(Socket==nullptr) return ;
-    Socket->localPort()==bPort ?
+    Socket->peerPort()==bPort ?
         BlenderHasConnected=false :
         MayaHasConnected = false;
 
+    QString message = RemoteApp == Maya ?
+                          "Maya is Not Connected." :
+                          "Blender is Not Connected.";
     if(QAbstractSocket::ConnectionRefusedError==inError){
-        qDebug() << "Socket init error " << Qt::endl;
-        Socket->flush();
-        Socket->close();
+        qDebug() << Socket->peerPort() << MayaHasConnected << BlenderHasConnected <<  Qt::endl;
+
+        Socket->aboutToClose();
+
+        AddToLog(Log,message,true,10);
     }
 
 }

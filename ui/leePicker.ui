@@ -283,6 +283,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <string>Blender</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menu3DMax">
+    <property name="title">
+     <string>3DMax</string>
+    </property>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
    <addaction name="menuAlign"/>
@@ -290,6 +295,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <addaction name="menuThirparty"/>
    <addaction name="menuMaya"/>
    <addaction name="menuBlender"/>
+   <addaction name="menu3DMax"/>
    <addaction name="menuHelp_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -324,6 +330,9 @@ li.checked::marker { content: &quot;\2612&quot;; }
    </property>
    <property name="iconText">
     <string>New</string>
+   </property>
+   <property name="toolTip">
+    <string notr="true">New</string>
    </property>
   </action>
   <action name="SaveAs">

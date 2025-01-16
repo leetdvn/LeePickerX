@@ -74,9 +74,18 @@ public:
     qreal ZDeepthLayer(){return iZLayer;}
 
     //WRITE
-    void SetHorizontal(bool isHz){isFlipHorizontal=isHz;}
-    void SetVertical(bool isHz){isFlipVertical=isHz;}
-    void SetZLayer(qreal newDeepth) {iZLayer=newDeepth;}
+    void SetHorizontal(bool isHz){
+        isFlipHorizontal=isHz;
+        emit HorizontalChanged(isHz);
+    }
+    void SetVertical(bool isHz){
+        isFlipVertical=isHz;
+        emit FlipVerticalChanged(isHz);
+    }
+    void SetZLayer(qreal newDeepth) {
+        iZLayer=newDeepth;
+        emit LayerZChanged(iZLayer);
+    }
 
     void SetItemName(const QString inItemName);
 
