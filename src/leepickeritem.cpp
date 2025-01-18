@@ -539,10 +539,10 @@ void LeePickerItem::OnTestBlenderCmds()
     }
     //PyExecString(data.constData());
 
-    QString Cmd = "import BlenderCommandPort\nPickerClearSelection()";
-    //PythonProcessCmd(this,Maya,Cmd);
-    QPointer<LeeSendCommand> process = new LeeSendCommand(this,Blender,Cmd);
-    process->SendCommand();
+    // QString Cmd = "import BlenderCommandPort\nPickerClearSelection()";
+    // //PythonProcessCmd(this,Maya,Cmd);
+    // QPointer<LeeSendCommand> process = new LeeSendCommand(this,Blender,Cmd);
+    // process->SendCommand();
 
 
     qDebug() << data << Qt::endl;
@@ -672,9 +672,6 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
     ///check empty property
     auto pro = property("select").toString();
     if(pro.isEmpty() || pro.isNull()) return;
-
-
-    const char* ModuleFile = interactApp == Maya ? "MayaCommandPort" : "BlenderCommandPort";
 
     auto Args = pro.toStdString();
     const char* Cmd = !isAdd ?

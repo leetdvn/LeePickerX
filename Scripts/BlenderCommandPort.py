@@ -33,7 +33,7 @@ def PickerSelect(inObjects):
 def PickerAddSelect(inObjects):
     #check port Open
     if not PortIsOpen(): return
-    command = str("cmds.select({},add=1)").format(inObjects)
+    command = str("import bpy\nfor o in bpy.data.objects:\n\tif o.name in {}:\n\t\to.select_set(True)").format(inObjects)
     send_command(command)    
 
 def PickerDeSelect(inObjects):

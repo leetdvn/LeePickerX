@@ -99,20 +99,15 @@ void LeePickerScene::ClearSelectionProcess()
     bool isAvalible = LeePicker->IsAppAvalible();
 
     if(!isAvalible) {
-        //LeePicker->AddToLog(Error,"Maya is Not Runing..",true);
+        LeePicker->AddToLog(Error,"Maya is Not Runing..",true);
         return;
     }
 
     SoftWareApp app = LeePicker->GetInteractionApp();
-    QString str = app == Maya ? "maya" : "blender";
 
     LeePicker->AddToLog(Log,"Clear Selections",true,2);
-    QString Cmds = app == Maya ?
-                        "cmds.select(cl=1)" :
-                        "bpy.ops.object.select_all(action='DESELECT')";
 
     PyExecFuncAsVoid("PickerClearSelection",app);
-    // PythonProcessCmd(this,app,Cmds);
 
     // qDebug() << "Commnad " << Cmds << Qt::endl;
 }

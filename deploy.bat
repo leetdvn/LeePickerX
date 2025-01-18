@@ -1,1 +1,1 @@
-C:/Qt/6.5.3/mingw_64\bin\windeployqt.exe "C:\Users\leepl\Documents\GitHub\LeePickerX\build\Debug\LeePickerX.exe"
+C:/Qt/6.5.3/mingw_64\bin\windeployqt.exe "C:\Users\thang\Documents\GitHub\LeePickerX\build\Release\LeePickerX.exe"

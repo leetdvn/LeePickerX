@@ -26,7 +26,7 @@ protected:
         if(m_Instance !=nullptr)
         {
             delete m_Instance;
-            m_Instance == nullptr;
+            m_Instance = nullptr;
         }
     };
     static T* m_Instance;
