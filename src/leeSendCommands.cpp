@@ -30,13 +30,23 @@ LeeSendCommand::~LeeSendCommand()
 void LeeSendCommand::SendCommand()
 {
     if(iProcess == Q_NULLPTR) return;
+
+    QString AppCmd = GetAppCommand(iApp);
+
+    ExecuteCmd(AppCmd);
+
+}
+
+void LeeSendCommand::ExecuteCmd(const QString inCmd)
+{
+
+    if(iProcess == Q_NULLPTR) return;
     QString workingDir(QDir::currentPath() + "/Scripts/");
 
     qint64 ProcessID;
     ///get path and app name from identity
     const char* AppEnv = GetAppEnv(iApp);
     const char* pyApp = GetAppExec(iApp);
-    QString AppCmd = GetAppCommand(iApp);
 
     //init environment
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -49,17 +59,14 @@ void LeeSendCommand::SendCommand()
 
     QStringList params;
 
-    params << "-c" << AppCmd.arg(ICommand);
+    params << "-c" << inCmd;
     iProcess->start(pyApp,params,QIODevice::ReadWrite);
-    qDebug() <<"Command : " << AppCmd.arg(ICommand) <<  iProcess->readAllStandardOutput() << Qt::endl;
 
     iProcess->waitForFinished(-1);
-    if(iProcess->error()){
-        qDebug() <<"error : "  << Qt::endl;
 
-    }
-
+    qDebug() <<"ExecuteCmd : " << inCmd <<  iProcess->readAllStandardOutput() << Qt::endl;
 }
+
 
 void LeeSendCommand::OnFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
@@ -79,13 +86,11 @@ void LeeSendCommand::OnError()
 
 void LeeSendCommand::OnReadyReadLog()
 {
-    QString log = iProcess->readAllStandardOutput();
+    iLog = iProcess->readAllStandardOutput();
 
-    qDebug() << "Process Ready : " << log << Qt::endl;
+    qDebug() << "Process Ready : " << iLog << Qt::endl;
 
-
-
-    emit ReadyOutPut(log);
+    emit ReadyOutPut(iLog);
 }
 
 void LeeSendCommand::OnThreadFinished()

@@ -189,18 +189,14 @@ static QString QtEnumToString(const QEnum value)
     return std::string(QMetaEnum::fromType<QEnum>().valueToKey(value)).c_str();
 }
 
-// static int QtStringToEnum(QString inEnumStr){
-//     const char* str = inEnumStr.toUtf8();
-//     return QMetaType::type(str);
-// }
 
+///Save Assign
 static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inValue)
 {
     if(inObj==nullptr) return;
     //save value to assign
     inObj->setProperty("select",inValue);
     inObj->setProperty("App",inApp);
-
 }
 
 

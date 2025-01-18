@@ -16,9 +16,9 @@
 
 #define LEESCRIPTPATH  QString("%1/Scripts/").arg(QDir::currentPath()).toUtf8()
 
-#define MAYACMDS QString("import MayaCommandPort as LeeCmds\nLeeCmds.%1")//BlenderCommandPort
+#define MAYACMDS QString("import MayaCommandPort as LeeCmds\nLeeResultStr=LeeCmds.%1\nprint(LeeResultStr)")//BlenderCommandPort
 
-#define BLENDERCMDS QString("import BlenderCommandPort as LeeCmds\nLeeCmds.%1")
+#define BLENDERCMDS QString("import BlenderCommandPort as LeeCmds\nLeeResultStr=LeeCmds.%1\nprint(LeeResultStr)")
 
 #define LEECASE(X,A) case X:{ return A;}
 #define LEECASEB(X,R,A) case X:{ R=A;break;}

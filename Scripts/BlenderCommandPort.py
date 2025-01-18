@@ -50,5 +50,4 @@ def PickerClearSelection():
 def PickerGetSelection():
     command="import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]\nprint(selected_obj)"
     
-    try: send_command(command)
-    except socket.error: print("connection false: Error:Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";")
+    return send_command(command)

@@ -172,11 +172,13 @@ private:
 
     void UpdateDisplayName(QPainter* paint);
 
-    void AssignMayaSelection();
+    void AssignSelection();
 
     void OnSelectionClicked(bool isSelect=true,bool isAdd=false);
 
     void InitVariant();
+
+    QString PyExecResultStr(const char* inCmd);
 
 private slots:
     void OnDelete();

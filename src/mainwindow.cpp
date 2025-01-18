@@ -456,13 +456,13 @@ void MainWindow::OnNewItem()
 
 void MainWindow::OnPickerExit()
 {
-    //On Quit
+    ////On Quit
     QCoreApplication::exit();
 }
 
 void MainWindow::OnColorChoise()
 {
-    //Change Color
+    ///Change Color
     QColor color= QColorDialog::getColor(Qt::white, this, "choise Color");
     MColor=color;
     emit OnColorChanged(color);

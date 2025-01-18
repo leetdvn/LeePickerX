@@ -43,8 +43,6 @@ public:
     void ReInitSocket(const SoftWareApp inApp);
 
     QPointer<QTcpSocket> GetTcpSocket();
-
-    bool IsConnected(){ return RemoteApp == Maya ? MayaHasConnected : BlenderHasConnected;}
 signals:
 
     void OnColorChanged(QColor &Color);

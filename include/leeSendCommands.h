@@ -18,11 +18,20 @@ public:
 
     QPointer<QProcess> GetProcess(){return iProcess;}
 
+    ///Get Pid ProcessId
     qint64 GetPID(){return processId;}
 
+    ///Send Command To Server App
     void SendCommand();
 
+    ///Send Command To Server App
+    void ExecuteCmd(const QString inCmd);
+
+    /// Get IsEroor
     bool isError(){return iError;}
+
+    ///Get ILog
+    QString GetILog(){return iLog.replace("\r\n","");}
 private:
     QPointer<QProcess> iProcess=Q_NULLPTR;
 
@@ -31,6 +40,7 @@ private:
     SoftWareApp iApp;
     QString ICommand;
     bool iError=false;
+    QString iLog;
 signals:
     void Finished();
     void ReadyOutPut(const QString& output);

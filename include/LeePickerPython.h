@@ -1,6 +1,7 @@
 #ifndef LEEPICKERPYTHON_H
 #define LEEPICKERPYTHON_H
 
+#include "leeGlobal.hpp"
 #include <QApplication>
 #include <QDir>
 #include <Definations.h>
@@ -64,10 +65,11 @@ static QString PyExecResultString(const char* inScriptFolder,const char* inFileN
     qDebug() << "path : " << rawpath << Qt::endl;
     const char* chdir_cmd = rawpath.toUtf8();
 
-    const char* cstr_cmd = chdir_cmd;
-    // use sys to locate the script
     PyRun_SimpleString("import sys\n");
-    PyRun_SimpleString(cstr_cmd);
+    // use sys to locate the script
+    //PyRun_SimpleString("import sys\n");
+
+    PyRun_SimpleString(chdir_cmd);
     // import module(predication.py), it's a python script file name
     pModule = PyImport_ImportModule(inFileName);
 
@@ -91,9 +93,11 @@ static QString PyExecResultString(const char* inScriptFolder,const char* inFileN
                 //qDebug() << PyArg_Parse(pArgs,inCmd) << Qt::endl;
                 }
             }
+
             pResult = PyObject_CallObject(pFunc,pArgs);
-            Py_DECREF(pArgs);
-            Py_DECREF(pValue);
+
+            if(pResult==NULL) return QString();
+
             str = PyUnicode_AsUTF8(pResult);
             cleanup<QString>("Completed..");
             qDebug() << "Func " << inFunc  << "Cmd" << inCmd<<  Qt::endl;
@@ -150,12 +154,14 @@ static bool PyExecResultAsBool(const char* inScriptPath,const char* inFileName,c
     return result;
 }
 
-static void PyExecFuncAsVoid(const char* inFunc,const char* Args=NULL)
+static void PyExecFuncAsVoid(const char* inFunc,const SoftWareApp inApp=Maya,const char* Args=NULL)
 {
     if (!QDir(LEESCRIPTPATH).exists()){
         qDebug() << "Folder Does not exists" << Qt::endl;
         return;
     }
+
+    const char* ModuleFile = inApp == Maya ? "MayaCommandPort" : "BlenderCommandPort";
 
     PyObject *pName, *pModule, *pFunc;
     PyObject *pArgs=NULL, *pValue,*pResult;
@@ -166,12 +172,11 @@ static void PyExecFuncAsVoid(const char* inFunc,const char* Args=NULL)
     QString rawpath = QString("sys.path.append(\'%1\')").arg(LEESCRIPTPATH);
     const char* chdir_cmd = rawpath.toStdString().c_str();
 
-    const char* cstr_cmd = chdir_cmd;
     // use sys to locate the script
     PyRun_SimpleString("import sys\n");
-    PyRun_SimpleString(cstr_cmd);
+    PyRun_SimpleString(chdir_cmd);
     // import module(predication.py), it's a python script file name
-    pModule = PyImport_ImportModule("MayaCommandPort");
+    pModule = PyImport_ImportModule(ModuleFile);
 
     if(pModule !=NULL){
         pFunc = PyObject_GetAttrString(pModule, inFunc);

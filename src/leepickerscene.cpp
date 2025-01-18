@@ -107,9 +107,11 @@ void LeePickerScene::ClearSelectionProcess()
     QString str = app == Maya ? "maya" : "blender";
 
     LeePicker->AddToLog(Log,"Clear Selections",true,2);
-    QString Cmds = "PickerClearSelection()";//"PickerSelect(\"['Cube','Light']\")";
-    QPointer<LeeSendCommand> process = new LeeSendCommand(this,app,Cmds);
-    process->SendCommand();
+    QString Cmds = app == Maya ?
+                        "cmds.select(cl=1)" :
+                        "bpy.ops.object.select_all(action='DESELECT')";
+
+    PyExecFuncAsVoid("PickerClearSelection",app);
     // PythonProcessCmd(this,app,Cmds);
 
     // qDebug() << "Commnad " << Cmds << Qt::endl;

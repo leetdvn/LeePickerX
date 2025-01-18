@@ -115,6 +115,21 @@ void LeePickerItem::InitVariant()
     }
 }
 
+QString LeePickerItem::PyExecResultStr(const char* inCmd)
+{
+    MainWindow* LeePicker=MainWindow::Instance();
+
+    SoftWareApp interactApp = LeePicker->GetInteractionApp();
+    const char* ModuleFile = interactApp == Maya ? "MayaCommandPort" : "BlenderCommandPort";
+    const char* funcName = "send_command";
+
+    QString selections ;
+    auto future = QtConcurrent::run([&](){selections = PyExecResultString(LEESCRIPTPATH,ModuleFile,funcName,inCmd);});
+    future.waitForFinished();
+
+    return selections;
+}
+
 QJsonObject LeePickerItem::toJsonObject()
 {
 
@@ -473,10 +488,10 @@ void LeePickerItem::OnAssignSelection()
     //     LeePicker->ReInitSocket(LeePicker->GetInteractionApp());
 
     switch (LeePicker->GetInteractionApp()) {
-        case Maya: return AssignMayaSelection();
+        case Maya: return AssignSelection();
         case Blender:{
             qDebug() << "Blender..." << Qt::endl;
-            return AssignMayaSelection();}
+            return AssignSelection();}
         case NONE:
             break;
     }
@@ -539,7 +554,7 @@ void LeePickerItem::OnTestMayaCmds()
     SoftWareApp interactApp = GetInteractApp();
 
     switch (interactApp) {
-    case Maya: return AssignMayaSelection();
+    case Maya: return AssignSelection();
     default:
         break;
     }
@@ -593,7 +608,7 @@ void LeePickerItem::OnInitScriptEditor()
 
 }
 
-void LeePickerItem::AssignMayaSelection()
+void LeePickerItem::AssignSelection()
 {
     ///Assign Selection
     MainWindow* LeePicker=MainWindow::Instance();
@@ -613,8 +628,6 @@ void LeePickerItem::AssignMayaSelection()
     if(isRunning(interactApp)){
         //check Port Commend
         bool result{};
-        // auto future = QtConcurrent::run([&](){result = PyExecResultAsBool(LEESCRIPTPATH,appUltils,funcName);});
-        // future.waitForFinished();
 
         result = LeePicker->IsAppAvalible();
         if(!result){
@@ -626,20 +639,14 @@ void LeePickerItem::AssignMayaSelection()
 
         ///Init Maya Command
         const char* Cmd = interactApp == Maya ?
-                                                "cmds.ls(sl=1)" :
-                                                "import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]\nprint(selected_obj)";
+                                        "cmds.ls(sl=1)" :
+                                        "import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]\nprint(selected_obj)";
 
-
-        if(!LeePicker->IsConnected()){
-            LeePicker->AddToLog(Error,msgPort,true,5);
-            return;
-        }
-
-        QString selections = PyExecResultString(LEESCRIPTPATH,appUltils,funcName,Cmd);
-        qDebug() << selections << Qt::endl;
+        QString selections  = PyExecResultStr(Cmd);
+        qDebug() << "file " << appUltils << "selection " << selections << Qt::endl;
         //save value to assign
         if(!selections.isEmpty() && !selections.startsWith("[]"))
-            SaveAssignObject(this,Maya,selections);
+            SaveAssignObject(this,interactApp,selections);
 
         //Log Result
         LeePicker->AddToLog(Log,QString("select %1").arg(selections),true);
@@ -647,7 +654,6 @@ void LeePickerItem::AssignMayaSelection()
     }
     else{
         //report error software not running
-
         QString info = "Error :  " + msgApp;
         LeePicker->AddToLog(Error,info,false);
     }
@@ -668,16 +674,22 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
     if(pro.isEmpty() || pro.isNull()) return;
 
 
-    auto Args = pro.toStdString();
-    QString Cmds = QString("PickerSelect(\"%1\")").arg(pro);
+    const char* ModuleFile = interactApp == Maya ? "MayaCommandPort" : "BlenderCommandPort";
 
-    QPointer<LeeSendCommand> process = new LeeSendCommand(this,interactApp,Cmds);
-    process->SendCommand();
+    auto Args = pro.toStdString();
+    const char* Cmd = !isAdd ?
+                          isSelect ?
+                          "PickerSelect" :
+                          "PickerDeSelect" :
+                          "PickerAddSelect";
+
+    PyExecFuncAsVoid(Cmd,interactApp,pro.toUtf8());
+
 
     MainWindow* LeePicker=MainWindow::Instance();
 
-    LeePicker->AddToLog(Error,QString("Select %1").arg(pro),true);
-    qDebug() << "Click " <<  Cmds << Qt::endl;
+    LeePicker->AddToLog(Log,QString("Select %1").arg(pro),true);
+    qDebug() << "Click " <<  Cmd << Qt::endl;
 }
 
 
