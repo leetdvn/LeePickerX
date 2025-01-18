@@ -8,6 +8,7 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(USER $ENV{USERNAME})
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Network)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Network)
@@ -16,8 +17,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ui)
 
-set(PYTHON_INCLUDE "C:/Users/thang/AppData/Local/Programs/Python/Python37/")
-set(PYTHON_LIB "C:/Users/thang/AppData/Local/Programs/Python/Python37/libs/python37.lib")
+set(PYTHON_INCLUDE "C:/Users/${USER}/AppData/Local/Programs/Python/Python37/")
+set(PYTHON_LIB "C:/Users/${USER}/AppData/Local/Programs/Python/Python37/libs/python37.lib")
 
 
 include_directories(${PYTHON_INCLUDE}/include)
