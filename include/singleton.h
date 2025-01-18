@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <mutex>
 
+
+///Singleton Pattern
 template <class T>
 class Singleton
 {

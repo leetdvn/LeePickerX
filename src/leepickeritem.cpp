@@ -27,6 +27,8 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
     ,iColor(Qt::blue)
     ,iRectF(inRectF)
 {
+
+    //Initialization
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
     setCacheMode(QGraphicsItem::DeviceCoordinateCache);
@@ -41,6 +43,8 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
 
 QRectF LeePickerItem::boundingRect() const
 {
+
+    ///Reimplemented Protected
     return iRectF;
 }
 
@@ -49,7 +53,7 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     Q_UNUSED(option);
     Q_UNUSED(widget);
 
-    //Pixmap file image link
+    ///Reimplemented Protected Paint Function
     if (ImageIsValid())	{
         QPainter::CompositionMode mode = !iIsOverlay ? QPainter::CompositionMode_SourceOver : QPainter::CompositionMode_Overlay;
         painter->drawPixmap(iRectF.toRect(), iPixmap);
@@ -77,6 +81,7 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 void LeePickerItem::UpdateDisplayName(QPainter *painter)
 {
+    ///Update DisplayName
     painter->setPen(Qt::white);
     QFont font("Arial",10, QFont::Bold);
     painter->setFont(font);
@@ -87,6 +92,7 @@ void LeePickerItem::UpdateDisplayName(QPainter *painter)
 
 void LeePickerItem::InitVariant()
 {
+    ///Inplementation Data Json
     VItems.insert(0,DisplayName);
     VItems.insert(1,imgfile);
     VItems.insert(2,iColor);
@@ -112,6 +118,7 @@ void LeePickerItem::InitVariant()
 QJsonObject LeePickerItem::toJsonObject()
 {
 
+    ///Convert Data Iem To Json Data
     InitVariant();
     QJsonObject obj;
     int count=0;
@@ -126,10 +133,11 @@ QJsonObject LeePickerItem::toJsonObject()
     return obj;
 }
 
-#pragma region Item Functions {
+#pragma region Item Sets Functions {
 
 void LeePickerItem::SetImagePath(const QString infile)
 {
+    ///Set Image Path Func
     if(infile.isEmpty() || infile.isNull()) return;
 
     if(!QFile(infile).exists()) {
@@ -143,6 +151,7 @@ void LeePickerItem::SetImagePath(const QString infile)
 
 void LeePickerItem::SetItemName(const QString inItemName)
 {
+    ///Set Item Name Func
     if(inItemName.isEmpty() || inItemName.isNull()) return;
 
     iName = inItemName;
@@ -152,6 +161,7 @@ void LeePickerItem::SetItemName(const QString inItemName)
 
 void LeePickerItem::SetItemColor(const QString inColor)
 {
+    ///Set item Color Func
     if(!inColor.isEmpty() || inColor.isNull()) return;
 
     iColor=QColor(inColor);
@@ -161,6 +171,7 @@ void LeePickerItem::SetItemColor(const QString inColor)
 
 void LeePickerItem::SetItemId(const int newId)
 {
+    ///Set Item Id
     if(newId < 0 || newId == itemId) return ;
 
     itemId = newId;
@@ -170,6 +181,7 @@ void LeePickerItem::SetItemId(const int newId)
 
 void LeePickerItem::SetItemPixmap(const QPixmap inPixmap)
 {
+    ///Set Image Pixmap
     if(inPixmap.isNull()) return;
     iPixmap=inPixmap;
 
@@ -178,6 +190,7 @@ void LeePickerItem::SetItemPixmap(const QPixmap inPixmap)
 
 void LeePickerItem::SetItemPixmap(const QImage inImage)
 {
+    ///Set Item Pixmap Overload2
     if(inImage.isNull()) return;
 
     iPixmap = QPixmap::fromImage(inImage);
@@ -187,6 +200,7 @@ void LeePickerItem::SetItemPixmap(const QImage inImage)
 
 void LeePickerItem::SetDisplayName(const QString inText)
 {
+    ///Set DisplayName
     if(inText.isEmpty() || inText.isNull()) return;
 
     DisplayName=inText;
@@ -196,16 +210,19 @@ void LeePickerItem::SetDisplayName(const QString inText)
 
 void LeePickerItem::SetRemoteAppScript(const SoftWareApp inApp)
 {
+    ///Set Remote Application Changed
     iApp = inApp;
 }
 
 void LeePickerItem::SetMayaActive(bool isActive,bool isAdd)
 {
+    ///Set Mayaa Active Change
    return OnSelectionClicked(isActive,isAdd);
 }
 
 bool LeePickerItem::IsAssigned()
 {
+    ///Is Assign Connect App == Check Properties
     QVariant selectV = property("select");
 
     return selectV.toString().isEmpty() ? false : true;
@@ -213,6 +230,7 @@ bool LeePickerItem::IsAssigned()
 
 void LeePickerItem::SetFlip(bool isVertical)
 {
+    ///Set Flip Image by Matrix 4x4
     QTransform current(this->transform());
 
     qreal m11 = current.m11();    // Horizontal scaling
@@ -259,6 +277,7 @@ void LeePickerItem::SetFlip(bool isVertical)
 void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
 {
 
+    ///Mouse Press Event
     if (ev->button() == Qt::LeftButton)
     {
         //this->~leePatternItem();
@@ -281,6 +300,7 @@ void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
 
 void LeePickerItem::hoverEnterEvent(QGraphicsSceneHoverEvent *e)
 {
+    ///Mouse Hover Enter Event
     isHover=true;
     iLastScenePos = e->screenPos();
 
@@ -290,6 +310,7 @@ void LeePickerItem::hoverEnterEvent(QGraphicsSceneHoverEvent *e)
 void LeePickerItem::hoverMoveEvent(QGraphicsSceneHoverEvent *e)
 {
 
+    ///Hover Move Event
     iLastScenePos = e->screenPos();
 
     return QGraphicsItem::hoverMoveEvent(e);
@@ -297,6 +318,7 @@ void LeePickerItem::hoverMoveEvent(QGraphicsSceneHoverEvent *e)
 
 void LeePickerItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *e)
 {
+    ///Hover Leave Event
     isHover=false;
     return QGraphicsItem::hoverLeaveEvent(e);
 }
@@ -304,6 +326,7 @@ void LeePickerItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *e)
 void LeePickerItem::InitItemMenus(const QPoint inPosi)
 {
 
+    ///Init Menu Item Righclick
     iItemMenus = new QMenu();
 
     QString pinText = property("Pin").toBool() ? "UnPin Item" : "Pin Item";
@@ -346,6 +369,7 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
 
 bool LeePickerItem::ImageIsValid()
 {
+    ///Check Valid Image
     if(iPixmap.isNull()) return false;
 
     QPixmap pm;
@@ -354,6 +378,7 @@ bool LeePickerItem::ImageIsValid()
 
 SoftWareApp LeePickerItem::GetInteractApp()
 {
+    ///Get Interact Application Connect
     MainWindow* LeePicker=MainWindow::Instance();
 
     return LeePicker->GetInteractionApp();
@@ -363,6 +388,7 @@ SoftWareApp LeePickerItem::GetInteractApp()
 void LeePickerItem::ZLayerSetup()
 {
 
+    ///SetUp Menu Changed ZLayer
 
     QPointer<QWidgetAction> layer = new QWidgetAction(this);
     QPointer<QComboBox> layerOder = new QComboBox();
@@ -392,12 +418,14 @@ void LeePickerItem::ZLayerSetup()
 
 void LeePickerItem::OnDelete()
 {
+    ///Destructor
     deleteLater();
     ///free(this);
 }
 
 void LeePickerItem::OnZLayerChanged(int idx)
 {
+    ///OnZLayer Changed
     QComboBox* layerOder = qobject_cast<QComboBox*>(sender());
 
     if(layerOder == nullptr) return;
@@ -426,6 +454,7 @@ void LeePickerItem::OnZLayerChanged(int idx)
 
 void LeePickerItem::OnShapeChanged()
 {
+    ///OnShaped Changed
     QString image = BrowserImage();
     if (!QFile(image).exists()) return;
 
@@ -437,6 +466,7 @@ void LeePickerItem::OnShapeChanged()
 
 void LeePickerItem::OnAssignSelection()
 {
+    ///On Assign Selection
     MainWindow* LeePicker=MainWindow::Instance();
 
     // if(LeePicker->IsAppAvalible())
@@ -454,6 +484,7 @@ void LeePickerItem::OnAssignSelection()
 
 void LeePickerItem::OnDisplayChanged(QString inText)
 {
+    //On Display Name Changed
     if(inText.isNull() || inText.isEmpty()) return;
 
     DisplayName = inText;
@@ -462,6 +493,7 @@ void LeePickerItem::OnDisplayChanged(QString inText)
 
 void LeePickerItem::OnColorChanged(QColor inColor)
 {
+    ///OnColor Changed
     if (!inColor.isValid() && !isSelected()) return;
 
     iColor=inColor;
@@ -478,6 +510,7 @@ void LeePickerItem::OnAppConnectChanged(bool isChecked)
 void LeePickerItem::OnTestBlenderCmds()
 {
 
+    ///Test Command Blender
     MainWindow* LeePicker=MainWindow::Instance();
 
 
@@ -502,6 +535,7 @@ void LeePickerItem::OnTestBlenderCmds()
 
 void LeePickerItem::OnTestMayaCmds()
 {
+    ///Test Command Maya
     SoftWareApp interactApp = GetInteractApp();
 
     switch (interactApp) {
@@ -513,6 +547,7 @@ void LeePickerItem::OnTestMayaCmds()
 
 void LeePickerItem::OnPinItem()
 {
+    ///OnPined
     MainWindow* LeePicker=MainWindow::Instance();
 
     isPined = !property("Pin").toBool();
@@ -525,6 +560,7 @@ void LeePickerItem::OnPinItem()
 void LeePickerItem::OnInitScriptEditor()
 {
 
+    ///Show Script Editor UI
     QWidget* widget=new QWidget();
     SEditor->setupUi(widget);
 
@@ -559,10 +595,19 @@ void LeePickerItem::OnInitScriptEditor()
 
 void LeePickerItem::AssignMayaSelection()
 {
+    ///Assign Selection
     MainWindow* LeePicker=MainWindow::Instance();
 
     SoftWareApp interactApp = LeePicker->GetInteractionApp();
     const char* appUltils = interactApp == Maya ? "MayaCommandPort" : "BlenderCommandPort";
+
+    QString msgApp = interactApp == Maya ?
+                       "Maya is not Runing" :
+                       "Blender is not Runing";
+
+    QString msgPort = interactApp == Maya ?
+                         "Error:Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";" :
+                         "Command Port Addon Not Found..";
 
     //Check Maya Running
     if(isRunning(interactApp)){
@@ -573,7 +618,7 @@ void LeePickerItem::AssignMayaSelection()
 
         result = LeePicker->IsAppAvalible();
         if(!result){
-            LeePicker->AddToLog(Error,"Error:Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";",true);
+            LeePicker->AddToLog(Error,msgApp,true,5);
             return;
         }
         ///Send MayA Command
@@ -584,41 +629,26 @@ void LeePickerItem::AssignMayaSelection()
                                                 "cmds.ls(sl=1)" :
                                                 "import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]\nprint(selected_obj)";
 
-        QPointer<LeeSendCommand> process = new LeeSendCommand(this,interactApp,"PickerGetSelection()");
-        process->SendCommand();
 
+        if(!LeePicker->IsConnected()){
+            LeePicker->AddToLog(Error,msgPort,true,5);
+            return;
+        }
 
-        // QString selections{};
+        QString selections = PyExecResultString(LEESCRIPTPATH,appUltils,funcName,Cmd);
+        qDebug() << selections << Qt::endl;
+        //save value to assign
+        if(!selections.isEmpty() && !selections.startsWith("[]"))
+            SaveAssignObject(this,Maya,selections);
 
-        // try{
-        //     selections = PyExecResultString(LEESCRIPTPATH,appUltils,funcName,Cmd);
-        // }
-        // catch (std::exception &e){
-
-        //     qDebug() <<"log Exception:" << e.what() << Qt::endl;
-        //     exit(0);
-        // }
-        // catch(...)
-        // {
-        //     exit(0);
-        // }
-
-        // qDebug() << selections << Qt::endl;
-        // //save value to assign
-        // if(!selections.isEmpty() && !selections.startsWith("[]"))
-        //     SaveAssignObject(this,Maya,selections);
-
-        // //Log Result
-        // LeePicker->AddToLog(Log,QString("select %1").arg(selections),true);
-        // qDebug() << selections << Qt::endl;
+        //Log Result
+        LeePicker->AddToLog(Log,QString("select %1").arg(selections),true);
+        qDebug() << selections << Qt::endl;
     }
     else{
         //report error software not running
-        QString AppC = interactApp == Maya ?
-                           "Maya is not Runing" :
-                           "Blender is not Runing";
 
-        QString info = "Error :  " + AppC;
+        QString info = "Error :  " + msgApp;
         LeePicker->AddToLog(Error,info,false);
     }
 
@@ -626,7 +656,7 @@ void LeePickerItem::AssignMayaSelection()
 
 void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 {
-    if(!IsAssigned()) return ;
+    //if(!IsAssigned()) return ;
     SoftWareApp interactApp = GetInteractApp();
 
     if(!isRunning(interactApp)){
@@ -640,12 +670,14 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 
     auto Args = pro.toStdString();
     QString Cmds = QString("PickerSelect(\"%1\")").arg(pro);
+
     QPointer<LeeSendCommand> process = new LeeSendCommand(this,interactApp,Cmds);
     process->SendCommand();
 
+    MainWindow* LeePicker=MainWindow::Instance();
 
-
-    qDebug() << Cmds << Qt::endl;
+    LeePicker->AddToLog(Error,QString("Select %1").arg(pro),true);
+    qDebug() << "Click " <<  Cmds << Qt::endl;
 }
 
 

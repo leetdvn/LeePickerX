@@ -551,14 +551,10 @@ void MainWindow::InitSocket(QHostAddress inhost, quint16 inPort)
         connect(m_pTcpSocket,&QTcpSocket::errorOccurred,this,&MainWindow::OnConnectionError,Qt::UniqueConnection);
         connect(m_pTcpSocket,SIGNAL(connected()),SLOT(OnSocketConnected()),Qt::UniqueConnection);
         connect(m_pTcpSocket,SIGNAL(disconnected()),this,SLOT(OnSocketDisconneted()),Qt::UniqueConnection);
-        m_pTcpSocket->waitForDisconnected(-1);
+        m_pTcpSocket->waitForConnected(5000);
     }
-    m_pTcpSocket->disconnect();
-    m_pTcpSocket->waitForDisconnected(-1);
 
     m_pTcpSocket->close();
-
-    m_pTcpSocket->deleteLater();
 }
 
 void MainWindow::OnRecentFile()
@@ -590,7 +586,7 @@ void MainWindow::OnSocketConnected()
 
     RemoteApp==Blender ?
             BlenderHasConnected=true :
-            MayaHasConnected = true;
+            MayaHasConnected != BlenderHasConnected;
 
     qDebug() << "Maya"  << MayaHasConnected
              << "Blender " << BlenderHasConnected

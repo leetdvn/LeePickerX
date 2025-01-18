@@ -5,10 +5,10 @@
 #include <qforeach.h>
 #include <mainwindow.h>
 
-
 LeePickerScene::LeePickerScene(QObject *parent)
     : QGraphicsScene{parent}
 {
+    //initialization
     QString itemName = "Demo";
     QString inImage(":/icons/color.png");
     //create item demo
@@ -20,6 +20,7 @@ LeePickerScene::LeePickerScene(QObject *parent)
 
 LeePickerItem* LeePickerScene::CreateItem(const QString inItemName, QString inImage, int itemId)
 {
+    //Factory pattern
     LeePickerItem* item = new LeePickerItem(inItemName,inImage,itemId);
     item->SetItemId(items().length() + 1);
     addItem(item);
@@ -28,6 +29,7 @@ LeePickerItem* LeePickerScene::CreateItem(const QString inItemName, QString inIm
 
 QList<LeePickerItem*> LeePickerScene::GetSelectedItems()
 {
+    ///@Get Item Selections
     QList<LeePickerItem*> pItems = QList<LeePickerItem*>();
     QList<QGraphicsItem*> Items = selectedItems();
 
@@ -43,6 +45,7 @@ QList<LeePickerItem*> LeePickerScene::GetSelectedItems()
 
 QList<LeePickerItem *> LeePickerScene::GetAllItems()
 {
+    //@get All Item in Scene
     QList<LeePickerItem*> pItems = QList<LeePickerItem*>();
     QList<QGraphicsItem*> Items = items();
 
@@ -58,6 +61,7 @@ QList<LeePickerItem *> LeePickerScene::GetAllItems()
 
 QJsonArray LeePickerScene::GetDataAllObject()
 {
+    //get JsonObect all Item
     QList<LeePickerItem*> AllItems = GetAllItems();
 
     QJsonArray jsArray{};
@@ -74,6 +78,7 @@ QJsonArray LeePickerScene::GetDataAllObject()
 
 QJsonObject LeePickerScene::GetSceneData(const QString &inViewName)
 {
+    //Get Scene Data return Json Object
     QJsonArray jsArray = GetDataAllObject();
     MainWindow* LeePicker=MainWindow::Instance();
 
@@ -89,6 +94,7 @@ QJsonObject LeePickerScene::GetSceneData(const QString &inViewName)
 
 void LeePickerScene::ClearSelectionProcess()
 {
+    //Clear Process
     MainWindow* LeePicker=MainWindow::Instance();
     bool isAvalible = LeePicker->IsAppAvalible();
 
@@ -112,6 +118,7 @@ void LeePickerScene::ClearSelectionProcess()
 
 void LeePickerScene::OnSelectionChanged(){
 
+    //OnSelection Changed
     QList<LeePickerItem*> Items = GetSelectedItems();
     if(Items.length() <= 0){
         return ClearSelectionProcess();

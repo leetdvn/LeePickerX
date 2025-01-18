@@ -16,6 +16,7 @@ class leePicker;
 }
 QT_END_NAMESPACE
 
+///init MainWindow // Implementation Singleton Pattern
 class MainWindow : public QMainWindow , public Singleton<MainWindow>
 {
     Q_OBJECT
@@ -39,15 +40,11 @@ public:
     //         m_Instance=new MainWindow();
     //     return m_Instance;
     // }
-    bool IsConnectedWithMaya(){return MayaHasConnected;}
-
-    bool isConnectedWIthBlender(){return BlenderHasConnected;}
-
     void ReInitSocket(const SoftWareApp inApp);
 
     QPointer<QTcpSocket> GetTcpSocket();
 
-    bool IsConnected();
+    bool IsConnected(){ return RemoteApp == Maya ? MayaHasConnected : BlenderHasConnected;}
 signals:
 
     void OnColorChanged(QColor &Color);

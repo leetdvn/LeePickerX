@@ -50,5 +50,6 @@ def PickerClearSelection():
 def PickerGetSelection():
     command="import maya.cmds as cmds\ncmds.ls(sl=1)"
     
-    try: send_command(command)
+    print(command)
+    try: return send_command(command)
     except socket.error: raise("connection false: Error:Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";")
