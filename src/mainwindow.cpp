@@ -153,10 +153,10 @@ void MainWindow::timerEvent(QTimerEvent *event)
 
 void MainWindow::InitializeFuns()
 {
-    //Signal SLot Window
+    ///Signal SLot Window
     connect(ui->tabWidget, SIGNAL(tabBarDoubleClicked(int)), this, SLOT(OnNewTab(int)));
 
-    //Signals slot Action
+    ///Signals slot Action
     connect(ui->NewShapeAct,SIGNAL(triggered(bool)),this,SLOT(CreateNewShape(bool)));
 
     connect(ui->NewScene,SIGNAL(triggered(bool)),this,SLOT(OnNewFile()));
@@ -166,8 +166,8 @@ void MainWindow::InitializeFuns()
     connect(ui->SaveAs,&QAction::triggered,this,[&](){OnSaveAs();});
 
     connect(ui->Quit,SIGNAL(triggered(bool)),this,SLOT(OnPickerExit()));
-    //toogle grid
-    connect(ui->actionLeeGrid, SIGNAL(triggered()), this, SLOT(OnToogleGrid()));
+    ///toogle grid
+    //connect(ui->actionLeeGrid, SIGNAL(triggered()), this, SLOT(OnToogleGrid()));
 
     connect(ui->actionConnectApp,SIGNAL(triggered(bool)),this,SLOT(OnConnectAppChanged(bool)));
 
@@ -177,10 +177,18 @@ void MainWindow::InitializeFuns()
 
     connect(ui->Save,SIGNAL(triggered(bool)),this,SLOT(OnSave()));
 
-    //Flip Action
+    ///Flip Action
     connect(ui->actionFlip_Horizontal,&QAction::triggered,this,[&](){OnFlip(false);});
 
     connect(ui->actionFlip_Vertical ,&QAction::triggered,this,[&](){OnFlip(true);});
+
+    ///Align Selections
+    connect(ui->actionLefttoRight,&QAction::triggered,this,[&](){AlignHorizontal();});
+    connect(ui->actionRighttoLeft,&QAction::triggered,this,[&](){AlignHorizontal(true);});
+    connect(ui->actionVToptoBottom,&QAction::triggered,this,[&](){AlignVertical(false);});
+    connect(ui->actionVBottomtoTop,&QAction::triggered,this,[&](){AlignVertical(true);});
+    connect(ui->SortVericalAct,&QAction::triggered,this,[&](){AlignVertical(false);});
+    connect(ui->SortHorizontalAct,&QAction::triggered,this,[&](){AlignHorizontal(true);});
 
 }
 
@@ -553,7 +561,9 @@ void MainWindow::OnSaveAs()
 {
     QString fileName = fileDialog(this);
 
-    OnSave();
+    if(fileName.isEmpty() || fileName.isNull()) return;
+
+    //OnSave();
     QString message = QString("Saved  :  %1").arg(fileName);
 
     AddToLog(Completed,message,true);
@@ -633,6 +643,29 @@ void MainWindow::LoadDataFile(QString &inPath)
     }
 
     //JsonImport()
+}
+
+void MainWindow::AlignHorizontal(bool fromRight)
+{
+    QPointer<LeePickerScene> currentScene = getScene(ui->tabWidget->currentWidget());
+
+    if(currentScene==nullptr) return;
+
+    currentScene->AlignSelectedItems(fromRight,true);
+
+    qDebug() << "Align" << Qt::endl;
+}
+
+void MainWindow::AlignVertical(bool fromBottom)
+{
+
+    QPointer<LeePickerScene> currentScene = getScene(ui->tabWidget->currentWidget());
+
+    if(currentScene==nullptr) return;
+
+    currentScene->AlignSelectedItems(fromBottom);
+
+
 }
 
 void MainWindow::OnRecentFile()

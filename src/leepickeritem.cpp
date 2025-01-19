@@ -153,6 +153,7 @@ void LeePickerItem::LoadDataFromJsObject(const QJsonObject inObject)
     ///Null Obj
     if(inObject.isEmpty()) return;
 
+    ///Load Metadata Properties
     for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
     {
         const QString iKey = metaObject()->property(i).name();
@@ -161,6 +162,13 @@ void LeePickerItem::LoadDataFromJsObject(const QJsonObject inObject)
 
     }
 
+    ///Update Item Posision
+    QGraphicsItem* item = qobject_cast<QGraphicsItem*>(this);
+    if(item !=nullptr){
+        item->setPos(QPoint(iX,iY));
+        item->update();
+    }
+    this->update();
 }
 
 #pragma region Item Sets Functions {

@@ -103,6 +103,9 @@ private:
 
     void LoadDataFile(QString &inPath);
     ///
+    void AlignHorizontal(bool fromRight=false);
+    void AlignVertical(bool fromBottom=false);
+
 
 private slots:
     ///Connection Slot

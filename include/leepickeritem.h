@@ -107,7 +107,9 @@ public:
 
     void SetMayaActive(bool isActive, bool isAdd=false);
 
-    void SetItemPosX(qreal newX){iX=newX;}
+    void SetItemPosX(qreal newX){
+        iX=newX;
+    }
 
     void SetItemPosY(qreal newY){iY=newY;}
 

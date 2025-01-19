@@ -40,10 +40,15 @@ public:
         emit SceneLockChanged(inLock);
     }
 
+    void AlignSelectedItems(bool isLeftToRight,bool isVertical=false);
+
 signals:
     void SceneNameChanged(QString newName);
     void SceneLockChanged(bool isLock);
 protected:
+
+    ///Find Item with X or Y Bigest or Smallest value
+    qreal GetBigestSmallest(bool isBigest,bool isVertical);
 
     void ClearSelectionProcess();
     QString iSceneName;

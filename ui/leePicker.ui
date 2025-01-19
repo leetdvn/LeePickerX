@@ -320,7 +320,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <addaction name="actionConnectApp"/>
    <addaction name="NewShapeAct"/>
    <addaction name="ColorAct"/>
-   <addaction name="actionLeeGrid"/>
    <addaction name="SortHorizontalAct"/>
    <addaction name="SortVericalAct"/>
   </widget>

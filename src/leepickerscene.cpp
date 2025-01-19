@@ -106,7 +106,6 @@ void LeePickerScene::LoadSceneData(QJsonObject &inItems)
 
     ///Load Item
     foreach(const QJsonValue& obj, JsItems){
-
         ///Create Item and load Value
         LeePickerItem* newItem = CreateItem("newItem");
         newItem->LoadDataFromJsObject(obj.toObject());
@@ -121,6 +120,53 @@ void LeePickerScene::SetISceneName(const QString inNewName)
     if(inNewName != iSceneName)
         iSceneName = inNewName;
     emit SceneNameChanged(inNewName);
+}
+
+void LeePickerScene::AlignSelectedItems(bool isLeftToRight, bool isVertical)
+{
+    QList<QGraphicsItem*> Selections = selectedItems();
+
+    if(Selections.length() <= 0) return;
+
+    int count=0;
+    bool isBigest = isLeftToRight ? true : false;
+    qreal baseXY = GetBigestSmallest(!isBigest,isVertical);
+
+    for(auto &it : Selections)
+    {
+        qreal valueXY = isVertical ? it->pos().x() : it->pos().y();
+        if(valueXY ==baseXY) continue;
+        isVertical ?
+            it->setPos(QPoint(it->pos().x(),baseXY)) :
+            it->setPos(QPoint(baseXY,it->pos().y()));
+        it->update();
+    }
+    qDebug() << "base XY " << baseXY << Qt::endl;
+
+}
+
+qreal LeePickerScene::GetBigestSmallest(bool isBigest, bool isVertical)
+{
+    QList<LeePickerItem*> Selections = GetSelectedItems();
+
+    if(Selections.length() <= 0) return 0;
+
+    qreal result=0;
+    int count=0;
+    for(auto &it : Selections)
+    {
+        qreal posXY = isVertical ? it->PosY() : it->PosX();
+        if(count ==0) result=posXY;
+
+        if(isBigest){
+            if(posXY > result) result = posXY;
+        }
+        else{
+            if(posXY < result) result = posXY;
+        }
+        count++;
+    }
+    return result;
 }
 
 void LeePickerScene::ClearSelectionProcess()
