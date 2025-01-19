@@ -107,7 +107,6 @@ void LeePickerItem::InitVariant()
     for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
     {
         qDebug() << metaObject()->property(i).name() << metaObject()->property(i).read(this) << Qt::endl;
-        metaObject()->property(i);
 
         QString img = property(metaObject()->property(i).name()).toString();
 
@@ -137,15 +136,31 @@ QJsonObject LeePickerItem::toJsonObject()
     InitVariant();
     QJsonObject obj;
     int count=0;
-    for(auto& iv : ItemVaribles){
-        if(count >= VItems.count()) break;
-        if(VItems[count].isNull() || !VItems[count].isValid()) continue;
-        QString str = VItems[count].toString();
-        LEEJOBJ(obj,iv,str)
-        count++;
+    for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
+    {
+        const QString iKey = metaObject()->property(i).name();
+        QVariant iv = metaObject()->property(i).read(this);
+        qDebug() << "Name : " << metaObject()->property(i).name() << "Property : " <<  metaObject()->property(i).read(this) << Qt::endl;
+        LEEJOBJ(obj,iKey,iv.toJsonValue());
+
     }
 
     return obj;
+}
+
+void LeePickerItem::LoadDataFromJsObject(const QJsonObject inObject)
+{
+    ///Null Obj
+    if(inObject.isEmpty()) return;
+
+    for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
+    {
+        const QString iKey = metaObject()->property(i).name();
+        QVariant iv = inObject[iKey].toVariant();
+        metaObject()->property(i).write(this,iv);
+
+    }
+
 }
 
 #pragma region Item Sets Functions {
@@ -621,7 +636,7 @@ void LeePickerItem::AssignSelection()
                        "Blender is not Runing";
 
     QString msgPort = interactApp == Maya ?
-                         "Error:Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";" :
+                         "Port not found exec Mel commandPort -name \"localhost:54322\" -sourceType \"python\";" :
                          "Command Port Addon Not Found..";
 
     //Check Maya Running
@@ -634,8 +649,6 @@ void LeePickerItem::AssignSelection()
             LeePicker->AddToLog(Error,msgApp,true,5);
             return;
         }
-        ///Send MayA Command
-        const char* funcName = "send_command";
 
         ///Init Maya Command
         const char* Cmd = interactApp == Maya ?
@@ -643,10 +656,18 @@ void LeePickerItem::AssignSelection()
                                         "import bpy\nselected_obj = [obj.name for obj in bpy.context.selected_objects]\nprint(selected_obj)";
 
         QString selections  = PyExecResultStr(Cmd);
-        qDebug() << "file " << appUltils << "selection " << selections << Qt::endl;
+
+        if(selections.isEmpty() || selections.isNull()){
+            LeePicker->AddToLog(Error,msgPort,true);
+            return;
+        }
         //save value to assign
-        if(!selections.isEmpty() && !selections.startsWith("[]"))
-            SaveAssignObject(this,interactApp,selections);
+        if(!selections.isEmpty() && !selections.startsWith("[]")){
+            //SaveAssignObject(this,interactApp,selections);
+            SetDataStr(selections);
+            SetDataServStr(interactApp == Maya ? "Maya" : "Blender");
+            SetDisplayName(DisplayName);
+        }
 
         //Log Result
         LeePicker->AddToLog(Log,QString("select %1").arg(selections),true);

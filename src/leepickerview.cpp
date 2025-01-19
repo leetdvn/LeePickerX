@@ -40,6 +40,7 @@ QList<LeePickerItem *> LeePickerView::SelectedItems()
     return leeObj;
 }
 
+
 void LeePickerView::InitializePolicy()
 {
     const QString bgrfile=":/icons/author.png";

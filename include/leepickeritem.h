@@ -46,6 +46,10 @@ class LeePickerItem : public QGraphicsObject
     Q_PROPERTY(bool isFlipHorizontal READ isHorizontal WRITE SetHorizontal NOTIFY HorizontalChanged FINAL)
     Q_PROPERTY(bool isFlipVertical READ isVertial WRITE SetVertical NOTIFY FlipVerticalChanged FINAL)
     Q_PROPERTY(qreal iZLayer READ ZDeepthLayer WRITE SetZLayer NOTIFY LayerZChanged FINAL)
+    Q_PROPERTY(qreal iX READ PosX WRITE SetItemPosX NOTIFY PosXChanged FINAL)
+    Q_PROPERTY(qreal iY READ PosY WRITE SetItemPosY NOTIFY PosYChanged FINAL)
+    Q_PROPERTY(QString iServerApp READ DataServerApp WRITE SetDataServStr NOTIFY DataServChanged FINAL)
+    Q_PROPERTY(QString iDataSelect READ DataSelect WRITE SetDataStr NOTIFY DataSelectChanged FINAL)
 
 public:
     LeePickerItem(QString itemName = NULL, QString Image = nullptr, int objID = -1 ,QRectF inRectF = QRectF(0, 0, 80, 80));
@@ -71,7 +75,8 @@ public:
     double PosX(){return pos().x();}
     double PosY(){return pos().y();}
     qreal ZDeepthLayer(){return iZLayer;}
-
+    QString DataSelect(){return iDataSelect;}
+    QString DataServerApp() {return iServerApp;}
     //WRITE
     void SetHorizontal(bool isHz){
         isFlipHorizontal=isHz;
@@ -102,6 +107,20 @@ public:
 
     void SetMayaActive(bool isActive, bool isAdd=false);
 
+    void SetItemPosX(qreal newX){iX=newX;}
+
+    void SetItemPosY(qreal newY){iY=newY;}
+
+    void SetDataStr(const QString newStr){
+        iDataSelect = newStr;
+        emit DataSelectChanged(newStr);
+    }
+
+    void SetDataServStr(const QString newStr){
+        iServerApp = newStr;
+        emit DataServChanged(newStr);
+    }
+
     //check Item Has Assinged
     bool IsAssigned();
 
@@ -110,6 +129,7 @@ public:
 
     QJsonObject toJsonObject();
 
+    void LoadDataFromJsObject(const QJsonObject inObject);
 signals:
     //Notify
     void nameChanged(const QString& newName);
@@ -121,6 +141,10 @@ signals:
     void FlipVerticalChanged(const bool isVertical);
     void LayerZChanged(const qreal inZLayer);
 
+    void PosXChanged(const qreal newX);
+    void PosYChanged(const qreal newY);
+    void DataSelectChanged(const QString newStr);
+    void DataServChanged(const QString newServ);
 protected:
 
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* ev) override;
@@ -135,6 +159,8 @@ protected:
     int itemId;
     QColor iColor;
     QString iColorStr;
+    QString iDataSelect;
+    QString iServerApp;
     QPixmap iPixmap;
 
     //private Funtion
@@ -154,7 +180,7 @@ protected:
 
     qreal iAlpha;
     qreal iZLayer;
-
+    qreal iX,iY;
     SoftWareApp iApp;
 
     QPointer<QAction> PinAct;

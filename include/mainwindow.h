@@ -43,6 +43,9 @@ public:
     void ReInitSocket(const SoftWareApp inApp);
 
     QPointer<QTcpSocket> GetTcpSocket();
+
+    QList<LeePickerScene*> GetAllTabScenes();
+
 signals:
 
     void OnColorChanged(QColor &Color);
@@ -98,6 +101,7 @@ private:
 
     void InitSocket(QHostAddress inhost,quint16 inPort);
 
+    void LoadDataFile(QString &inPath);
     ///
 
 private slots:

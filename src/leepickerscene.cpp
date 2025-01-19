@@ -92,6 +92,37 @@ QJsonObject LeePickerScene::GetSceneData(const QString &inViewName)
     return sceneData;
 }
 
+void LeePickerScene::LoadSceneData(QJsonObject &inItems)
+{
+
+    ///Check Item Obj
+    if(inItems.isEmpty()) return;
+
+    QJsonArray JsItems = inItems["Items"].toArray();
+
+    ///Check Array Json
+    if(JsItems.isEmpty()) return;
+
+
+    ///Load Item
+    foreach(const QJsonValue& obj, JsItems){
+
+        ///Create Item and load Value
+        LeePickerItem* newItem = CreateItem("newItem");
+        newItem->LoadDataFromJsObject(obj.toObject());
+    }
+
+}
+
+void LeePickerScene::SetISceneName(const QString inNewName)
+{
+    if(inNewName.isEmpty() || inNewName.isNull()) return ;
+
+    if(inNewName != iSceneName)
+        iSceneName = inNewName;
+    emit SceneNameChanged(inNewName);
+}
+
 void LeePickerScene::ClearSelectionProcess()
 {
     //Clear Process

@@ -66,33 +66,33 @@ MainWindow::~MainWindow()
 void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear, int inSecond)
 {
     if(inMessage =="") return;
-    QStringList splitMes =  inMessage.split(":");
-    QString title = splitMes.count() >=0 ? splitMes[0] : inMessage;
+    QString title;
 
-    QString mess = splitMes.count() >=2  ? splitMes[1] : QString();
     QString result;
     switch (inLog) {
     case Log:{
+        title = "Log : ";
         result = QString("<font color=\"white\">%1</font>").arg(title);
-        result +=mess;
         break;
     }
     case Warning:{
+        title = "Warning : ";
         result = QString("<font color=\"yellow\">%1</font>").arg(title);
-        result += mess;
         break;
     }
     case Error:{
+        title = "Error : ";
         result = QString("<font color=\"red\">%1</font>").arg(title);
-        result += mess;
         break;
     }
     case Completed:{
+        title = "Completed : ";
         result = QString("<font color=\"cyan\">%1</font>").arg(title);
-        result += mess;
         break;
     }
+
     };
+    result += inMessage;
 
     qDebug () << "Reuslt : " << result << Qt::endl;
     QString CLog = !isClear ? ui->LogPicker->toHtml() : QString();
@@ -291,12 +291,12 @@ void MainWindow::tabSetup(bool newfile)
     LeePickerView* view = new LeePickerView(curr);
     view->setObjectName("Main");
     QString graphName = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
-    view->setObjectName(graphName);
     LeePickerScene* scene = new LeePickerScene();
-    scene->setObjectName("leeScene");
+    scene->SetISceneName(QString("scene_%1").arg(graphName));
     view->setScene(scene);
     if (curr->objectName() =="mainTab"){
         ui->GraphicsLayout->addWidget(view);
+        scene->SetISceneName("Main");
     }
     else
         layout->addWidget(view);
@@ -380,6 +380,11 @@ void MainWindow::OnTabRename(const QString &inNewName)
     qDebug() << "info " << inNewName << Qt::endl;
 
     if (!inNewName.isEmpty()) {
+        QWidget* curentWidget = ui->tabWidget->currentWidget();
+        LeePickerScene* currentScene = getScene(curentWidget);
+        if(currentScene !=Q_NULLPTR){
+            currentScene->SetISceneName(QString("scene_").arg(inNewName));
+        }
         ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), inNewName);
     }
 }
@@ -468,21 +473,53 @@ void MainWindow::OnColorChoise()
     emit OnColorChanged(color);
 }
 
+QList<LeePickerScene *> MainWindow::GetAllTabScenes()
+{
+    QList<LeePickerScene*> Scenes = QList<LeePickerScene*>();
+
+    int tabNum = ui->tabWidget->count();
+    if(tabNum <= 0) return Scenes;
+
+    for(int i =0 ; i < tabNum ; ++i){
+
+        QWidget* wg = ui->tabWidget->widget(i);
+        LeePickerScene* scene = getScene(wg);
+        if(scene == nullptr) continue;
+        QString tabName = ui->tabWidget->tabText(i);
+        scene->setObjectName(tabName);
+        Scenes.append(scene);
+        //if(wg->tab)
+    }
+    return Scenes;
+}
+
+
 void MainWindow::OnSave()
 {
-    LeePickerScene* currentScene =  getScene(ui->tabWidget->currentWidget());
-    if(currentScene==Q_NULLPTR) return;
 
-    QJsonArray jsArray  = currentScene->GetDataAllObject();
+    QList<LeePickerScene*> ListScenes = GetAllTabScenes();
+    if(ListScenes.length() <= 0) return;
 
+    QJsonArray jsScene;
+    QJsonObject PickerObj;
 
-    QJsonObject total;
-    LEEJOBJ(total,ui->tabWidget->tabText(0),jsArray);
+    int count=0;
+    for(auto &scene : ListScenes){
+        QJsonArray jsArray  = scene->GetDataAllObject();
+        QJsonObject sceneObj;
+        LEEJOBJ(sceneObj,"TextName",ui->tabWidget->tabText(count));
+        LEEJOBJ(sceneObj,"SceneName",scene->GetISceneName());
+        LEEJOBJ(sceneObj,"SceneLock",scene->GetISceneLocked());
+        LEEJOBJ(sceneObj,"Items",jsArray);
+        jsScene.append(sceneObj);
+        count++;
+    }
 
+    LEEJOBJ(PickerObj,"LeePicker",jsScene);
     QString ePath = QDir::currentPath() + "/Saved/test.Leetdvn";
 
     QFile jfile(ePath);
-    QByteArray byteArray = QJsonDocument(total).toJson();
+    QByteArray byteArray = QJsonDocument(PickerObj).toJson();
 
     JsonExport(jfile,byteArray,true);
     QString message = "Saved  %1";
@@ -499,10 +536,17 @@ void MainWindow::OnSave()
 
 void MainWindow::OnFileOpen()
 {
+    QString filter = "JSON (*.json)", source{};
+
     QString fileOpen = fileDialog(this);
 
+    if(fileOpen.isNull() || fileOpen.isEmpty()) return ;
+
     QString message = QString("Open file :  %1").arg(fileOpen);
+
     AddToLog(Completed,message,true);
+
+    return LoadDataFile(fileOpen);
 }
 
 void MainWindow::OnSaveAs()
@@ -555,6 +599,40 @@ void MainWindow::InitSocket(QHostAddress inhost, quint16 inPort)
     }
 
     m_pTcpSocket->close();
+}
+
+void MainWindow::LoadDataFile(QString &inPath)
+{
+    QFile inDatafile(inPath);
+    if(!inDatafile.exists()) {
+        qDebug() << "file does not exists.." << Qt::endl;
+        return ;
+    }
+
+    ///Ready All Data
+    QByteArray data = JsonImport(inDatafile,true);
+
+    QJsonDocument doc = QJsonDocument::fromJson(data);
+    QJsonObject rootObj = doc.object();
+    QJsonArray dataTab = rootObj["LeePicker"].toArray();
+
+    int count=0;
+    foreach(const QJsonValue &v, dataTab) {
+        QJsonObject tabOther = v.toObject();
+        QString TabName = tabOther["TextName"].toString();
+        QJsonArray Items = v.toObject().value("Items").toArray();
+        if(count > 0){
+            AddTabSimple(TabName);
+            ui->tabWidget->setTabText(count,TabName);
+        }
+
+        LeePickerScene* scene  = getScene(ui->tabWidget->widget(count));
+
+        scene->LoadSceneData(tabOther);
+        count++;
+    }
+
+    //JsonImport()
 }
 
 void MainWindow::OnRecentFile()

@@ -143,11 +143,10 @@ static QByteArray JsonImport(QFile &file, bool Hex=0)
     data = file.readAll();
     file.close();
 
-    QString copyData{};
+    QByteArray copyData{};
     if(Hex){
-        copyData= data;
-        copyData = QByteArray::fromHex(copyData.toUtf8());
-
+        copyData = QByteArray::fromHex(data);
+        return copyData;
         // data = QByteArray::fromRawData(data,sizeof(data));
         // QJsonDocument doc = QJsonDocument::fromJson(copyData.toUtf8());
         // QJsonObject rootObj = doc.object();
@@ -160,12 +159,11 @@ static QByteArray JsonImport(QFile &file, bool Hex=0)
         //     qDebug() << "data : " << color.toString() <<Qt::endl;
 
         // }
-        qDebug() << "data : " << copyData.toUtf8() <<Qt::endl;
 
     }
 
     //QString cData= QString::fromUtf16((char16_t*)hexEncode.data());
-    return copyData.toUtf8();
+    return data;
 }
 
 
@@ -195,8 +193,9 @@ static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inVa
 {
     if(inObj==nullptr) return;
     //save value to assign
-    inObj->setProperty("select",inValue);
-    inObj->setProperty("App",inApp);
+    //QString app = QtEnumToString(inApp);
+
+
 }
 
 
