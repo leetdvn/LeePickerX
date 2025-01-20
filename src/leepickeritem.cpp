@@ -6,7 +6,6 @@
 #include <QGraphicsScene>
 #include <QMenu>
 #include <QWidgetAction>
-#include <QComboBox>
 #include <QHBoxLayout>
 #include <QLineEdit>
 #include <QPixmap>
@@ -17,6 +16,7 @@
 #include <LeePickerPython.h>
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
+#include <QStyledItemDelegate>
 
 
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
@@ -26,6 +26,8 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
     ,SEditor(new Ui::ScriptEditor)
     ,iColor(Qt::blue)
     ,iRectF(inRectF)
+    ,iZLayer(1)
+    ,isize(1)
 {
 
     //Initialization
@@ -38,14 +40,28 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
 
     setProperty("Pin",false);
     //Default Bgr Layer 1
-    setZValue(1);
+    setZValue(iZLayer);
+
+    rX = inRectF.x();
+    rY = inRectF.y();
+    rH = inRectF.height();
+    rW = inRectF.width();
 }
 
 QRectF LeePickerItem::boundingRect() const
 {
+    // if (!imgfile.isNull()) {
+    //     qreal wMin = 80;
+    //     QFontMetrics fm(QFont(DisplayName, isize));
+    //     double ratio{};
+    //     int width = fm.horizontalAdvance(DisplayName);
+    //     ratio = width < 80 ? 80 : width * 1.25;
+    //     return QRectF(iPixmap.rect().x(),iPixmap.rect().y(), ratio, iPixmap.height());
+    // }
 
     ///Reimplemented Protected
     return iRectF;
+;
 }
 
 void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -74,6 +90,10 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     if(isFlipHorizontal || isFlipVertical)
         painter->setTransform(transform().inverted(),true);
 
+    ///Size
+    painter->setFont(QFont("Arial",isize,QFont::Bold));
+    painter->setRenderHint(QPainter::Antialiasing, true);
+
     UpdateDisplayName(painter);
     painter->setOpacity(iAlpha);
 
@@ -92,18 +112,6 @@ void LeePickerItem::UpdateDisplayName(QPainter *painter)
 
 void LeePickerItem::InitVariant()
 {
-    ///Inplementation Data Json
-    VItems.insert(0,DisplayName);
-    VItems.insert(1,imgfile);
-    VItems.insert(2,iColor);
-    VItems.insert(3,pos().x());
-    VItems.insert(4,pos().y());
-    VItems.insert(5,isPined);
-    VItems.insert(6,itemId);
-    QByteArray scr = iScript.toUtf8();
-    VItems.insert(7,scr.toHex());
-    VItems.insert(8,property("select"));
-
     for(int i = metaObject()->propertyOffset(); i < metaObject()->propertyCount(); ++i)
     {
         qDebug() << metaObject()->property(i).name() << metaObject()->property(i).read(this) << Qt::endl;
@@ -261,9 +269,8 @@ void LeePickerItem::SetMayaActive(bool isActive,bool isAdd)
 bool LeePickerItem::IsAssigned()
 {
     ///Is Assign Connect App == Check Properties
-    QVariant selectV = property("select");
 
-    return selectV.toString().isEmpty() ? false : true;
+    return iDataSelect.isEmpty() || iDataSelect.isNull() ? false : true;
 }
 
 void LeePickerItem::SetFlip(bool isVertical)
@@ -319,8 +326,7 @@ void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
     if (ev->button() == Qt::LeftButton)
     {
         //this->~leePatternItem();
-        QVariant selectV = property("select");
-        if(!selectV.isValid() || selectV.isNull()) return QGraphicsItem::mousePressEvent(ev);
+        if(iDataSelect.isEmpty() || iDataSelect.isNull()) return QGraphicsItem::mousePressEvent(ev);
 
         qDebug() << "info left mouse click." << Qt::endl;
         OnSelectionClicked();
@@ -369,35 +375,38 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
 
     QString pinText = property("Pin").toBool() ? "UnPin Item" : "Pin Item";
     PinAct = new QAction(pinText);
-    //_menu->setAttribute(Qt::WA_DeleteOnClose,true);
-    //QMenu* edit = _menu->addMenu("edit button");
-    iItemMenus->addAction("assign selection", [&]() { OnAssignSelection();});
 
-    //_menu->addSeparator();
-    //_menu->addAction("test Action", [&]() {on_testCommand(); });
-    iItemMenus->addAction("scripts editor", [&]() { OnInitScriptEditor(); });
+    if(iZLayer > 0){
+        //_menu->setAttribute(Qt::WA_DeleteOnClose,true);
+        //QMenu* edit = _menu->addMenu("edit button");
+        iItemMenus->addAction("assign selection", [&]() { OnAssignSelection();});
 
-    iItemMenus->addAction(pinText, [&]() { OnPinItem(); });
+        //_menu->addSeparator();
+        //_menu->addAction("test Action", [&]() {on_testCommand(); });
+        iItemMenus->addAction("scripts editor", [&]() { OnInitScriptEditor(); });
 
-    iItemMenus->addAction("test Maya Cmds", [&]() { OnTestMayaCmds(); });
+        iItemMenus->addAction(pinText, [&]() { OnPinItem(); });
 
-    iItemMenus->addAction("test Blender Cmds", [&]() { OnTestBlenderCmds(); });
+        iItemMenus->addAction("test Maya Cmds", [&]() { OnTestMayaCmds(); });
 
-    //PinActionSetUp();
-    QString  menuStyle(
-        "QMenu::item{"
-        "background-color: rgb(0, 170, 0);"
-        "color: rgb(255, 255, 255);"
-        "}"
-        "QMenu::item:selected{"
-        "background-color: rgb(0, 127, 85);"
-        "color: rgb(255, 255, 255);"
-        "}"
-        );
-    iItemMenus->setStyleSheet(menuStyle);
-    iItemMenus->addAction("change shape", [this]() {OnShapeChanged();});
-    iItemMenus->addSeparator();
-    iItemMenus->addAction("delete item", [&]() {OnDelete(); });
+        iItemMenus->addAction("test Blender Cmds", [&]() { OnTestBlenderCmds(); });
+
+        //PinActionSetUp();
+        QString  menuStyle(
+            "QMenu::item{"
+            "background-color: rgb(0, 170, 0);"
+            "color: rgb(255, 255, 255);"
+            "}"
+            "QMenu::item:selected{"
+            "background-color: rgb(0, 127, 85);"
+            "color: rgb(255, 255, 255);"
+            "}"
+            );
+        iItemMenus->setStyleSheet(menuStyle);
+        iItemMenus->addAction("change shape", [this]() {OnShapeChanged();});
+        iItemMenus->addSeparator();
+        iItemMenus->addAction("delete item", [&]() {OnDelete(); });
+    }
     ZLayerSetup();
     iItemMenus->exec(iItemMenus->mapToParent(inPosi));
 
@@ -408,10 +417,12 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
 bool LeePickerItem::ImageIsValid()
 {
     ///Check Valid Image
-    if(iPixmap.isNull()) return false;
+    if(imgfile.isEmpty()||imgfile.isNull() || !QFile(imgfile).exists()) return false;
 
-    QPixmap pm;
-    return pm.load(imgfile);
+    QImage img(imgfile);
+    iPixmap = QPixmap::fromImage(img);
+
+    return !iPixmap.isNull();
 }
 
 SoftWareApp LeePickerItem::GetInteractApp()
@@ -429,9 +440,8 @@ void LeePickerItem::ZLayerSetup()
     ///SetUp Menu Changed ZLayer
 
     QPointer<QWidgetAction> layer = new QWidgetAction(this);
-    QPointer<QComboBox> layerOder = new QComboBox();
-
-
+    layerOder = new QComboBox();
+    layerOder->setContextMenuPolicy(Qt::NoContextMenu);
     layerOder->addItem("background",Qt::AlignHCenter);
     layerOder->addItem("on background",Qt::AlignHCenter);
 
@@ -464,16 +474,14 @@ void LeePickerItem::OnDelete()
 void LeePickerItem::OnZLayerChanged(int idx)
 {
     ///OnZLayer Changed
-    QComboBox* layerOder = qobject_cast<QComboBox*>(sender());
-
     if(layerOder == nullptr) return;
 
     qDebug () << "index ZLayer" << idx << Qt::endl;
 
 
-    int OrderNumber = layerOder->currentIndex();
-    setZValue(OrderNumber);
-    if (OrderNumber == 0) {
+    iZLayer = layerOder->currentIndex();
+    setZValue(iZLayer);
+    if (iZLayer == 0) {
         // if (MaskColor != nullptr)
         //     MaskColor = nullptr;
         // status.isMoving = false;
@@ -485,6 +493,7 @@ void LeePickerItem::OnZLayerChanged(int idx)
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setFlag(QGraphicsItem::ItemIsSelectable, true);
     }
+    qDebug() << "ZLayer" << iZLayer << Qt::endl;
     update();
 
 
@@ -496,8 +505,12 @@ void LeePickerItem::OnShapeChanged()
     QString image = BrowserImage();
     if (!QFile(image).exists()) return;
 
-    SetItemPixmap(QImage(image));
-    iRectF = QImage(image).rect();
+    QImage img(image);
+    SetItemPixmap(img);
+    SetRectX(img.rect().left());
+    SetRectY(img.rect().top());
+    SetRectH(img.rect().height());
+    SetRectW(img.rect().width());
     imgfile = image;
     update();
 }
@@ -699,22 +712,22 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
         return;
     }
     ///check empty property
-    auto pro = property("select").toString();
-    if(pro.isEmpty() || pro.isNull()) return;
 
-    auto Args = pro.toStdString();
+    if(iDataSelect.isEmpty() || iDataSelect.isNull()) return;
+
+    auto Args = iDataSelect.toStdString();
     const char* Cmd = !isAdd ?
                           isSelect ?
                           "PickerSelect" :
                           "PickerDeSelect" :
                           "PickerAddSelect";
 
-    PyExecFuncAsVoid(Cmd,interactApp,pro.toUtf8());
+    PyExecFuncAsVoid(Cmd,interactApp,iDataSelect.toUtf8());
 
 
     MainWindow* LeePicker=MainWindow::Instance();
 
-    LeePicker->AddToLog(Log,QString("Select %1").arg(pro),true);
+    LeePicker->AddToLog(Log,QString("Select %1").arg(iDataSelect),true);
     qDebug() << "Click " <<  Cmd << Qt::endl;
 }
 

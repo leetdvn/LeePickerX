@@ -26,7 +26,7 @@ def PortIsOpen():
     
 def PickerSelect(inObjects):
     if not PortIsOpen(): return
-    command =str('''import bpy\nfor o in bpy.data.objects:\n\tif o.name in {}:\n\t\to.select_set(True)''').format(inObjects)
+    command =str('''import bpy\nfor o in bpy.data.objects:\n\tif o.name in {}:\n\t\to.select_set(True)\n\telse: o.select_set(False)''').format(inObjects)
     print(command)
     send_command(command)
 

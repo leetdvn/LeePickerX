@@ -415,7 +415,7 @@ void MainWindow::OnToogleGrid()
         }
         else {
             current->setBackgroundBrush(image);
-            current->setCacheMode(QGraphicsView::CacheBackground);
+            //current->setCacheMode(QGraphicsView::CacheBackground);
         }
     }
 }
@@ -429,7 +429,7 @@ void MainWindow::OnTabChanged(int index)
     LeePickerView* current = curentWidget->findChild<LeePickerView*>();
     if(ui->actionLeeGrid->isChecked()){
         current->setBackgroundBrush(image);
-        current->setCacheMode(QGraphicsView::CacheBackground);
+        //current->setCacheMode(QGraphicsView::Ca);
 
     }
     else{

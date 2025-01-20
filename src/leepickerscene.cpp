@@ -20,8 +20,8 @@ LeePickerScene::LeePickerScene(QObject *parent)
 
 LeePickerItem* LeePickerScene::CreateItem(const QString inItemName, QString inImage, int itemId)
 {
-    //Factory pattern
-    LeePickerItem* item = new LeePickerItem(inItemName,inImage,itemId);
+    ///Factory pattern
+    LeePickerItem* item = new LeePickerItem(inItemName,inImage,itemId,QRectF(0,0,80,80));
     item->SetItemId(items().length() + 1);
     addItem(item);
     return item;

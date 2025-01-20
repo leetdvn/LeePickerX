@@ -8,6 +8,7 @@
 #include <leeGlobal.hpp>
 #include <QJsonObject>
 #include <QProcess>
+#include <QComboBox>
 
 
 QT_BEGIN_NAMESPACE
@@ -17,19 +18,6 @@ class ScriptEditor;
 QT_END_NAMESPACE
 
 class MainWindow;
-
-
-static QStringList ItemVaribles={
-    "DisplayName", //0
-    "Image", //1
-    "Color", //2
-    "PosX", //3
-    "PosY",//4
-    "Pin",//5
-    "ID",
-    "Script",
-    "Select",
-};
 
 
 
@@ -45,11 +33,16 @@ class LeePickerItem : public QGraphicsObject
     Q_PROPERTY(int itemId READ Id WRITE SetItemId NOTIFY IdChanged FINAL)
     Q_PROPERTY(bool isFlipHorizontal READ isHorizontal WRITE SetHorizontal NOTIFY HorizontalChanged FINAL)
     Q_PROPERTY(bool isFlipVertical READ isVertial WRITE SetVertical NOTIFY FlipVerticalChanged FINAL)
-    Q_PROPERTY(qreal iZLayer READ ZDeepthLayer WRITE SetZLayer NOTIFY LayerZChanged FINAL)
+    Q_PROPERTY(int iZLayer READ ZDeepthLayer WRITE SetZLayer NOTIFY LayerZChanged FINAL)
     Q_PROPERTY(qreal iX READ PosX WRITE SetItemPosX NOTIFY PosXChanged FINAL)
     Q_PROPERTY(qreal iY READ PosY WRITE SetItemPosY NOTIFY PosYChanged FINAL)
     Q_PROPERTY(QString iServerApp READ DataServerApp WRITE SetDataServStr NOTIFY DataServChanged FINAL)
     Q_PROPERTY(QString iDataSelect READ DataSelect WRITE SetDataStr NOTIFY DataSelectChanged FINAL)
+    Q_PROPERTY(qreal isize READ iSize WRITE SetItemSize NOTIFY SizeChanged FINAL)
+    Q_PROPERTY(qreal rX READ IRectX WRITE SetRectX NOTIFY RectXChanged FINAL)
+    Q_PROPERTY(qreal rY READ IRectY WRITE SetRectY NOTIFY RectYChanged FINAL)
+    Q_PROPERTY(qreal rH READ IRectH WRITE SetRectH NOTIFY RectHChanged FINAL)
+    Q_PROPERTY(qreal rW READ IRectW WRITE SetRectW NOTIFY RectWChanged FINAL)
 
 public:
     LeePickerItem(QString itemName = NULL, QString Image = nullptr, int objID = -1 ,QRectF inRectF = QRectF(0, 0, 80, 80));
@@ -74,21 +67,32 @@ public:
     bool isVertial() {return isFlipVertical;}
     double PosX(){return pos().x();}
     double PosY(){return pos().y();}
-    qreal ZDeepthLayer(){return iZLayer;}
+    int ZDeepthLayer(){return iZLayer;}
+    qreal iSize(){return isize;}
     QString DataSelect(){return iDataSelect;}
     QString DataServerApp() {return iServerApp;}
+
+    qreal IRectX(){return rX;}
+    qreal IRectY(){return rY;}
+    qreal IRectH(){return rH;}
+    qreal IRectW(){return rW;}
+
     //WRITE
     void SetHorizontal(bool isHz){
         isFlipHorizontal=isHz;
         emit HorizontalChanged(isHz);
+        update();
     }
     void SetVertical(bool isHz){
         isFlipVertical=isHz;
         emit FlipVerticalChanged(isHz);
+        update();
     }
-    void SetZLayer(qreal newDeepth) {
+    void SetZLayer(int newDeepth) {
         iZLayer=newDeepth;
+        setZValue(iZLayer);
         emit LayerZChanged(iZLayer);
+        update();
     }
 
     void SetItemName(const QString inItemName);
@@ -109,9 +113,16 @@ public:
 
     void SetItemPosX(qreal newX){
         iX=newX;
+        emit PosXChanged(newX);
     }
-
-    void SetItemPosY(qreal newY){iY=newY;}
+    void SetItemSize(qreal newsize){
+        isize=newsize;
+        emit SizeChanged(newsize);
+    }
+    void SetItemPosY(qreal newY){
+        iY=newY;
+        emit PosYChanged(newY);
+    }
 
     void SetDataStr(const QString newStr){
         iDataSelect = newStr;
@@ -122,8 +133,36 @@ public:
         iServerApp = newStr;
         emit DataServChanged(newStr);
     }
-
-    //check Item Has Assinged
+    ///set Rect
+    void SetRectX(const qreal newx)
+    {
+        rX=newx;
+        iRectF.setLeft(newx);
+        emit RectXChanged(newx);
+        update();
+    }
+    void SetRectY(const qreal newy)
+    {
+        rY=newy;
+        iRectF.setTop(newy);
+        emit RectYChanged(newy);
+        update();
+    }
+    void SetRectH(const qreal newH)
+    {
+        rH=newH;
+        iRectF.setHeight(newH);
+        emit RectHChanged(newH);
+        update();
+    }
+    void SetRectW(const qreal newW)
+    {
+        rW=newW;
+        iRectF.setWidth(newW);
+        emit RectXChanged(newW);
+        update();
+    }
+    ///check Item Has Assinged
     bool IsAssigned();
 
     //Set Flip
@@ -141,12 +180,18 @@ signals:
     void IdChanged(const int newId);
     void HorizontalChanged(const bool newHoz);
     void FlipVerticalChanged(const bool isVertical);
-    void LayerZChanged(const qreal inZLayer);
+    void LayerZChanged(const int inZLayer);
 
     void PosXChanged(const qreal newX);
     void PosYChanged(const qreal newY);
     void DataSelectChanged(const QString newStr);
     void DataServChanged(const QString newServ);
+    void SizeChanged(const qreal newsize);
+    //Rect Signals
+    void RectXChanged(const qreal newX);
+    void RectYChanged(const qreal newY);
+    void RectHChanged(const qreal newH);
+    void RectWChanged(const qreal newW);
 protected:
 
     virtual void mousePressEvent(QGraphicsSceneMouseEvent* ev) override;
@@ -180,8 +225,10 @@ protected:
 
     QString DisplayName,iScript;
 
+    qreal isize;
+    qreal rX,rY,rH,rW;
     qreal iAlpha;
-    qreal iZLayer;
+    int iZLayer;
     qreal iX,iY;
     SoftWareApp iApp;
 
@@ -189,7 +236,7 @@ protected:
 
     SoftWareApp GetInteractApp();
 
-    QList<QVariant> VItems;
+    QPointer<QComboBox> layerOder;
 
 
 private:
