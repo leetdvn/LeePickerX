@@ -60,16 +60,14 @@ void LeePickerView::InitializePolicy()
 
 void LeePickerView::wheelEvent(QWheelEvent *e)
 {
-
+    ///Zoom Middle Wheel
 
     switch (e->modifiers())
     {
         case Qt::NoModifier:{
-            //qDebug() << "Wheel Event" << Qt::endl;
             return Zoom(e);
         }
         default: {
-            //qDebug() << "Wheel Event 1" << Qt::endl;
             return QGraphicsView::wheelEvent(e);
         }
     }

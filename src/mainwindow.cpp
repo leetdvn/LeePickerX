@@ -637,8 +637,8 @@ void MainWindow::LoadDataFile(QString &inPath)
 
     QJsonDocument doc = QJsonDocument::fromJson(data);
     QJsonObject rootObj = doc.object();
-    QJsonArray dataTab = rootObj["LeePicker"].toArray();
-    RemoteApp = rootObj["InteractApp"].toVariant().toString().endsWith("Maya") ? Maya : Blender;
+    QJsonArray dataTab = rootObj[AUTHOR].toArray();
+    RemoteApp = rootObj[INTERACTAPP].toVariant().toString().endsWith("Maya") ? Maya : Blender;
     int count=0;
     foreach(const QJsonValue &v, dataTab) {
         QJsonObject tabOther = v.toObject();
@@ -677,8 +677,6 @@ void MainWindow::AlignVertical(bool fromBottom)
     if(currentScene==nullptr) return;
 
     currentScene->AlignSelectedItems(fromBottom);
-
-
 }
 
 void MainWindow::OnRecentFile()
@@ -772,4 +770,9 @@ void MainWindow::OnReadSocketData()
 {
     qDebug() << "Ready SocketData " << Qt::endl;
     mIsConnected=true;
+}
+
+void MainWindow::OnPinAction()
+{
+
 }

@@ -8,13 +8,13 @@
 LeePickerScene::LeePickerScene(QObject *parent)
     : QGraphicsScene{parent}
 {
-    //initialization
+    ///initialization
     QString itemName = "Demo";
     QString inImage(":/icons/color.png");
-    //create item demo
+    ///create item demo
     CreateItem(itemName,inImage);
 
-    //connect selection change
+    ///connect selection change
     connect(this,SIGNAL(selectionChanged()),this,SLOT(OnSelectionChanged()));
 }
 
@@ -197,5 +197,19 @@ void LeePickerScene::OnSelectionChanged(){
     if(Items.length() <= 0){
         return ClearSelectionProcess();
     }
+}
+
+void LeePickerScene::OnSelectedPin()
+{
+    QList<LeePickerItem*> Items = GetSelectedItems();
+
+    for(auto& it : Items)
+        it->SetPin(!it->LeePined());
+}
+
+void LeePickerScene::OnScenePinted()
+{
+    ///Lock Scene Pin
+    /// Do Some Thing
 }
 

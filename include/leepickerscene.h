@@ -57,6 +57,9 @@ private slots:
 
     void OnSelectionChanged();
 
+    void OnSelectedPin();
+
+    void OnScenePinted();
 };
 
 #endif // PICKERSCENE_H

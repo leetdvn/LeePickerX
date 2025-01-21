@@ -16,6 +16,10 @@ class leePicker;
 }
 QT_END_NAMESPACE
 
+
+#define AUTHOR "LeePicker"
+#define INTERACTAPP "InteractApp"
+
 ///init MainWindow // Implementation Singleton Pattern
 class MainWindow : public QMainWindow , public Singleton<MainWindow>
 {
@@ -150,7 +154,8 @@ private slots:
 
     void OnReadSocketData();
 
-
+    ///Pin Selected
+    void OnPinAction();
 };
 
 
