@@ -199,12 +199,14 @@ void LeePickerScene::OnSelectionChanged(){
     }
 }
 
-void LeePickerScene::OnSelectedPin()
+void LeePickerScene::OnSelectedPin(bool isPin)
 {
     QList<LeePickerItem*> Items = GetSelectedItems();
 
+    if(Items.length() <=0) return;
+
     for(auto& it : Items)
-        it->SetPin(!it->LeePined());
+        it->SetPin(isPin);
 }
 
 void LeePickerScene::OnScenePinted()

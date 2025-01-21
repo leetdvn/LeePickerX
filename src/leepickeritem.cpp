@@ -71,7 +71,9 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
     ///Reimplemented Protected Paint Function
     if (ImageIsValid())	{
-        QPainter::CompositionMode mode = !iIsOverlay ? QPainter::CompositionMode_SourceOver : QPainter::CompositionMode_Overlay;
+        QPainter::CompositionMode mode = !iIsOverlay ?
+                                             QPainter::CompositionMode_SourceOver :
+                                             QPainter::CompositionMode_Overlay;
         painter->drawPixmap(iRectF.toRect(), iPixmap);
         painter->setCompositionMode(mode);
     }

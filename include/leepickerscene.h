@@ -42,6 +42,8 @@ public:
 
     void AlignSelectedItems(bool isLeftToRight,bool isVertical=false);
 
+    void OnSelectedPin(bool isPin=false);
+
 signals:
     void SceneNameChanged(QString newName);
     void SceneLockChanged(bool isLock);
@@ -57,7 +59,6 @@ private slots:
 
     void OnSelectionChanged();
 
-    void OnSelectedPin();
 
     void OnScenePinted();
 };

@@ -195,7 +195,7 @@ void LeePickerView::mouseReleaseEvent(QMouseEvent *e)
 void LeePickerView::MoveSceneRect(QMouseEvent *e)
 {
 
-    //Move Scene Rect Funtions
+    ///Move Scene Rect Funtions
     if(!isRightClicked || isLocked) return QGraphicsView::mouseMoveEvent(e);
 
     QPoint delta = sScenePos - cursorPos;
