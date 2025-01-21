@@ -118,7 +118,7 @@ static bool PyExecResultAsBool(const char* inScriptPath,const char* inFileName,c
     // set system path to find correct python script
     //C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/
     QString rawpath = QString("sys.path.append(\'%1\')").arg(inScriptPath);
-    const char* chdir_cmd = rawpath.toStdString().c_str();
+    const char* chdir_cmd = rawpath.toUtf8();
 
     const char* cstr_cmd = chdir_cmd;
     // use sys to locate the script
@@ -170,7 +170,7 @@ static void PyExecFuncAsVoid(const char* inFunc,const SoftWareApp inApp=Maya,con
     // set system path to find correct python script
     //C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/
     QString rawpath = QString("sys.path.append(\'%1\')").arg(LEESCRIPTPATH);
-    const char* chdir_cmd = rawpath.toStdString().c_str();
+    const char* chdir_cmd = rawpath.toUtf8();
 
     // use sys to locate the script
     PyRun_SimpleString("import sys\n");

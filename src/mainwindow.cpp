@@ -483,6 +483,7 @@ void MainWindow::OnColorChoise()
 
 QList<LeePickerScene *> MainWindow::GetAllTabScenes()
 {
+    ///Get All Tab Scene
     QList<LeePickerScene*> Scenes = QList<LeePickerScene*>();
 
     int tabNum = ui->tabWidget->count();
@@ -504,9 +505,50 @@ QList<LeePickerScene *> MainWindow::GetAllTabScenes()
 
 void MainWindow::OnSave()
 {
+    ///Save Data
+    if(currentPath.isEmpty()|| currentPath.isNull()) return;
+
+    return SaveData(currentPath);
+}
+
+void MainWindow::OnFileOpen()
+{
+    ///File Open File Data
+    QString filter = "JSON (*.json)", source{};
+
+    QString fileOpen = fileDialog(this);
+
+    if(fileOpen.isNull() || fileOpen.isEmpty()) return ;
+
+    QString message = QString("Open file :  %1").arg(fileOpen);
+
+    AddToLog(Completed,message,true);
+
+    currentPath = fileOpen;
+    return LoadDataFile(fileOpen);
+}
+
+void MainWindow::OnSaveAs()
+{
+    ///Save Data Ass File Diglog Save
+    QString fileName = fileDialog(this,true);
+
+    if(fileName.isEmpty() || fileName.isNull()) return;
+
+    return SaveData(fileName);
+
+}
+
+void MainWindow::SaveData(const QString inPath)
+{
+    if(inPath.isEmpty()|| inPath.isNull()) return ;
+
 
     QList<LeePickerScene*> ListScenes = GetAllTabScenes();
-    if(ListScenes.length() <= 0) return;
+    if(ListScenes.length() <= 0) {
+        AddToLog(Log,"No Data To Save.",true);
+        return;
+    }
 
     QJsonArray jsScene;
     QJsonObject PickerObj;
@@ -524,52 +566,23 @@ void MainWindow::OnSave()
     }
 
     LEEJOBJ(PickerObj,"LeePicker",jsScene);
-    QString ePath = QDir::currentPath() + "/Saved/test.Leetdvn";
+    LEEJOBJ(PickerObj,"InteractApp",RemoteApp == Maya ? "Maya" : "Blender");
 
-    QFile jfile(ePath);
+    QFile jfile(inPath);
     QByteArray byteArray = QJsonDocument(PickerObj).toJson();
 
     JsonExport(jfile,byteArray,true);
     QString message = "Saved  %1";
     AddToLog(Log,message.arg(jfile.fileName()));
 
-    QFile checkFile(ePath.replace("Leetdvn","json"));
+    ///Json Check Path
+    QString jsPath = inPath;
+    QFile checkFile(jsPath.replace("Leetdvn","json"));
     QByteArray imp =  JsonImport(jfile,true);
 
     JsonExport(checkFile,imp);
 
-    qDebug() << "data : " << imp << Qt::endl;
-
 }
-
-void MainWindow::OnFileOpen()
-{
-    QString filter = "JSON (*.json)", source{};
-
-    QString fileOpen = fileDialog(this);
-
-    if(fileOpen.isNull() || fileOpen.isEmpty()) return ;
-
-    QString message = QString("Open file :  %1").arg(fileOpen);
-
-    AddToLog(Completed,message,true);
-
-    return LoadDataFile(fileOpen);
-}
-
-void MainWindow::OnSaveAs()
-{
-    QString fileName = fileDialog(this);
-
-    if(fileName.isEmpty() || fileName.isNull()) return;
-
-    //OnSave();
-    QString message = QString("Saved  :  %1").arg(fileName);
-
-    AddToLog(Completed,message,true);
-
-}
-
 
 
 void MainWindow::AddRecentFile(const QString inName)
@@ -625,7 +638,7 @@ void MainWindow::LoadDataFile(QString &inPath)
     QJsonDocument doc = QJsonDocument::fromJson(data);
     QJsonObject rootObj = doc.object();
     QJsonArray dataTab = rootObj["LeePicker"].toArray();
-
+    RemoteApp = rootObj["InteractApp"].toVariant().toString().endsWith("Maya") ? Maya : Blender;
     int count=0;
     foreach(const QJsonValue &v, dataTab) {
         QJsonObject tabOther = v.toObject();

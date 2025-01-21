@@ -35,7 +35,9 @@ enum SoftWareApp{
     Blender,
 };
 
-static QString OLDFOLDER = "./icons/";
+static QString ICONSFOLDER = "./icons/";
+
+static QString SAVEDFOLDER = "./Saved/";
 
 static bool isDir(const QString dir) { return QDir(dir).exists(); }
 
@@ -46,10 +48,10 @@ static QString getCurrentFolder(QString path) {
         QString folder(path);
         QStringList split = folder.split('/');
         folder.remove(split[split.length() - 1]);
-        OLDFOLDER = folder;
-        return OLDFOLDER;
+        ICONSFOLDER = folder;
+        return ICONSFOLDER;
     }
-    return OLDFOLDER;
+    return ICONSFOLDER;
 }
 
 template<class T>
@@ -77,7 +79,7 @@ QWidgetAction* TemplateAction(void*& action, QString label = NULL, QString name 
 static QString BrowserImage()
 {
     QString filter = "All files (*.*);;JPEG (*.jpg *.jpeg);;TIFF (*.tif);;PNG (*.png)";
-    QString ImgPath = QFileDialog::getOpenFileName(nullptr, " image choise ", OLDFOLDER,filter);
+    QString ImgPath = QFileDialog::getOpenFileName(nullptr, " image choise ", ICONSFOLDER,filter);
     getCurrentFolder(ImgPath);
     return ImgPath;
 }
@@ -200,10 +202,12 @@ static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inVa
 
 
 //file dialog
-static QString fileDialog(QWidget* main)
+static QString fileDialog(QWidget* main,bool isSave=false)
 {
     QString filter = "LeePicker (*.Leetdvn)";
-    return QFileDialog::getOpenFileName(main, ("Lee Picker file Open Window"), OLDFOLDER, filter, &filter);
+    return isSave ?
+        QFileDialog::getSaveFileName(main, ("Lee Picker file Save As Window"), SAVEDFOLDER, filter, &filter) :
+        QFileDialog::getOpenFileName(main, ("Lee Picker file Open Window"), SAVEDFOLDER, filter, &filter);
 }
 
 static QString GetAppCommand(const SoftWareApp inApp){

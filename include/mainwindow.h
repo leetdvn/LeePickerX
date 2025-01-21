@@ -67,6 +67,8 @@ private:
 
     QStringList recentfiles;
 
+    QString currentPath;
+
     void InitializeFuns();
 
     void CustomNewTab(QString newName,int type=0);
@@ -106,7 +108,8 @@ private:
     void AlignHorizontal(bool fromRight=false);
     void AlignVertical(bool fromBottom=false);
 
-
+    ///Saving
+    void SaveData(const QString inPath);
 private slots:
     ///Connection Slot
     void CreateNewShape(bool ischecked=0);
@@ -122,18 +125,24 @@ private slots:
     void OnNewItem();
     void OnPickerExit();
     void OnColorChoise();
+    ///On Save
     void OnSave();
 
+    ///File Exploder Open
     void OnFileOpen();
 
+    ///OnSaveAs
     void OnSaveAs();
 
+    ///On Load Recent File
     void OnRecentFile();
 
     void OnLoadRecent();
 
+    ///On Flip
     void OnFlip(bool isVertical);
 
+    ///On Connected
     void OnSocketConnected();
     void OnSocketDisconneted();
 
