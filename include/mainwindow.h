@@ -61,8 +61,15 @@ protected:
 private:
     //static MainWindow* m_Instance;
     bool MayaHasConnected,BlenderHasConnected;
-
+    bool IsPined=false;
     bool mIsConnected=false;
+
+    ///Author
+    QString _Pc,_Users,_Host,_AuthorName;
+    bool IsAuthor();
+    QString GetMacAddress();
+    bool IsValidAPI(QString inUrl,QString inMacHost);
+    void InitLeePicker();
 
     Ui::leePicker *ui;
 

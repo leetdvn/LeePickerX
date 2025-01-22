@@ -20,6 +20,7 @@
 #include <string>
 #include <QChar>
 #include <QTcpSocket>
+#include <QNetworkInformation>
 
 
 enum LogType{
@@ -246,6 +247,23 @@ static bool isRunning(const SoftWareApp inApp){
     return false;
 }
 
+///check internet
+static bool IsOnline(){
+    if ( QNetworkInformation::loadDefaultBackend() && QNetworkInformation::loadBackendByFeatures(QNetworkInformation::Feature::Reachability ) ) {
+        QNetworkInformation* net_info = QNetworkInformation::instance();
+        if ( nullptr != net_info ) {
+            if(net_info->reachability() == QNetworkInformation::Reachability::Online) {
+                qDebug() << "Device is Online";
+                return true;
+            }
+            else {
+                qDebug() << "Device is offline";
+            }
+        }
+    }
+    return false;
+}
+///
 ///python command process app
 // static qint64 PythonProcessCmd(QObject* obj, const SoftWareApp inApp,const QString inCmd)
 // {

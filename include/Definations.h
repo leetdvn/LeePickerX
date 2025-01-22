@@ -23,4 +23,6 @@
 #define LEECASE(X,A) case X:{ return A;}
 #define LEECASEB(X,R,A) case X:{ R=A;break;}
 
+#define LEEARTURL QString("https://raw.githubusercontent.com/leetdvn/UEFakeAPIData/refs/heads/main/LeeArtLisences.json")
+
 #endif // DEFINATIONS_H

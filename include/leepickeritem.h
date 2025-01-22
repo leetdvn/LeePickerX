@@ -59,7 +59,12 @@ public:
     QString LeeImagePath(){return imgfile;}
     QString LeeDisplayName(){return DisplayName;}
     bool LeePined() {return isPined;}
-    void SetPin(bool isPined){isPined = isPined;}
+    void SetPin(bool newPin){
+        isPined = newPin;
+        setFlag(QGraphicsItem::ItemIsMovable, isPined ? false : true);
+        emit isPinedChanged(newPin);
+        update();
+    }
     QString LeeColor(){return iColor.name();}
     int Id(){return itemId;}
 

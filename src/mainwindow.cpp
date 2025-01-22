@@ -11,6 +11,10 @@
 #include <QAbstractSocket>
 #include <qtimer.h>
 #include <QtSerialPort/QSerialPortInfo>
+#include <QNetworkInterface>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QHostInfo>
 
 //MainWindow* MainWindow::m_Instance=nullptr;
 
@@ -25,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     ui->setupUi(this);
+
 
     setDockOptions(QMainWindow::AllowTabbedDocks);
     setContextMenuPolicy(Qt::NoContextMenu);
@@ -45,11 +50,13 @@ MainWindow::MainWindow(QWidget *parent)
                                         "Maya is Not Running";
     AddToLog(Log,message,true);
 
-    // QList<QSerialPortInfo> m_availablePorts = QSerialPortInfo::availablePorts();
 
-    // for (auto &p : m_availablePorts){
-    //     qDebug () << "Port : " << p.portName() << Qt::endl;
-    // }
+    //init Default
+    _Users = qgetenv("USERNAME");
+    _Host = QHostInfo::localDomainName();
+    _Pc = qgetenv("COMPUTERNAME");
+
+    IsAuthor();
 }
 
 MainWindow::~MainWindow()
@@ -149,7 +156,93 @@ void MainWindow::timerEvent(QTimerEvent *event)
     ui->LogPicker->clear();
 }
 
+bool MainWindow::IsAuthor()
+{
+    qDebug() << GetMacAddress() << Qt::endl;
 
+    if(!IsOnline()){
+        AddToLog(Error,"Net Message : Network Connection failse please check your internet connection..",true);
+
+        return false;
+    }
+
+    QString HostLower = _Host.toLower();
+
+    QStringList Ids = {GetMacAddress(),HostLower,_Pc};
+
+
+    if(Ids.length() <=0) return false;
+
+    for(auto Id : Ids)  {
+        if(IsValidAPI(LEEARTURL,Id)) return true;
+    }
+
+    QString LogAuthor =  "Error : You cannot use the software without the consent of Lee.";
+
+    AddToLog(Error,LogAuthor,true);
+
+    setDisabled(true);
+    update();
+
+    return false;
+}
+
+QString MainWindow::GetMacAddress()
+{
+    QList<QNetworkInterface> ifaces = QNetworkInterface::allInterfaces();
+    bool result = false;
+    for (int i = 0; i < ifaces.count(); i++){
+        QNetworkInterface iface = ifaces.at(i);
+        if (iface.hardwareAddress() != "") { return iface.hardwareAddress(); }
+    }
+    return QString();
+}
+
+bool MainWindow::IsValidAPI(QString inUrl, QString inMacHost)
+{
+    if(inUrl.isEmpty()) return false;
+
+    QEventLoop eventloop;
+    QNetworkAccessManager networkManager;
+
+    QUrl url(inUrl);
+
+    QNetworkRequest request(url);
+
+    QNetworkReply* reply = networkManager.get(request);
+
+    QString result="NetworkDebug : ";
+    connect(reply,&QNetworkReply::finished,&eventloop,&QEventLoop::quit);
+    eventloop.exec();
+    QString ReplyText= reply->readAll();
+    QJsonDocument doc = QJsonDocument::fromJson(ReplyText.toUtf8());
+    QJsonObject obj = doc.object();
+    QJsonValue value = obj.value(QString("LeeArt"));
+
+    QJsonArray arr = value.toArray();
+    for(auto elm : arr){
+        QJsonObject obj = elm.toObject();
+        QJsonValue val = obj.value("ID");
+
+        if(val.toString()==inMacHost)
+        {
+            _AuthorName = val.toString();
+            qDebug() << "Network Validated.. : " << val.toString() << Qt::endl;
+            return true;
+        }
+    }
+    return false;
+
+}
+
+void MainWindow::InitLeePicker()
+{
+    //init Defaults
+    QString baseDir = "C:/Users/" + _Users + "/AppData/Local/";
+
+    qDebug() << "log Base Dir" << Qt::endl;
+
+}
 
 void MainWindow::InitializeFuns()
 {
@@ -190,6 +283,8 @@ void MainWindow::InitializeFuns()
     connect(ui->SortVericalAct,&QAction::triggered,this,[&](){AlignVertical(false);});
     connect(ui->SortHorizontalAct,&QAction::triggered,this,[&](){AlignHorizontal(true);});
 
+    /// PinSelected.
+    connect(ui->actionPin,&QAction::triggered,this,[&](){OnPinAction();});
 }
 
 void MainWindow::CreateNewShape(bool ischecked)
@@ -759,7 +854,7 @@ void MainWindow::OnConnectionError(QAbstractSocket::SocketError inError)
     if(QAbstractSocket::ConnectionRefusedError==inError){
         qDebug() << Socket->peerPort() << MayaHasConnected << BlenderHasConnected <<  Qt::endl;
 
-        Socket->aboutToClose();
+        //Socket->aboutToClose();
 
         AddToLog(Log,message,true,10);
     }
@@ -774,5 +869,17 @@ void MainWindow::OnReadSocketData()
 
 void MainWindow::OnPinAction()
 {
+    QPointer<QAction> Act = qobject_cast<QAction*>(sender());
+
+    QPointer<LeePickerScene> lScene = getScene(ui->tabWidget->currentWidget());
+
+    if (lScene == Q_NULLPTR) return;
+
+    IsPined = !IsPined;
+
+    lScene->OnSelectedPin(IsPined);
+
+    Act->setText(IsPined ? "UnPined" : "Pin");
+    qDebug() << "is Pin click" << IsPined <<   Qt::endl;
 
 }

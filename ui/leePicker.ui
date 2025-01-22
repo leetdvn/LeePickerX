@@ -239,7 +239,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <addaction name="actionFlip_Vertical"/>
     <addaction name="actionOverlayMode"/>
     <addaction name="actionPin"/>
-    <addaction name="actionUnpin"/>
     <addaction name="actionDuplicate"/>
    </widget>
    <widget class="QMenu" name="menuHelp_2">
