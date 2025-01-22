@@ -10,7 +10,7 @@
 #include <QProcess>
 #include <QComboBox>
 
-
+///Ui File Name Space
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class ScriptEditor;
@@ -56,6 +56,7 @@ public:
     void SetImagePath(const QString infile);
 
     //Read Property
+#pragma region Q PROPERTY {
     QString LeeImagePath(){return imgfile;}
     QString LeeDisplayName(){return DisplayName;}
     bool LeePined() {return isPined;}
@@ -167,6 +168,7 @@ public:
         emit RectXChanged(newW);
         update();
     }
+#pragma endregion Q PROPERTIES }
     ///check Item Has Assinged
     bool IsAssigned();
 

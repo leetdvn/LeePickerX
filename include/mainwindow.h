@@ -34,23 +34,24 @@ public:
     explicit  MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    ///Log Main
     void AddToLog(const LogType inLog,QString inMessage,bool isClear=0,int inSecond=6000);
 
-
+    ///Server App
     SoftWareApp GetInteractionApp(){return RemoteApp;}
 
+    ///Color
     QColor GetColor(){return MColor;}
 
+    ///App Avalible
     bool IsAppAvalible();
-    // static MainWindow* Instance(){
-    //     if(m_Instance == nullptr)
-    //         m_Instance=new MainWindow();
-    //     return m_Instance;
-    // }
+
+    ///Socket Call Solution
     void ReInitSocket(const SoftWareApp inApp);
 
     QPointer<QTcpSocket> GetTcpSocket();
 
+    ///Tabs
     QList<LeePickerScene*> GetAllTabScenes();
 
 signals:
@@ -163,9 +164,7 @@ private slots:
     ///On Connected
     void OnSocketConnected();
     void OnSocketDisconneted();
-
     void OnConnectionError(QAbstractSocket::SocketError inError);
-
     void OnReadSocketData();
 
     ///Pin Selected

@@ -248,7 +248,7 @@ static bool isRunning(const SoftWareApp inApp){
     return false;
 }
 
-///check internet
+///Check Internet
 static bool IsOnline(){
     if ( QNetworkInformation::loadDefaultBackend() && QNetworkInformation::loadBackendByFeatures(QNetworkInformation::Feature::Reachability ) ) {
         QNetworkInformation* net_info = QNetworkInformation::instance();

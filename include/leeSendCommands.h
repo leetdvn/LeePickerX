@@ -16,6 +16,7 @@ public:
     LeeSendCommand(QObject* parent,const SoftWareApp inApp,const QString Cmds);
     ~LeeSendCommand();
 
+    ///Process Q
     QPointer<QProcess> GetProcess(){return iProcess;}
 
     ///Get Pid ProcessId

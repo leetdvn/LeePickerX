@@ -16,6 +16,7 @@ public:
         if(m_Instance==nullptr)
             m_Instance = new T();
         assert(m_Instance!=NULL);
+        ///lock memories theadsafe
         std::lock_guard<std::mutex> lock(mtx);
         return m_Instance;
     }
