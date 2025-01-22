@@ -40,6 +40,7 @@ static QString ICONSFOLDER = "./icons/";
 
 static QString SAVEDFOLDER = "./Saved/";
 
+
 static bool isDir(const QString dir) { return QDir(dir).exists(); }
 
 static QString getCurrentFolder(QString path) {

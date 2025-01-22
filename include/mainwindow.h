@@ -27,6 +27,9 @@ class MainWindow : public QMainWindow , public Singleton<MainWindow>
 
     const quint16 mPort =54322;
     const quint16 bPort =5000;
+
+    const QString PickerLocation = "C:/Users/" + qgetenv("USERNAME") + "/AppData/LocalLow/LeePicker/LeePicker.picker";
+
 public:
     explicit  MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -58,6 +61,8 @@ protected:
     void timerEvent(QTimerEvent *event) override;
     int timeId=-1;
 
+    virtual void closeEvent ( QCloseEvent * event ) override;
+    void SaveLocalData();
 private:
     //static MainWindow* m_Instance;
     bool MayaHasConnected,BlenderHasConnected;
@@ -70,6 +75,8 @@ private:
     QString GetMacAddress();
     bool IsValidAPI(QString inUrl,QString inMacHost);
     void InitLeePicker();
+    void LoadLocalData();
+
 
     Ui::leePicker *ui;
 

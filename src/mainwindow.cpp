@@ -57,6 +57,10 @@ MainWindow::MainWindow(QWidget *parent)
     _Pc = qgetenv("COMPUTERNAME");
 
     IsAuthor();
+
+    LoadLocalData();
+
+    //connect(this,&QMainWindow::close,this,[&](){OnPickerExit();});
 }
 
 MainWindow::~MainWindow()
@@ -153,7 +157,33 @@ QPointer<QTcpSocket> MainWindow::GetTcpSocket()
 
 void MainWindow::timerEvent(QTimerEvent *event)
 {
+    ///Timer Event
     ui->LogPicker->clear();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    ///Close Event...
+    SaveLocalData();
+    qDebug () << "Closed Window" << Qt::endl;
+
+}
+
+void MainWindow::SaveLocalData()
+{
+    ///Save Data
+    QFile savefile(PickerLocation);
+
+    QJsonObject obj;QJsonDocument jdoc;
+
+    obj[INTERACTAPP]= RemoteApp  == Maya ? "Maya" : "Blender";
+    jdoc.setObject(obj);
+
+    if(savefile.open(QIODeviceBase::ReadWrite | QIODevice::Truncate))
+    {
+        savefile.write(jdoc.toJson());
+        savefile.close();
+    }
 }
 
 bool MainWindow::IsAuthor()
@@ -174,7 +204,12 @@ bool MainWindow::IsAuthor()
     if(Ids.length() <=0) return false;
 
     for(auto Id : Ids)  {
-        if(IsValidAPI(LEEARTURL,Id)) return true;
+        if(IsValidAPI(LEEARTURL,Id)) {
+            InitLeePicker();
+
+
+            return true;
+        }
     }
 
     QString LogAuthor =  "Error : You cannot use the software without the consent of Lee.";
@@ -182,6 +217,7 @@ bool MainWindow::IsAuthor()
     AddToLog(Error,LogAuthor,true);
 
     setDisabled(true);
+
     update();
 
     return false;
@@ -238,10 +274,46 @@ bool MainWindow::IsValidAPI(QString inUrl, QString inMacHost)
 void MainWindow::InitLeePicker()
 {
     //init Defaults
-    QString baseDir = "C:/Users/" + _Users + "/AppData/Local/";
+    QString baseDir = "C:/Users/" + _Users + "/AppData/LocalLow/LeePicker/";
 
-    qDebug() << "log Base Dir" << Qt::endl;
+    if (!QDir(baseDir).exists()){
+        QDir nDir(baseDir);
+        if(!nDir.exists()) {
+            nDir.mkdir(baseDir);
+        }
+    }
 
+
+
+    qDebug() << "log Base Dir" <<  baseDir <<  Qt::endl;
+
+}
+
+void MainWindow::LoadLocalData()
+{
+    QFile localFile(PickerLocation);
+    if(!localFile.exists()) return ;
+
+    QByteArray localData = JsonImport(localFile,false);
+
+    if(localData.isEmpty() || localData.isNull()) return;
+
+    QJsonDocument jdoc = QJsonDocument::fromJson(localData);
+    QJsonObject currentObj = jdoc.object();
+
+    QString app = currentObj[INTERACTAPP].toString();
+
+    bool isMaya = app.endsWith("Maya") ? false : true;
+
+    QString img = !isMaya ? (":/icons/maya.png") : (":/icons/blender.png");
+
+    RemoteApp = isMaya ? Maya  : Blender;
+
+    QImage image(img);
+
+    ui->actionConnectApp->setIcon(QPixmap::fromImage(image));
+    ui->actionConnectApp->setChecked(isMaya);
+    update();
 }
 
 void MainWindow::InitializeFuns()
@@ -544,6 +616,8 @@ void MainWindow::OnConnectAppChanged(bool checkable)
     QImage image(img);
 
     QAction* appAct = qobject_cast<QAction*>(sender());
+    if(appAct==nullptr) return;
+
     appAct->setIcon(QPixmap::fromImage(image));
 
     // QHostAddress host("127.0.0.1");
@@ -562,8 +636,11 @@ void MainWindow::OnNewItem()
     //Create New Item
 }
 
+
 void MainWindow::OnPickerExit()
 {
+
+    SaveLocalData();
     ////On Quit
     QCoreApplication::exit();
 }
