@@ -93,11 +93,12 @@ void LeePickerView::Zoom(QWheelEvent *e)
 
 bool LeePickerView::HasItemUnderMouse()
 {
+    ///HAS ITEM UNDER MOUSE HOVER
     QGraphicsItem* item= scene()->itemAt(mapToScene(cursorPos), transform());
 
     bool result = item== nullptr ? false : true;
 
-    return result == true ? item->isUnderMouse() : false;
+    return result == true ? item->isUnderMouse() && item->zValue() > 0 : false;
 }
 
 void LeePickerView::mousePressEvent(QMouseEvent *e)
@@ -106,7 +107,7 @@ void LeePickerView::mousePressEvent(QMouseEvent *e)
 
 
     if (e->button() & Qt::LeftButton){
-        //Show Rubberband Rectangle
+        ///Show Rubberband Rectangle
         iOrigin = e->pos();
         if (Rubberband == nullptr){
             Rubberband = new QRubberBand(QRubberBand::Rectangle,this);

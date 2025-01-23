@@ -8,6 +8,7 @@
 
 #define LEEUSER qgetenv("USERNAME")
 
+///JSON
 #define LEEJOBJ(Obj,Key,value)  Obj[Key]=value;
 
 #define LEEMAYAENV "C:/Program Files/Autodesk/Maya2022/bin/"
@@ -20,7 +21,9 @@
 
 #define BLENDERCMDS QString("import BlenderCommandPort as LeeCmds\nLeeResultStr=LeeCmds.%1\nprint(LeeResultStr)")
 
+///Nomal CASE RETURN
 #define LEECASE(X,A) case X:{ return A;}
+///CASE REF COPY
 #define LEECASEB(X,R,A) case X:{ R=A;break;}
 
 #define LEEARTURL QString("https://raw.githubusercontent.com/leetdvn/UEFakeAPIData/refs/heads/main/LeeArtLisences.json")

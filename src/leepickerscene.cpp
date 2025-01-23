@@ -65,7 +65,7 @@ QJsonArray LeePickerScene::GetDataAllObject()
     QList<LeePickerItem*> AllItems = GetAllItems();
 
     QJsonArray jsArray{};
-    if(AllItems.length() <=0) return jsArray;
+    if(AllItems.length() <=0) return QJsonArray();
 
     for(const auto It : AllItems)
     {
@@ -207,6 +207,36 @@ void LeePickerScene::OnSelectedPin(bool isPin)
 
     for(auto& it : Items)
         it->SetPin(isPin);
+}
+
+void LeePickerScene::ClearSelection()
+{
+    QList<LeePickerItem*> Items = GetSelectedItems();
+
+    if(Items.length() <=0) return;
+
+    for(auto &it : Items){
+
+        bool isZero = it->zValue() == 0;
+        it->setSelected(!isZero);
+        it->SetEditBackGround(!isZero);
+        it->update();
+    }
+}
+
+void LeePickerScene::SelectAllItemZLayer(const int inLayer)
+{
+    QList<LeePickerItem*> Items = GetAllItems();
+
+    if(Items.length() <=0) return;
+
+    for(auto &it:Items){
+        bool result = it->zValue() == inLayer ? true : false;
+        qDebug() << "abc : "  << result  << "value " << it->zValue() << Qt::endl;
+        it->SetEditBackGround(result);
+        it->setSelected(result);
+        it->update();
+    }
 }
 
 void LeePickerScene::OnScenePinted()

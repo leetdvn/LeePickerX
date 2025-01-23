@@ -55,6 +55,7 @@ public:
     //Public Function
     void SetImagePath(const QString infile);
 
+    void UpdateRect();
     //Read Property
 #pragma region Q PROPERTY {
     QString LeeImagePath(){return imgfile;}
@@ -168,6 +169,15 @@ public:
         emit RectXChanged(newW);
         update();
     }
+
+    void SetEditBackGround(bool isEdit){
+        ///Set Edit Bgr
+        isEditBgr=isEdit;
+        setFlag(QGraphicsItem::ItemIsSelectable, isEdit);
+        this->update();
+    }
+
+
 #pragma endregion Q PROPERTIES }
     ///check Item Has Assinged
     bool IsAssigned();
@@ -207,6 +217,8 @@ protected:
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* e) override;
     virtual void InitItemMenus(const QPoint inPosi);
 
+    void SetUpMenuPolicy(const QPoint inPos);
+
     QRectF iRectF;
     QString imgfile;
     QString iName;
@@ -228,6 +240,7 @@ protected:
     bool isPined=false;
     bool isFlipHorizontal=false;
     bool isFlipVertical=false;
+    bool isEditBgr=false;
     QMenu* iItemMenus = Q_NULLPTR;
 
     QString DisplayName,iScript;

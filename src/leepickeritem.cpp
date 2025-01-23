@@ -197,6 +197,17 @@ void LeePickerItem::SetImagePath(const QString infile)
     return this->update();
 }
 
+void LeePickerItem::UpdateRect()
+{
+    QImage img(imgfile);
+    SetItemPixmap(img);
+    SetRectX(img.rect().left());
+    SetRectY(img.rect().top());
+    SetRectH(img.rect().height());
+    SetRectW(img.rect().width());
+    update();
+}
+
 void LeePickerItem::SetItemName(const QString inItemName)
 {
     ///Set Item Name Func
@@ -339,7 +350,7 @@ void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
         //     QAction  *act = new QAction("abc");
         //     menu->addAction(act);
 
-        InitItemMenus(iLastScenePos);//iItemMenus->exec(iItemMenus->mapToParent(iLastScenePos));
+        SetUpMenuPolicy(iLastScenePos);//iItemMenus->exec(iItemMenus->mapToParent(iLastScenePos));
     }
     return QGraphicsItem::mousePressEvent(ev);
 }
@@ -414,6 +425,15 @@ void LeePickerItem::InitItemMenus(const QPoint inPosi)
 
 }
 
+void LeePickerItem::SetUpMenuPolicy(const QPoint inPos)
+{
+    MainWindow* LeePicker=MainWindow::Instance();
+
+    if(!LeePicker->CanEditBackGround() && iZLayer == 0) return;
+
+    InitItemMenus(inPos);
+}
+
 #pragma endregion }
 
 bool LeePickerItem::ImageIsValid()
@@ -455,7 +475,7 @@ void LeePickerItem::ZLayerSetup()
         iItemMenus->addAction(layer);
     layerOder->setCurrentIndex(zValue());
 
-    //Sort Alignment
+    ///Sort Alignment
     layerOder->setEditable(true);
     layerOder->lineEdit()->setReadOnly(true);
     layerOder->lineEdit()->setAlignment(Qt::AlignCenter);
@@ -478,11 +498,9 @@ void LeePickerItem::OnZLayerChanged(int idx)
     ///OnZLayer Changed
     if(layerOder == nullptr) return;
 
-    qDebug () << "index ZLayer" << idx << Qt::endl;
-
-
     iZLayer = layerOder->currentIndex();
     setZValue(iZLayer);
+
     if (iZLayer == 0) {
         // if (MaskColor != nullptr)
         //     MaskColor = nullptr;
@@ -495,7 +513,7 @@ void LeePickerItem::OnZLayerChanged(int idx)
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setFlag(QGraphicsItem::ItemIsSelectable, true);
     }
-    qDebug() << "ZLayer" << iZLayer << Qt::endl;
+    qDebug() << "ZLayer Changed" << iZLayer << Qt::endl;
     update();
 
 
@@ -564,7 +582,7 @@ void LeePickerItem::OnTestBlenderCmds()
 {
 
     ///Test Command Blender
-    MainWindow* LeePicker=MainWindow::Instance();
+    //MainWindow* LeePicker=MainWindow::Instance();
 
 
     const char* pfile="C:/Users/leepl/Documents/GitHub/LeePickerX/Scripts/connectPort.py";
@@ -706,7 +724,7 @@ void LeePickerItem::AssignSelection()
 
 void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 {
-    //if(!IsAssigned()) return ;
+    if(!IsAssigned()) return ;
     SoftWareApp interactApp = GetInteractApp();
 
     if(!isRunning(interactApp)){

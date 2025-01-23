@@ -321,6 +321,8 @@ li.checked::marker { content: &quot;\2612&quot;; }
    <addaction name="ColorAct"/>
    <addaction name="SortHorizontalAct"/>
    <addaction name="SortVericalAct"/>
+   <addaction name="BgrAct"/>
+   <addaction name="separator"/>
   </widget>
   <action name="NewScene">
    <property name="text">
@@ -574,9 +576,23 @@ li.checked::marker { content: &quot;\2612&quot;; }
     <string>Multiply Button V</string>
    </property>
   </action>
-  <action name="action">
+  <action name="BgrAct">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>abc</string>
+    <string>BGR</string>
+   </property>
+   <property name="toolTip">
+    <string>Back ground edit</string>
+   </property>
+   <property name="font">
+    <font>
+     <bold>true</bold>
+    </font>
    </property>
   </action>
  </widget>

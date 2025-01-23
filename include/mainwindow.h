@@ -49,6 +49,8 @@ public:
     ///Socket Call Solution
     void ReInitSocket(const SoftWareApp inApp);
 
+    bool CanEditBackGround(){return CanEditBgr;}
+
     QPointer<QTcpSocket> GetTcpSocket();
 
     ///Tabs
@@ -69,7 +71,7 @@ private:
     bool MayaHasConnected,BlenderHasConnected;
     bool IsPined=false;
     bool mIsConnected=false;
-
+    bool CanEditBgr=false;
     ///Author
     QString _Pc,_Users,_Host,_AuthorName;
     bool IsAuthor();
@@ -169,6 +171,12 @@ private slots:
 
     ///Pin Selected
     void OnPinAction();
+
+    /// Edit BackGround
+    void OnEditBackGround();
+
+    ///New Shape
+    void OnCreateNewShape();
 };
 
 

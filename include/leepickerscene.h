@@ -44,6 +44,10 @@ public:
 
     void OnSelectedPin(bool isPin=false);
 
+    void ClearSelection();
+
+    void SelectAllItemZLayer(const int inLayer);
+
 signals:
     void SceneNameChanged(QString newName);
     void SceneLockChanged(bool isLock);

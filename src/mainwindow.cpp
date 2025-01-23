@@ -16,7 +16,6 @@
 #include <QNetworkReply>
 #include <QHostInfo>
 
-//MainWindow* MainWindow::m_Instance=nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -176,7 +175,10 @@ void MainWindow::SaveLocalData()
 
     QJsonObject obj;QJsonDocument jdoc;
 
-    obj[INTERACTAPP]= RemoteApp  == Maya ? "Maya" : "Blender";
+    obj[INTERACTAPP]= RemoteApp  == ui->actionConnectApp->isChecked() ? "Maya" : "Blender";
+
+    qDebug () << ui->actionConnectApp->isChecked() << "remote" << Qt::endl;
+    obj["CanEditBgr"] = ui->BgrAct->isChecked();
     jdoc.setObject(obj);
 
     if(savefile.open(QIODeviceBase::ReadWrite | QIODevice::Truncate))
@@ -357,6 +359,13 @@ void MainWindow::InitializeFuns()
 
     /// PinSelected.
     connect(ui->actionPin,&QAction::triggered,this,[&](){OnPinAction();});
+
+    connect(ui->BgrAct,&QAction::triggered,this,[&](){OnEditBackGround();});
+
+    ///Menu Create
+    connect(ui->actionCreateCImage,&QAction::triggered,this,[&](){OnCreateNewShape();});
+    connect(ui->actionCreateSingleButton,&QAction::triggered,this,[&](){CreateNewShape();});
+
 }
 
 void MainWindow::CreateNewShape(bool ischecked)
@@ -739,6 +748,7 @@ void MainWindow::SaveData(const QString inPath)
 
     LEEJOBJ(PickerObj,"LeePicker",jsScene);
     LEEJOBJ(PickerObj,"InteractApp",RemoteApp == Maya ? "Maya" : "Blender");
+    LEEJOBJ(PickerObj,"CanEditBgr",ui->BgrAct->isChecked());
 
     QFile jfile(inPath);
     QByteArray byteArray = QJsonDocument(PickerObj).toJson();
@@ -811,6 +821,8 @@ void MainWindow::LoadDataFile(QString &inPath)
     QJsonObject rootObj = doc.object();
     QJsonArray dataTab = rootObj[AUTHOR].toArray();
     RemoteApp = rootObj[INTERACTAPP].toVariant().toString().endsWith("Maya") ? Maya : Blender;
+    bool caneditbgr = rootObj["CanEditBgr"].isBool();
+    ui->BgrAct->setChecked(caneditbgr);
     int count=0;
     foreach(const QJsonValue &v, dataTab) {
         QJsonObject tabOther = v.toObject();
@@ -958,5 +970,36 @@ void MainWindow::OnPinAction()
 
     Act->setText(IsPined ? "UnPined" : "Pin");
     qDebug() << "is Pin click" << IsPined <<   Qt::endl;
+
+}
+
+void MainWindow::OnEditBackGround()
+{
+    CanEditBgr = ui->BgrAct->isChecked();
+    QString Text = CanEditBgr ? "EDIT" : "BGR";
+    ui->BgrAct->setText(Text);
+
+    QPointer<LeePickerScene> currentScene = getScene(ui->tabWidget->currentWidget());
+    if(!CanEditBgr && currentScene !=nullptr) {
+        currentScene->ClearSelection();
+        return;
+    }
+
+    currentScene->SelectAllItemZLayer(0);
+
+    qDebug() << "Bgr Edit" << Qt::endl;
+}
+
+void MainWindow::OnCreateNewShape()
+{
+    QPointer<LeePickerScene> currentScene = getScene(ui->tabWidget->currentWidget());
+
+    QString image = BrowserImage();
+
+    if (!QFile(image).exists() || currentScene == nullptr) return;
+
+    QPointer<LeePickerItem> item =  currentScene->CreateItem(QString(),image);
+
+    item->UpdateRect();
 
 }

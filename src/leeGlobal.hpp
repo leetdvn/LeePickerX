@@ -56,6 +56,7 @@ static QString getCurrentFolder(QString path) {
     return ICONSFOLDER;
 }
 
+///Widget Action
 template<class T>
 QWidgetAction* TemplateAction(void*& action, QString label = NULL, QString name = NULL)
 {
@@ -77,7 +78,7 @@ QWidgetAction* TemplateAction(void*& action, QString label = NULL, QString name 
     return _nAct;
 }
 
-//Instance Browser Image
+///Instance Browser Image
 static QString BrowserImage()
 {
     QString filter = "All files (*.*);;JPEG (*.jpg *.jpeg);;TIFF (*.tif);;PNG (*.png)";
@@ -86,6 +87,7 @@ static QString BrowserImage()
     return ImgPath;
 }
 
+///Binary Data
 static void MakeBinaryData(QFile &file){
     if (!file.exists()) { return; }
 
@@ -101,6 +103,7 @@ static void MakeBinaryData(QFile &file){
     }
 }
 
+///Read Binary
 static QByteArray ReadBinaryData(QFile &file){
 
     if (!file.exists()) { return QByteArray(); }
@@ -116,7 +119,7 @@ static QByteArray ReadBinaryData(QFile &file){
     return copyData;
 }
 
-//Json Export File
+///Json Export File
 static void JsonExport(QFile &file, QByteArray data, bool Hex=0)
 {
     if (!file.exists() && data.isEmpty() || !file.exists() && data.isNull()) { return; }
@@ -134,7 +137,7 @@ static void JsonExport(QFile &file, QByteArray data, bool Hex=0)
 
 
 
-//Json Import File
+///Json Import File
 static QByteArray JsonImport(QFile &file, bool Hex=0)
 {
     if (!file.exists()) { QByteArray(); };
@@ -171,7 +174,7 @@ static QByteArray JsonImport(QFile &file, bool Hex=0)
 }
 
 
-//check Maya Running on Task process
+///check Maya Running on Task process
 static bool isRunning(const QString &process) {
     QProcess tasklist;
     tasklist.start(
@@ -184,7 +187,7 @@ static bool isRunning(const QString &process) {
     return output.startsWith(QString("\"%1").arg(process));
 }
 
-
+///
 template<typename QEnum>
 static QString QtEnumToString(const QEnum value)
 {
@@ -203,7 +206,7 @@ static void SaveAssignObject(QObject* inObj,SoftWareApp inApp,const QString inVa
 }
 
 
-//file dialog
+///file dialog
 static QString fileDialog(QWidget* main,bool isSave=false)
 {
     QString filter = "LeePicker (*.Leetdvn)";
