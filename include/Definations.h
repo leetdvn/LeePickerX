@@ -28,4 +28,12 @@
 
 #define LEEARTURL QString("https://raw.githubusercontent.com/leetdvn/UEFakeAPIData/refs/heads/main/LeeArtLisences.json")
 
+#define LEEWHITE_HTML QString("<font color=\"white\">%1</font>")
+
+#define LEECYAN_HTML QString("<font color=\"cyan\">%1</font>")
+
+#define LEERED_HTML QString("<font color=\"red\">%1</font>")
+
+#define LEEYELLOW_HTML QString("<font color=\"red\">%1</font>")
+
 #endif // DEFINATIONS_H

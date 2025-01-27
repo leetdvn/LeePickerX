@@ -20,6 +20,7 @@ QT_END_NAMESPACE
 class MainWindow;
 
 
+#define MESSAGE(Type,msg,time) Message(Type,msg,time)
 
 
 class LeePickerItem : public QGraphicsObject
@@ -173,7 +174,7 @@ public:
     void SetEditBackGround(bool isEdit){
         ///Set Edit Bgr
         isEditBgr=isEdit;
-        setFlag(QGraphicsItem::ItemIsSelectable, isEdit);
+        OnZLayerChanged(1);
         this->update();
     }
 
@@ -229,6 +230,8 @@ protected:
     QString iServerApp;
     QPixmap iPixmap;
 
+    ///Item Message
+    void Message(LogType inType,const QString msg,int timeDelete);
     //private Funtion
     bool ImageIsValid();
     bool iIsOverlay;

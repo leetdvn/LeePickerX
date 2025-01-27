@@ -82,22 +82,22 @@ void MainWindow::AddToLog(const LogType inLog, QString inMessage, bool isClear, 
     switch (inLog) {
     case Log:{
         title = "Log : ";
-        result = QString("<font color=\"white\">%1</font>").arg(title);
+        result = LEEWHITE_HTML.arg(title);
         break;
     }
     case Warning:{
         title = "Warning : ";
-        result = QString("<font color=\"yellow\">%1</font>").arg(title);
+        result = LEEYELLOW_HTML.arg(title);
         break;
     }
     case Error:{
         title = "Error : ";
-        result = QString("<font color=\"red\">%1</font>").arg(title);
+        result = LEERED_HTML.arg(title);
         break;
     }
     case Completed:{
         title = "Completed : ";
-        result = QString("<font color=\"cyan\">%1</font>").arg(title);
+        result = LEECYAN_HTML.arg(title);
         break;
     }
 

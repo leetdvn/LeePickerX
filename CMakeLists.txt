@@ -43,6 +43,7 @@ set(PROJECT_SOURCES
         ui/leePicker.ui
         ui/leePicker.qrc
         ui/ScriptEditor.ui
+        ui/ComfirmDialog.ui
         ui/leePicker.qrc
         LeePickerX.rc
 )

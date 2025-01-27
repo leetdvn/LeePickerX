@@ -202,7 +202,6 @@ void LeePickerScene::OnSelectionChanged(){
 void LeePickerScene::OnSelectedPin(bool isPin)
 {
     QList<LeePickerItem*> Items = GetSelectedItems();
-
     if(Items.length() <=0) return;
 
     for(auto& it : Items)
@@ -226,6 +225,7 @@ void LeePickerScene::ClearSelection()
 
 void LeePickerScene::SelectAllItemZLayer(const int inLayer)
 {
+    ///Get Selectted Item Z Layer
     QList<LeePickerItem*> Items = GetAllItems();
 
     if(Items.length() <=0) return;

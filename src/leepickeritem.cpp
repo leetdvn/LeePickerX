@@ -27,7 +27,7 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
     ,iColor(Qt::blue)
     ,iRectF(inRectF)
     ,iZLayer(1)
-    ,isize(1)
+    ,isize(25)
 {
 
     //Initialization
@@ -50,14 +50,14 @@ LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF 
 
 QRectF LeePickerItem::boundingRect() const
 {
-    // if (!imgfile.isNull()) {
-    //     qreal wMin = 80;
-    //     QFontMetrics fm(QFont(DisplayName, isize));
-    //     double ratio{};
-    //     int width = fm.horizontalAdvance(DisplayName);
-    //     ratio = width < 80 ? 80 : width * 1.25;
-    //     return QRectF(iPixmap.rect().x(),iPixmap.rect().y(), ratio, iPixmap.height());
-    // }
+    if (imgfile.isNull()) {
+        qreal wMin = 80;
+        QFontMetrics fm(QFont(DisplayName, isize));
+        double ratio{};
+        int width = fm.horizontalAdvance(DisplayName);
+        ratio = width < 80 ? 80 : width * 1.25;
+        return QRectF(iRectF.x(),iRectF.y(), ratio, iRectF.height());
+    }
 
     ///Reimplemented Protected
     return iRectF;
@@ -93,9 +93,6 @@ void LeePickerItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         painter->setTransform(transform().inverted(),true);
 
     ///Size
-    painter->setFont(QFont("Arial",isize,QFont::Bold));
-    painter->setRenderHint(QPainter::Antialiasing, true);
-
     UpdateDisplayName(painter);
     painter->setOpacity(iAlpha);
 
@@ -105,10 +102,9 @@ void LeePickerItem::UpdateDisplayName(QPainter *painter)
 {
     ///Update DisplayName
     painter->setPen(Qt::white);
-    QFont font("Arial",10, QFont::Bold);
+    QFont font("Arial",isize, QFont::Bold);
     painter->setFont(font);
-    if(!DisplayName.isEmpty())
-        painter->drawText(iRectF, DisplayName, QTextOption(Qt::AlignCenter));
+    painter->drawText(boundingRect(), DisplayName, QTextOption(Qt::AlignCenter));
 
 }
 
@@ -434,6 +430,13 @@ void LeePickerItem::SetUpMenuPolicy(const QPoint inPos)
     InitItemMenus(inPos);
 }
 
+void LeePickerItem::Message(LogType inType,const QString msg,int timeDelete)
+{
+    MainWindow* LeePicker=MainWindow::Instance();
+
+    return LeePicker->AddToLog(inType,msg,true,timeDelete);
+}
+
 #pragma endregion }
 
 bool LeePickerItem::ImageIsValid()
@@ -498,7 +501,7 @@ void LeePickerItem::OnZLayerChanged(int idx)
     ///OnZLayer Changed
     if(layerOder == nullptr) return;
 
-    iZLayer = layerOder->currentIndex();
+    iZLayer = idx;
     setZValue(iZLayer);
 
     if (iZLayer == 0) {
@@ -607,25 +610,25 @@ void LeePickerItem::OnTestBlenderCmds()
 void LeePickerItem::OnTestMayaCmds()
 {
     ///Test Command Maya
-    SoftWareApp interactApp = GetInteractApp();
+    if(ShowDialog("taoday"))
+    {
+        ///Test Log Define
+        MESSAGE(Log,"taoday Comfirm",3);
+    }
+    else{
+        MESSAGE(Log,"taoday Canel",3);
 
-    switch (interactApp) {
-    case Maya: return AssignSelection();
-    default:
-        break;
     }
 }
 
 void LeePickerItem::OnPinItem()
 {
-    ///OnPined
-    MainWindow* LeePicker=MainWindow::Instance();
 
     isPined = !property("Pin").toBool();
     //Toogle Change Item Pin
     setFlag(QGraphicsItem::ItemIsMovable,!isPined);
     setProperty("Pin",isPined);
-    LeePicker->AddToLog(Log,isPined ? QString("Pined"):QString("UnPined"),true);
+    MESSAGE(Log,isPined ? QString("Pined"):QString("UnPined"),3);
 }
 
 void LeePickerItem::OnInitScriptEditor()
@@ -687,7 +690,7 @@ void LeePickerItem::AssignSelection()
 
         result = LeePicker->IsAppAvalible();
         if(!result){
-            LeePicker->AddToLog(Error,msgApp,true,5);
+            LeePicker->AddToLog(Error,msgApp,true,2);
             return;
         }
 
@@ -699,7 +702,7 @@ void LeePickerItem::AssignSelection()
         QString selections  = PyExecResultStr(Cmd);
 
         if(selections.isEmpty() || selections.isNull()){
-            LeePicker->AddToLog(Error,msgPort,true);
+            LeePicker->AddToLog(Error,msgPort,true,2);
             return;
         }
         //save value to assign

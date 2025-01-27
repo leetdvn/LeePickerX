@@ -21,8 +21,17 @@
 #include <QChar>
 #include <QTcpSocket>
 #include <QNetworkInformation>
+#include "../ui/ui_ComfirmDialog.h"
 
 
+QT_BEGIN_NAMESPACE
+namespace Ui {
+class ComfirmDialog;
+}
+QT_END_NAMESPACE
+
+
+//ComfirmDialog
 enum LogType{
     Log,
     Warning,
@@ -264,6 +273,20 @@ static bool IsOnline(){
                 qDebug() << "Device is offline";
             }
         }
+    }
+    return false;
+}
+
+static bool ShowDialog(QString message)
+{
+    Ui::ComfirmDialog* dialogui = new Ui::ComfirmDialog();
+    QDialog* dialog = new QDialog();
+    dialogui->setupUi(dialog);
+    dialogui->label->setText(message);
+
+    if(dialog->exec() == QDialog::Accepted)
+    {
+        return true;
     }
     return false;
 }

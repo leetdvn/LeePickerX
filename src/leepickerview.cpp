@@ -105,7 +105,6 @@ void LeePickerView::mousePressEvent(QMouseEvent *e)
 {
     if (HasItemUnderMouse()) return QGraphicsView::mousePressEvent(e);
 
-
     if (e->button() & Qt::LeftButton){
         ///Show Rubberband Rectangle
         iOrigin = e->pos();
@@ -117,7 +116,7 @@ void LeePickerView::mousePressEvent(QMouseEvent *e)
         Rubberband->show();
 
     }
-    else if (e->button() == Qt::RightButton && !HasItemUnderMouse())
+    else if (e->button() == Qt::RightButton)
     {
         //e->accept();
         sScenePos = e->pos();
@@ -125,7 +124,6 @@ void LeePickerView::mousePressEvent(QMouseEvent *e)
         viewport()->setCursor(Qt::ClosedHandCursor);
 
     }
-
     QGraphicsView::mousePressEvent(e);
 }
 
