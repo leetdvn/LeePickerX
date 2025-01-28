@@ -29,6 +29,7 @@ class LeePickerItem : public QGraphicsObject
 
     Q_PROPERTY(QString imgfile READ LeeImagePath WRITE SetImagePath NOTIFY nameChanged FINAL)
     Q_PROPERTY(QString DisplayName READ LeeDisplayName WRITE SetDisplayName NOTIFY DisplayNameChanged FINAL)
+    Q_PROPERTY(QString iScript READ IScript WRITE SetIScript NOTIFY IScriptChanged FINAL)
     Q_PROPERTY(bool isPined READ LeePined WRITE SetPin NOTIFY isPinedChanged FINAL)
     Q_PROPERTY(QString iColorStr READ LeeColor WRITE SetItemColor NOTIFY iColorChanged FINAL)
     Q_PROPERTY(int itemId READ Id WRITE SetItemId NOTIFY IdChanged FINAL)
@@ -80,6 +81,8 @@ public:
     QString DataSelect(){return iDataSelect;}
     QString DataServerApp() {return iServerApp;}
 
+    QString IScript() {return iScript;}
+
     qreal IRectX(){return rX;}
     qreal IRectY(){return rY;}
     qreal IRectH(){return rH;}
@@ -104,6 +107,10 @@ public:
     }
 
     void SetItemName(const QString inItemName);
+    void SetIScript(const QString inScript){
+        iScript = inScript;
+        emit IScriptChanged(inScript);
+    }
 
     void SetItemColor(const QString inColor);
 
@@ -195,6 +202,7 @@ signals:
     void DisplayNameChanged(const QString& newName) ;
     void isPinedChanged(const bool& newName) ;
     void iColorChanged(const QString& newName);//{qDebug() << "Color changed";}
+    void IScriptChanged(const QString& newScript);
     void IdChanged(const int newId);
     void HorizontalChanged(const bool newHoz);
     void FlipVerticalChanged(const bool isVertical);
@@ -277,6 +285,9 @@ private:
 
     QString PyExecResultStr(const char* inCmd);
 
+    void PyExec(const char* inCmd);
+
+    int testCount=0;
 private slots:
     void OnDelete();
 
@@ -299,6 +310,9 @@ private slots:
     void OnTestMayaCmds();
 
     void OnPinItem();
+
+    ///Script Changed
+    void OnScriptChanged();
 };
 
 #endif // LEEPICKERITEM_H

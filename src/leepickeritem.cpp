@@ -17,6 +17,7 @@
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
 #include <QStyledItemDelegate>
+#include <qobject.h>
 
 
 LeePickerItem::LeePickerItem(QString itemName, QString Image, int objID, QRectF inRectF)
@@ -122,6 +123,7 @@ void LeePickerItem::InitVariant()
 
 QString LeePickerItem::PyExecResultStr(const char* inCmd)
 {
+    ///Call Python Function
     MainWindow* LeePicker=MainWindow::Instance();
 
     SoftWareApp interactApp = LeePicker->GetInteractionApp();
@@ -133,6 +135,20 @@ QString LeePickerItem::PyExecResultStr(const char* inCmd)
     future.waitForFinished();
 
     return selections;
+}
+
+void LeePickerItem::PyExec(const char *inCmd)
+{
+    ///Call Python Void Function
+    MainWindow* LeePicker=MainWindow::Instance();
+
+    SoftWareApp interactApp = LeePicker->GetInteractionApp();
+    ///Module File
+    const char* ModuleFile = interactApp == Maya ? "MayaCommandPort" : "BlenderCommandPort";
+    const char* funcName = "send_command";
+
+    PyExecFuncAsVoid(funcName,interactApp,inCmd);
+
 }
 
 QJsonObject LeePickerItem::toJsonObject()
@@ -335,9 +351,7 @@ void LeePickerItem::mousePressEvent(QGraphicsSceneMouseEvent *ev)
     if (ev->button() == Qt::LeftButton)
     {
         //this->~leePatternItem();
-        if(iDataSelect.isEmpty() || iDataSelect.isNull()) return QGraphicsItem::mousePressEvent(ev);
 
-        qDebug() << "info left mouse click." << Qt::endl;
         OnSelectionClicked();
     }
     else if (ev->button() & Qt::RightButton && isHover)
@@ -491,6 +505,19 @@ void LeePickerItem::ZLayerSetup()
 
 void LeePickerItem::OnDelete()
 {
+    if(!iDataSelect.isEmpty() ||
+        !iDataSelect.isNull() ||
+        !iScript.isEmpty() ||
+        !iScript.isNull())
+    {
+        if(ShowDialog("Do You Wanna Delele this Button")){
+            deleteLater();
+        }
+        else{
+            return;
+        }
+
+    }
     ///Destructor
     deleteLater();
     ///free(this);
@@ -631,6 +658,19 @@ void LeePickerItem::OnPinItem()
     MESSAGE(Log,isPined ? QString("Pined"):QString("UnPined"),3);
 }
 
+void LeePickerItem::OnScriptChanged()
+{
+    QPointer<QTextEdit> textEdit = qobject_cast<QTextEdit*>(sender());
+    QString textChanged = textEdit->toPlainText();
+
+    if(textChanged.isNull() || textChanged.isEmpty()) return;
+
+    SetIScript(textChanged);
+    update();
+
+    qDebug () << "Text : " << textChanged << Qt::endl;
+}
+
 void LeePickerItem::OnInitScriptEditor()
 {
 
@@ -638,7 +678,14 @@ void LeePickerItem::OnInitScriptEditor()
     QWidget* widget=new QWidget();
     SEditor->setupUi(widget);
 
+    if(!DisplayName.isEmpty())
+        SEditor->lineEdit->setText(DisplayName);
+    if(!iScript.isEmpty()){
+        SEditor->ScriptEdit->setText(iScript);
+    }
+
     connect(SEditor->lineEdit,SIGNAL(textChanged(QString)),SLOT(OnDisplayChanged(QString)));
+
     MainWindow* LeePicker=MainWindow::Instance();
 
     SoftWareApp interactApp = LeePicker->GetInteractionApp();
@@ -660,9 +707,10 @@ void LeePickerItem::OnInitScriptEditor()
         case NONE:
             return;
     }
+
     connect(SEditor->BlenderRadio,SIGNAL(clicked(bool)),this,SLOT(OnAppConnectChanged(bool)));
     connect(SEditor->MayaRadio,SIGNAL(clicked(bool)),this,SLOT(OnAppConnectChanged(bool)));
-
+    connect(SEditor->ScriptEdit,SIGNAL(textChanged()),this,SLOT(OnScriptChanged()));
     widget->show();
 
 }
@@ -727,7 +775,8 @@ void LeePickerItem::AssignSelection()
 
 void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
 {
-    if(!IsAssigned()) return ;
+    if(!IsAssigned() && iScript.isEmpty()) return ;
+
     SoftWareApp interactApp = GetInteractApp();
 
     if(!isRunning(interactApp)){
@@ -736,7 +785,6 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
     }
     ///check empty property
 
-    if(iDataSelect.isEmpty() || iDataSelect.isNull()) return;
 
     auto Args = iDataSelect.toStdString();
     const char* Cmd = !isAdd ?
@@ -745,13 +793,23 @@ void LeePickerItem::OnSelectionClicked(bool isSelect, bool isAdd)
                           "PickerDeSelect" :
                           "PickerAddSelect";
 
-    PyExecFuncAsVoid(Cmd,interactApp,iDataSelect.toUtf8());
-
-
     MainWindow* LeePicker=MainWindow::Instance();
 
-    LeePicker->AddToLog(Log,QString("Select %1").arg(iDataSelect),true);
-    qDebug() << "Click " <<  Cmd << Qt::endl;
+    if(IsAssigned()){
+        PyExecFuncAsVoid(Cmd,interactApp,iDataSelect.toUtf8());
+        LeePicker->AddToLog(Log,QString("Select %1").arg(iDataSelect),true);
+    }
+
+    if(!iScript.isEmpty())
+    {
+        const char* ModuleFile = interactApp == Maya ? "MayaCommandPort" : "BlenderCommandPort";
+        const char* funcName = "send_command";
+
+        const char* Cmd = iScript.toLocal8Bit();
+        QString result = PyExecResultString(LEESCRIPTPATH,ModuleFile,funcName,Cmd);
+        //PyExec(Cmd);
+    }
+    qDebug() << "Click " <<  Cmd << testCount <<  Qt::endl;
 }
 
 

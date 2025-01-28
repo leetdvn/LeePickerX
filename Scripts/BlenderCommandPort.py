@@ -4,7 +4,6 @@ HOST = '127.0.0.1'  # the local host
 PORT = 5000  # The same port as used by the server
 ADDR = (HOST, PORT)
 
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 def send_command(command=str):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
